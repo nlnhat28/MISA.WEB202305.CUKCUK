@@ -1,0 +1,130 @@
+/* date picker */
+
+/* wrapper */
+.dp__main {
+    font-family: var(--font-primary);
+}
+
+.dp__main [tabindex]:focus {
+    outline: 1px solid var(--green-300);
+}
+.dp__outer_menu_wrap {
+    width: 100%;
+}
+.dp__menu {
+    width: 280px;
+    z-index: 1;
+    border-radius: 4px;
+    box-shadow: 0px 4px 16px rgba(23, 27, 42, 0.24);
+}
+.dp__menu_transitioned {
+    transition: none;
+}
+
+/* input */
+.dp__input_wrap {
+    box-sizing: border-box;
+}
+.dp__input {
+    transition: none;
+}
+input.dp__input {
+    color: var(--color-text);
+    border-color: var(--border-color);
+    font-size: 14px;
+}
+input.dp__input::placeholder {
+    color: var(--color-placeholder);
+    opacity: 1;
+}
+input.dp__input::-webkit-calendar-picker-indicator {
+    display: none;
+}
+
+/* calendar */
+.dp__menu_inner {
+    font-family: var(--font-primary);
+}
+.dp__calendar_header {
+    font-size: 16px;
+}
+
+/* cell */
+.dp__calendar_item {
+    display: flex;
+    justify-content: center;
+}
+[tabindex].dp__calendar_item:active {
+    outline: none;
+}
+.dp__cell_inner {
+    font-size: 14px;
+    border-radius: 50%;
+}
+.dp__cell_inner:active {
+    border: 1px solid var(--green-500);
+}
+.dp__today {
+    border: none;
+    color: var(--green-500);
+    font-weight: 700;
+}
+.dp__today:hover{
+    color: var(--green-500);
+}
+.dp__today.dp__active_date:hover{
+    color: #fff;
+}
+.dp__active_date {
+    background-color: var(--green-500);
+    color: #fff;
+}
+
+/* month and year */
+[tabindex].dp__overlay_col:focus {
+    outline-offset: -4px;
+}
+
+/* month year picker */
+.dp__overlay_cell_active {
+    background-color: var(--green-500);
+}
+.dp__overlay_cell:active {
+    border: 1px solid var(--green-500);
+}
+
+/* icon */
+.dp__input_icon {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    left: auto;
+    right: 0;
+}
+.dp__clear_icon {
+    display: none;
+}
+
+/* action-row */
+.dp__action_row {
+    padding: 8px;
+}
+.action-row {
+    display: flex;
+    flex-direction: row-reverse;
+    align-items: center;
+    justify-content: space-between;
+    column-gap: 8px;
+    padding: 0px 12px;
+    width: 100%;
+}
+
+/* title */
+.textfield[tooltip]::after,
+.textfield[tooltip]::before {
+    opacity: 0;
+}
+.textfield:has(input:hover)[tooltip]::after,
+.textfield:has(input:hover)[tooltip]::before {
+    opacity: 1;
+}

@@ -1,0 +1,33 @@
+/* table */
+/* head */
+.table .table__head {
+  box-shadow: none;
+}
+.table-content .mask {
+  position: sticky;
+  top: 67px;
+  height: calc(100% - 67px);
+  z-index: 1;
+}
+.table-content .mask__icon {
+  width: 100px;
+  height: 100px;
+  filter: brightness(0.8) invert(0.2);
+}
+.table-content .mask__message {
+  font-size: 16px;
+}
+.table-content .filter .mask__icon {
+  width: 90px;
+  height: 90px;
+  filter: brightness(0.8) invert(0.2);
+  transform: translateY(-10%);
+}
+.table-content .filter .mask__message {
+  transform: translateY(-20%);
+  font-size: 16px;
+}
+
+.table-toolbar .textfield {
+  width: auto;
+}

@@ -1,0 +1,28 @@
+/* select-dropdown - used to chose a item */
+
+.select-dropdown__title {
+  display: flex;
+  flex: 1;
+  column-gap: 4px;
+  word-wrap: break-word;
+  display: flex;
+  align-items: center;
+}
+.select-dropdown__title--text {
+  font-size: 24px;
+  font-weight: 700;
+  width: fit-content;
+  padding: 0px 4px;
+}
+.select-dropdown__title--dropdown {
+  min-width: 24px;
+  min-height: 24px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+}
+/* .select-dropdown .select-dropdown__title:focus-within ~ .p-relative .select-list,
+.select-dropdown .select-dropdown__title:focus-within ~ .p-relative .search-typing {
+    display: block;
+} */

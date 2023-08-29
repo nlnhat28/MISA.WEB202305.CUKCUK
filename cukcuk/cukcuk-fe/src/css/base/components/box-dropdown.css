@@ -1,0 +1,28 @@
+/* box dropdown */
+.box-dropdown {
+    caret-color: transparent;
+}
+
+/* box */
+.box-dropdown__box {
+  height: 28px;
+  width: 28px;
+  background-color: #fff;
+  border-radius: 2px;
+  cursor: pointer;
+  line-height: 28px;
+  text-align: center;
+  vertical-align: middle;
+  border: 1px solid var(--border-color);
+}
+.box-dropdown__box:hover {
+  border: 1px solid var(--orange);
+}
+.box-dropdown__box:focus,
+.box-dropdown__box:active {
+  border: 1px solid var(--blue-bold);
+}
+.box-dropdown__box--active {
+  color: var(--blue) 
+}
+

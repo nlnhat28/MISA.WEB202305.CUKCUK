@@ -1,0 +1,65 @@
+.tab-menu {
+  width: 100%;
+  padding-top: 4px;
+  font-size: 13px;
+}
+.tab-menu__header {
+  background-color: var(--grey-100);
+  margin-bottom: 4px;
+}
+.tab-menu__body {
+  margin-bottom: 4px;
+}
+.tab-menu__footer .button-container {
+  display: flex;
+  column-gap: 4px;
+}
+.tab-item {
+  background-color: red;
+  height: fit-content;
+  width: fit-content;
+  padding: 6px 8px;
+  cursor: pointer;
+  caret-color: transparent;
+}
+.tab-item.tab-item--active {
+  background-color: #fff;
+  color: var(--blue-bold);
+  border-left: 1px solid var(--border-color);
+  border-right: 1px solid var(--border-color);
+  position: relative;
+}
+.tab-item.tab-item--active::before {
+  content: "";
+  position: absolute;
+  width: 100%;
+  height: 2px;
+  background-color: var(--blue-bold);
+  top: 0px;
+  left: 0;
+}
+
+.tab-menu__body .table-container {
+  height: 200px;
+}
+.tab-menu__body .table__footer,
+.tab-menu__body .table-toolbar {
+  display: none;
+}
+
+.tab-menu__body .table__head,
+.tab-menu__body .table__head th {
+  height: 30px;
+  background-color: var(--grey-200);
+}
+.tab-menu__body .table tr:focus-within td,
+.tab-menu__body .table tr:hover td {
+  background-color: #fff;
+}
+.tab-menu__body .table tr td:hover {
+  background-color: var(--blue-50);
+}
+.tab-menu__body .table-content {
+  border: none;
+  padding: 0;
+}

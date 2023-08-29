@@ -1,0 +1,26 @@
+@import "./table.css";
+
+/* customers */
+
+a,
+a:active,
+a:visited {
+  text-decoration: none;
+}
+.icon {
+  caret-color: transparent;
+}
+
+/* button */
+.btn--icon-left .icon--plus {
+  scale: calc(16 / 14);
+}
+
+/* icon */
+.icon--refresh {
+  scale: calc(20 / 21);
+  filter: brightness(0.9);
+}
+.icon--magnifying-glass {
+  filter: brightness(1) invert(1);
+}

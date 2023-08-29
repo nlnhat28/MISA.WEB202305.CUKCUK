@@ -1,0 +1,64 @@
+/* select list - display when click dropdown or context menu*/
+
+.select-list {
+  display: block;
+  position: absolute;
+  top: 0;
+  background-color: #ffffff;
+  list-style: none;
+  overflow: auto;
+  border: 1px solid var(--border-color);
+  border-radius: 2px;
+  padding: 0;
+  margin: 0px;
+  width: 100%;
+  max-height: 308px;
+  box-shadow: 0px 4px 16px rgba(23, 27, 42, 0.24);
+  z-index: 3;
+}
+.select-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  column-gap: 10px;
+  height: 26px;
+  padding: 0px 8px;
+  font-size: 13px;
+  width: 100%;
+  border-radius: 2px;
+  color: var(--primary-text-color);
+  background-color: #ffffff;
+  cursor: pointer;
+}
+.select-item.select-item--focused,
+.select-item:hover {
+  background: var(--blue-50);
+}
+.select-item.select-item--danger:hover {
+  background: var(--red-100);
+}
+.select-item.select-item--selected {
+  color: var(--blue-500);
+}
+.select-item .select-item__icon {
+  width: 24px;
+  height: 24px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+}
+
+/* selected-item */
+.select-item.select-item--selected .selected-item__icon {
+  color: var(--blue-500);
+  font-size: 20px;
+  padding: 0px 8px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 18px;
+}
+.selected-item__icon .icon--check--blue {
+  scale: calc(18 / 14);
+}

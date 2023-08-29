@@ -1,0 +1,128 @@
+/* header */
+.header {
+  display: flex;
+  float: left;
+  height: 56px;
+  width: 100%;
+}
+
+/* header-left */
+.header__left {
+  width: 200px;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  float: left;
+  column-gap: 16px;
+  padding: 0 24px;
+}
+.toggle {
+  min-width: 24px;
+  min-height: 24px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+}
+.header__left .logo {
+  background-image: url("@/assets/img/Logo_Module_TiengViet_White.66947422.svg");
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  flex: 1;
+  height: 32px;
+  cursor: pointer;
+}
+/* header-right */
+.header__right {
+  height: 100%;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  float: right;
+  padding: 0px 24px;
+  column-gap: 16px;
+}
+.header__right .textfield {
+  max-width: 400px;
+}
+
+/* header-toolbar*/
+.header__right .header__toolbar {
+  display: flex;
+  align-items: center;
+  column-gap: 8px;
+  margin: 0px 12px;
+}
+.header__toolbar i.icon-btn::before {
+  font-size: 20px;
+}
+
+.tool-item {
+  width: 24px;
+  height: 24px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+/* .dot--status::before{
+    position: absolute;
+    top: 0px;
+    right: 0px;
+    color: var(--red-500);
+    font-size: 10px;
+   -webkit-text-stroke-width: 1px;
+   -webkit-text-stroke-color: #fff;
+} */
+.dot--amount {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  font-size: 10px;
+  font-weight: 700;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  color: #fff;
+  background-color: var(--red-500);
+  text-align: center;
+}
+
+/* avater */
+.avatar-container {
+  display: flex;
+  align-items: center;
+  column-gap: 4px;
+}
+.avatar {
+  width: 36px;
+  height: 36px;
+  position: relative;
+  cursor: pointer;
+}
+img.avatar--sm {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 1px solid var(--border-color);
+}
+.avatar--lg {
+  width: 320px;
+  height: 320px;
+  position: absolute;
+  right: 0px;
+  top: 36px;
+  border-radius: 4px;
+  box-shadow: 0px 4px 16px rgba(23, 27, 42, 0.24);
+  z-index: 5;
+  opacity: 0;
+  transition: all 1s;
+  pointer-events: none;
+}
+.avatar--sm:hover ~ .avatar--lg {
+  opacity: 1;
+  transition: all 1s;
+}

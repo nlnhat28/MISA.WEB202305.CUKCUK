@@ -1,0 +1,31 @@
+/* Loading effect
+
+for table */
+.table.skeleton td {
+  position: relative;
+  background-color: #fff !important;
+}
+.table.skeleton th:not(:first):not(:last-child) {
+  width: 150px !important;
+}
+.table.skeleton td::before {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  content: "";
+  width: calc(100% - 10px);
+  height: calc(100% - 10px);
+  background: linear-gradient(90deg, #eeeeee, #f4f4f4, #eeeeee);
+  background-size: 200% 100%;
+  animation: skeleton-loading 0.8s linear infinite;
+  z-index: 1;
+}
+@keyframes skeleton-loading {
+  0% {
+    background-position: 0 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}

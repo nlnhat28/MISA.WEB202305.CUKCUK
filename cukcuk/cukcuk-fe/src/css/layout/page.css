@@ -1,0 +1,14 @@
+/* header */
+.page__header {
+  margin-bottom: 16px;
+}
+
+/* title */
+.page__title--text {
+  font-weight: 500;
+}
+
+/* action */
+.page__action .btn {
+  height: 28px;
+}

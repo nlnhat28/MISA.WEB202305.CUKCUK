@@ -1,0 +1,7 @@
+.separator {
+    cursor: default;
+    caret-color: transparent;
+    background-color: var(--border-color);
+    width: 1px;
+    height: 20px;
+}

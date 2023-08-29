@@ -1,0 +1,116 @@
+/* radio */
+input[type="radio"]:focus {
+  outline: none !important;
+  border: 1px solid var(--green-300) !important;
+}
+
+/* radio-wrapper */
+.radio-wrapper {
+  display: block;
+  position: relative;
+  cursor: pointer;
+  margin: 0 10px;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+/* hide the browser's default radio button */
+.radio-wrapper input {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  opacity: 0;
+  cursor: default;
+}
+
+/* create a custom radio button */
+.radio-wrapper .checkmark {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  height: 22px;
+  width: 22px;
+  background-color: #fff;
+  border-radius: 50%;
+  border: 1px solid var(--grey-600);
+}
+
+.radio-wrapper input:checked ~ .checkmark {
+  border: 1px solid var(--green-500);
+}
+
+.radio-wrapper .checkmark:after {
+  content: "";
+  position: absolute;
+  display: none;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--green-500);
+}
+
+/* show the indicator (dot/circle) when checked */
+.radio-wrapper input:checked ~ .checkmark:after {
+  display: block;
+}
+
+/* border when focus */
+.radio-wrapper .checkmark::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  height: calc(100% + 8px);
+  width: calc(100% + 8px);
+  border-radius: 50%;
+  border: 1px solid var(--grey-500);
+  opacity: 0;
+}
+.radio-wrapper input:checked ~ .checkmark::before {
+  border: 1px solid var(--green-500);
+}
+.radio-wrapper input:checked ~ .checkmark {
+  border: 1px solid var(--green-500);
+}
+
+.radio-wrapper input:active ~ .checkmark::before,
+.radio-wrapper input:focus ~ .checkmark::before {
+  opacity: 0.6;
+  transition: opacity 0.4s;
+}
+
+/* radio group */
+.radio-group {
+  display: flex;
+  align-items: center;
+  flex-direction: row;
+  row-gap: 12px;
+  column-gap: 8px;
+  height: 36px;
+}
+.radio-item {
+  display: flex;
+  align-items: center;
+  flex-direction: row;
+  column-gap: 8px;
+  row-gap: 8px;
+  padding: 4px 8px;
+  cursor: pointer;
+}
+.radio-group input[type="radio"] {
+  margin: 0px;
+  vertical-align: middle;
+  height: 20px;
+  cursor: pointer;
+}
+.radio-item__label {
+  cursor: pointer;
+}

@@ -1,0 +1,17 @@
+.conversion-unit td .textfield input,
+.conversion-unit td .combobox .input-group {
+    border: 1px solid transparent;
+}
+.conversion-unit td:has(.combobox .input-group input:read-only) {
+    cursor: pointer;
+}
+.conversion-unit .combobox .input-action,
+.conversion-unit .combobox .input-dropdown {
+    display: none;
+}
+.conversion-unit .combobox:hover .input-action,
+.conversion-unit .combobox:hover .input-dropdown,
+.conversion-unit .combobox:focus-within .input-action,
+.conversion-unit .combobox:focus-within .input-dropdown {
+    display: flex;
+}

@@ -1,0 +1,51 @@
+/* page */
+.page {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+/* header */
+.page__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  margin-bottom: 24px;
+  column-gap: 12px;
+  row-gap: 12px;
+}
+
+.page__title {
+  display: flex;
+  flex: 1;
+  column-gap: 12px;
+  word-wrap: break-word;
+  display: flex;
+  align-items: center;
+}
+.page__title--text {
+  font-size: 22px;
+  font-weight: 700;
+  width: fit-content;
+}
+.page__title--dropdown {
+  cursor: pointer;
+}
+.page__title--dropdown:hover {
+  color: var(--grey-600);
+}
+
+.page__action {
+  display: flex;
+  width: fit-content;
+  column-gap: 12px;
+}
+
+/* body */
+.page__body {
+  width: 100%;
+  display: flex;
+  flex: 1;
+}

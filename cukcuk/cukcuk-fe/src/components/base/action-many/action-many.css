@@ -1,0 +1,30 @@
+/* action-dropdown */
+
+.action-many {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* select-list */
+.action-many .select-list.context-menu {
+  top: 36px;
+  width: 140px;
+  right: 0px;
+  padding: 0px;
+  z-index: 3;
+}
+.action-many .select-item {
+  padding: 0px 12px;
+  border-radius: 0px;
+}
+.action-many .select-item:hover {
+  background-color: var(--grey-100);
+  color: var(--green-500);
+}
+.action-many .select-item:active {
+  background-color: var(--grey-200);
+}
+.action-many.disabled {
+  opacity: 0.6;
+}

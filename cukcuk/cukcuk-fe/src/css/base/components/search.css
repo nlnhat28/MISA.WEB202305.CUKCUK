@@ -1,0 +1,26 @@
+/* search-box */
+.search-box {
+  caret-color: transparent;
+}
+.search-box .input-group:focus-within {
+  caret-color: auto;
+}
+.search-box.textfield input,
+.search-box.textfield .input-group {
+  height: 24px;
+  width: 240px
+}
+.search-box .icon--magnifying-glass {
+  scale: 0.9;
+}
+.search-box .input-clear .icon--xmark {
+  scale: 0.6;
+}
+/* search-result */
+.search-result {
+  display: flex;
+  /* color: var(--blue-500) */
+}
+.search-result pre.search-result__key {
+  margin: 0;
+}

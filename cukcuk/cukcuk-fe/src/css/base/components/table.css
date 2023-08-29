@@ -1,0 +1,320 @@
+/* table */
+.table-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  border-radius: 2px;
+  border: 1px solid var(--border-color);
+  width: 100%;
+  height: 100%;
+  background-color: #fff;
+  box-shadow: 0px 3px 20px 20x rgba(0, 0, 0, 0.039);
+}
+
+/* toolbar */
+.table-toolbar {
+  width: 100%;
+  height: fit-content;
+  min-height: 32px;
+  padding: 2px;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+  column-gap: 12px;
+  row-gap: 12px;
+  justify-content: space-between;
+  background: linear-gradient(to bottom, var(--grey-100), var(--grey-300));
+}
+
+/* toolbar__left */
+.table-toolbar__left {
+  display: flex;
+  column-gap: 8px;
+  row-gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+  flex: 1;
+}
+.select-bar {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  align-items: center;
+  column-gap: 16px;
+  row-gap: 12px;
+}
+.selected-count__count {
+  white-space: nowrap;
+  font-weight: 700;
+}
+.select-bar__unselect {
+  scale: 0.64;
+}
+/* toolbar__right */
+.table-toolbar__right {
+  display: flex;
+  flex-wrap: wrap;
+  column-gap: 12px;
+  row-gap: 12px;
+  align-items: center;
+  padding: 0 10px;
+}
+.table-toolbar .btn.btn--icon.btn--icon-primary {
+  border: 1px solid var(--green-500);
+}
+
+/* content */
+.table-content {
+  position: relative;
+  overflow: auto;
+  width: 100%;
+  flex: 1px;
+  border-bottom: 1px solid var(--border-color);
+  border-top: 1px solid var(--border-color);
+  z-index: 2;
+}
+.table {
+  width: 100%;
+  /* width: auto; */
+  /* min-width: 100%; */
+  border-collapse: separate;
+  border-spacing: 0px;
+  white-space: nowrap;
+  background-color: #fff;
+  outline: none;
+  table-layout: fixed;
+  position: absolute;
+  top: 0;
+}
+.table .select-list {
+  z-index: 1;
+}
+.table input:disabled {
+  cursor: not-allowed;
+}
+
+.table--noborder th {
+  border-collapse: collapse !important;
+}
+.table--noborder th,
+.table--noborder tr,
+.table--noborder td {
+  border: none !important;
+}
+
+/* head */
+.table__head {
+  height: 58px;
+  background-color: var(--grey-100);
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  box-shadow: 0px 2px 10px rgba(23, 27, 42, 0.2);
+  flex-direction: row;
+  font-size: 13px;
+  font-weight: 500;
+}
+.table th {
+  vertical-align: middle;
+  background-color: var(--grey-300);
+  border-bottom: 1px solid var(--grey-400);
+  position: relative;
+  border-right: 1px solid var(--border-color);
+  font-weight: 500;
+  height: 55px;
+  /* white-space: break-spaces; */
+}
+.table th:last-child {
+  border-right: none;
+}
+.table th i.float-right {
+  float: right;
+}
+.table th:hover {
+  z-index: 1;
+}
+
+/* table wrapper */
+.th-wrapper {
+  padding: 2px 6px;
+  width: 100%;
+  height: 64px;
+  display: flex;
+  flex-direction: column;
+}
+.th-wrapper__content {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  line-height: 30px;
+  height: 30px;
+}
+.th-wrapper__filter {
+  display: flex;
+  flex: 1;
+  align-items: flex-start;
+}
+
+/* resize */
+.table th .th__resize {
+  width: 19px;
+  height: 100%;
+  cursor: col-resize;
+  position: absolute;
+  right: -10px;
+  top: 0;
+  z-index: 1;
+  caret-color: transparent;
+}
+/* .table th .th__resize:active {
+  position: fixed;
+  width: 100%;
+  height: 100vh;
+} */
+.table th:last-child .th__resize {
+  display: none;
+}
+
+/* sort icon */
+.table .th-wrapper__content:hover .icon--arrow-blur {
+  opacity: 0.3;
+}
+.table .icon-container.th__sort {
+  position: absolute;
+  left: 100%;
+  top: 50%;
+  transform: translateY(-50%);
+}
+.table .th__sort:has(.icon--arrow-blur) {
+  visibility: hidden;
+}
+.table .th-wrapper__content:hover .th__sort:has(.icon--arrow-blur) {
+  visibility: visible;
+}
+
+/* filter */
+.th__filter {
+  display: none;
+  position: absolute;
+  top: 50%;
+  right: 0px;
+  transform: translate(0%, -50%);
+  caret-color: transparent;
+  background-color: var(--grey-300);
+  padding-right: 10px;
+  box-sizing: content-box;
+}
+
+/* body */
+.table tr {
+  outline: none;
+  font-size: 13px;
+}
+.table tr.tr--dark td {
+  background-color: var(--grey-100);
+}
+.table tr.tr--focused td {
+  background-color: var(--blue-50) !important;
+}
+.table .tr--focused td .combobox .input-group,
+.table .tr--focused td .textfield input {
+    background-color: var(--blue-50);
+}
+.table tr:focus-within td,
+.table tr:focus-within:hover td {
+  background-color: var(--blue-50);
+  outline: none;
+}
+.table tr:hover td {
+  background-color: var(--orange-50);
+}
+.table tr.tr--selected td {
+  background-color: var(--green-50);
+}
+.table tr.tr--selected:hover td {
+  background-color: var(--green-100);
+}
+.table td {
+  background-color: #fff;
+  padding: 0px 12px;
+  height: 28px;
+  max-height: 48px;
+  cursor: text;
+  vertical-align: middle;
+  border-bottom: 1px solid var(--border-color);
+  outline: none;
+}
+.table td.td--resizable {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+td.td--readonly {
+  /* pointer-events: none; */
+  background-color: var(--grey-100) !important;
+  /* caret-color: transparent; */
+}
+td.td--nopadding {
+  padding: 0;
+}
+.table td:has(input[type]) {
+  cursor: default;
+}
+.table td:not(:last-child) {
+  border-right: 1px solid var(--border-color);
+}
+.table td:focus {
+  outline: none;
+}
+.td--null::before {
+  content: "Dữ liệu rỗng";
+  color: var(--red-500);
+}
+.td__content {
+  width: fit-content;
+}
+td .checkbox-wrapper {
+  /* position: absolute; */
+  /* left: 50% */
+} 
+/* width of column */
+.th--width-checkbox {
+  width: 56px !important;
+}
+.th--width-sm {
+  width: 120px;
+}
+.th--width-md {
+  width: 160px;
+}
+.th--width-lg {
+  width: 240px;
+}
+
+.avatar--sm {
+  width: 30px;
+  height: 30px;
+  margin-right: 8px;
+  border-radius: 50%;
+  border: 1px solid var(--border-color);
+  overflow: hidden;
+  vertical-align: middle;
+}
+
+/* footer */
+.table__footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  column-gap: 16px;
+  height: 38px;
+  width: 100%;
+  background-color: #fff;
+  padding: 0px 16px 0px 8px;
+}
+.count-wrapper {
+  display: flex;
+  align-items: center;
+  column-gap: 12px;
+}

@@ -1,0 +1,169 @@
+@import "./root.css";
+
+@import "./base/components/button.css";
+@import "./base/components/box-dropdown.css";
+@import "./base/components/checkbox";
+@import "./base/components/combobox.css";
+@import "./base/components/conversion-unit.css";
+@import "./base/components/context-menu.css";
+@import "./base/components/dialog.css";
+@import "./base/components/dot-pulse.css";
+@import "./base/components/filter.css";
+@import "./base/components/form.css";
+@import "./base/components/loading-bar.css";
+@import "./base/components/loading-spinner.css";
+@import "./base/components/mask.css";
+@import "./base/components/pagination.css";
+@import "./base/components/popup.css";
+@import "./base/components/radio.css";
+@import "./base/components/search.css";
+@import "./base/components/select-dropdown.css";
+@import "./base/components/select-table.css";
+@import "./base/components/select-list.css";
+@import "./base/components/separator.css";
+@import "./base/components/skeleton.css";
+@import "./base/components/table.css";
+@import "./base/components/tab-menu.css";
+@import "./base/components/textfield.css";
+@import "./base/components/toast-message.css";
+@import "./base/components/tooltip.css";
+@import "./base/layout/layout.css";
+
+@import "./icon.css";
+
+* {
+  box-sizing: border-box;
+  font-family: var(--font-primary);
+}
+*[tabindex]:focus {
+  outline: none;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+}
+
+/* hide scroll bar */
+body::-webkit-scrollbar {
+  display: none;
+}
+
+/* color notify */
+.color--success {
+  color: var(--green-500);
+}
+.color--error {
+  color: var(--red-500);
+}
+.color--warning {
+  color: var(--orange-500);
+}
+.color--info {
+  color: var(--blue-500);
+}
+.color--placeholder {
+  color: var(--color-placeholder);
+}
+
+/* display */
+.d-flex {
+  display: flex;
+}
+.flex-1 {
+  flex: 1;
+}
+.d-flex--column {
+  display: flex;
+  flex-direction: column;
+}
+.d-flex--row {
+  display: flex;
+  flex-direction: row;
+}
+.align-items--center {
+  align-items: center;
+}
+.justify-content--space {
+  justify-content: space-between;
+}
+.justify-content--center {
+  justify-content: center;
+}
+.d-none {
+  display: none;
+}
+/* position */
+.p-relative {
+  position: relative;
+}
+
+/* align */
+.align--left {
+  text-align: left;
+}
+.align--right {
+  text-align: right;
+}
+.align--center {
+  text-align: center;
+}
+
+/* input */
+input::-webkit-calendar-picker-indicator {
+  cursor: pointer;
+}
+
+/* disabled */
+.disabled {
+  cursor: not-allowed;
+}
+.disabled * {
+  pointer-events: none;
+}
+
+/* splash screen */
+.mask.mask--splash {
+  opacity: 1;
+  min-height: 300px;
+  background-color: var(--blue-bold);
+  row-gap: 24px;
+}
+.mask--splash .company-name {
+  position: absolute;
+  bottom: 10px;
+}
+.logo--splash {
+  margin-left: -120px;
+}
+.logo--misa {
+  /* width: 300px; */
+}
+.company-name.company-name--text {
+  font-weight: 700;
+}
+.loading-bar {
+  margin-left: 20px;
+}
+
+/* input */
+input {
+  vertical-align: middle;
+}
+input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+}
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  cursor: pointer;
+  height: 26px;
+  font-size: 30px;
+}
+
+/* app */
+#app:has(#popup-container--main) #main .popup-container {
+  background-color: transparent;
+}

@@ -1,0 +1,12 @@
+/* main content */
+.main-content {
+  background-color: #eeeff1;
+  display: flex;
+  width: 100%;
+  height: calc(100vh - 56px);
+  overflow: visible;
+  padding: 16px;
+}
+.main-content::-webkit-scrollbar {
+  display: none;
+}

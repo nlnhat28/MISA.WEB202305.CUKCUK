@@ -1,0 +1,173 @@
+<template>
+    <div class="popup-container">
+        <div
+            class="popup"
+            ref="refPopup"
+        >
+            <slot name="mask"></slot>
+            <div
+                class="popup__header"
+                v-tooltip="tooltip"
+                @mousedown="startMove"
+                @dblclick="resetPosition"
+            >
+                <div class="popup__header--left">
+                    <div class="popup__title">{{ title }}</div>
+                    <slot name="headLeft"></slot>
+                </div>
+                <div
+                    class="icon-container icon-close"
+                    @click="onClose()"
+                    v-tooltip="'Đóng (Esc)'"
+                >
+                    <m-icon-close></m-icon-close>
+                </div>
+            </div>
+            <div class="popup__body">
+                <slot name="body"></slot>
+            </div>
+            <div class="popup__footer">
+                <slot name="footer"></slot>
+            </div>
+        </div>
+    </div>
+</template>
+<script>
+export default {
+    name: 'MISAPopup',
+    props: {
+        /**
+         * Function to hide popup
+         */
+        closePopup: {
+            type: Function,
+        },
+        /**
+         * Title of popup
+         */
+        title: {
+            type: String,
+        }
+    },
+    data() {
+        return {
+            /**
+             * Đang di chuyển hay không
+             */
+            isMoving: false,
+            /**
+             * Offset toạ độ mới so với toạ độ cũ
+             */
+            offset: [0, 0],
+            /**
+             * Popup content
+             */
+            refPopup: null,
+            /**
+             * Tooltip content
+             */
+            tooltip: null,
+            /**
+             * Limit of position to keep dialog on screen
+             */
+            limitPosition: {},
+        }
+    },
+    mounted() {
+        try {
+            this.refPopup = this.$refs.refPopup;
+            this.limitPosition = {
+                minX: this.refPopup.offsetWidth / 2,
+                minY: this.refPopup.offsetHeight / 2,
+                maxX: window.innerWidth - this.refPopup.offsetWidth / 2,
+                maxY: window.innerHeight - this.refPopup.offsetHeight / 2,
+            }
+        } catch (error) {
+            console.error(error);
+        }
+    },
+    methods: {
+        /**
+         * Đóng popup
+         * 
+         * Author: nlnhat (01/07/2023)
+         */
+        onClose() {
+            this.$emit('emitClose')
+        },
+        /**
+         * Bắt đầu di chuyển popup
+         * 
+         * Author: nlnhat (01/07/2023)
+         * @param {*} event Sự kiện ấn chuột
+         */
+        startMove(event) {
+            this.isMoving = true;
+            this.offset = [
+                this.refPopup.offsetLeft - event.clientX,
+                this.refPopup.offsetTop - event.clientY
+            ];
+            window.addEventListener('mousemove', this.onMove);
+            window.addEventListener('mouseup', this.endMove);
+        },
+        /**
+         * Di chuyển popup
+         * 
+         * Author: nlnhat (01/07/2023)
+         * @param {*} event Sự kiện di chuyển chuột
+         */
+        onMove(event) {
+            try {
+                if (this.isMoving) {
+                    event.preventDefault();
+
+                    // Giữ popup trong màn hình
+                    const newX = Math.max(this.limitPosition.minX,
+                        Math.min((event.clientX + this.offset[0]), this.limitPosition.maxX));
+
+                    const newY = Math.max(this.limitPosition.minY,
+                        Math.min((event.clientY + this.offset[1]), this.limitPosition.maxY));
+
+                    // Thiết lập toạ độ mới
+                    this.refPopup.style.left = newX + 'px';
+                    this.refPopup.style.top = newY + 'px';
+                    this.tooltip = null;
+                };
+
+            } catch (error) {
+                console.error(error);
+            }
+        },
+        /**
+         * Thả popup
+         * 
+         * Author: nlnhat (01/07/2023)
+         */
+        endMove() {
+            this.isMoving = false;
+            if (this.refPopup.style.left != '50%' && this.refPopup.style.top != '50%') {
+                this.tooltip = `${this.$resources['vn'].doubleClick} ${this.$resources['vn'].toResetPosition}`;
+            };
+            window.removeEventListener('mousemove', this.onMove);
+            window.removeEventListener('mouseup', this.endMove);
+        },
+        /**
+         * Đưa popup về vị trí ban đầu (giữa màn hình)
+         * 
+         * Author: nlnhat (01/07/2023)
+         */
+        resetPosition() {
+            this.refPopup.style.left = '50%';
+            this.refPopup.style.top = '50%';
+            this.tooltip = null;
+        },
+    }
+}
+</script>
+<style scoped>
+.popup__header .icon-container.icon-close {
+    padding: 6px 0px 6px 8px;
+    box-sizing: content-box;
+    cursor: pointer;
+}
+</style>
