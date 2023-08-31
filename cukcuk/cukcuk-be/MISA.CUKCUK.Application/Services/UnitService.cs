@@ -68,12 +68,12 @@ namespace MISA.CUKCUK.Application
         /// <summary>
         /// Validate tổng thể (input + nghiệp vụ) đơn vị tính
         /// </summary>
-        /// <param name="unit">Entity đơn vị tính</param>
+        /// <param name="unit">Thực thể đơn vị tính</param>
         /// Created by: nlnhat (17/08/2023)
         public override async Task ValidateAsync(Unit unit)
         {
             // Check trùng tên
-            await _domainService.CheckDuplicatedNameAsync(unit);
+            await _domainService.CheckDuplicatedNameAsync(unit.UnitId, unit.UnitName);
         }
         #endregion
     }

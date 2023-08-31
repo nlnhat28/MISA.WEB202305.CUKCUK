@@ -34,13 +34,13 @@
                 class="p-relative"
                 v-show="isShowSelects"
             >
-                <ul
+                <div
                     class="select-list"
                     v-show="selects.length > 0"
                     ref="refSelects"
                 >
                     <!-- <m-no-content v-if="selects.length == 0"></m-no-content> -->
-                    <li
+                    <div
                         v-for="(select, index) in selects"
                         :key="select.id"
                         :class="{
@@ -58,8 +58,8 @@
                         >
                             <m-icon icon="check--blue"></m-icon>
                         </div>
-                    </li>
-                </ul>
+                    </div>
+                </div>
             </div>
         </div>
         <m-icon-container
@@ -454,6 +454,7 @@ export default {
          */
         onClickSelect(select) {
             try {
+                this.focus();
                 // Un select
                 if (select.id == this.inputValue.id) {
                     if (this.canUnselect) {
@@ -465,7 +466,6 @@ export default {
                     this.inputValue.name = select.name;
                     this.onSelected();
                 }
-                this.focus();
                 this.isShowSelects = false;
             } catch (error) {
                 console.error(error);

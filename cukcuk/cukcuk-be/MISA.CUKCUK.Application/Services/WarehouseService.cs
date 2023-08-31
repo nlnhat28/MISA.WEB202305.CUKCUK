@@ -68,12 +68,12 @@ namespace MISA.CUKCUK.Application
         /// <summary>
         /// Validate tổng thể (input + nghiệp vụ) kho
         /// </summary>
-        /// <param name="warehouse">Entity kho</param>
+        /// <param name="warehouse">Thực thể kho</param>
         /// Created by: nlnhat (17/08/2023)
         public override async Task ValidateAsync(Warehouse warehouse)
         {
             // Check trùng mã kho
-            await _domainService.CheckDuplicatedCodeAsync(warehouse);
+            await _domainService.CheckDuplicatedCodeAsync(warehouse.WarehouseId, warehouse.WarehouseCode);
         }
         #endregion
     }

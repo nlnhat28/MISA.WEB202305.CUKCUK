@@ -7,10 +7,17 @@
     public interface IUnitDomainService
     {
         /// <summary>
-        /// Check trùng tên đơn vị
+        /// Check trùng tên đơn vị tính
         /// </summary>
-        /// <param name="unit">Entity đơn vị để check</param>
+        /// <param name="unitId">Id đơn vị để check</param>
+        /// <param name="unitName">Tên đơn vị để check</param>
         /// Created by: nlnhat (17/08/2023)
-        Task CheckDuplicatedNameAsync(Unit unit);
+        Task CheckDuplicatedNameAsync(Guid unitId, string unitName);
+        /// <summary>
+        /// Check tồn tại đơn vị tính
+        /// </summary>
+        /// <param name="unitId">Id của đơn vị tính</param>
+        /// Created by: nlnhat (30/08/2023)
+        Task CheckExistUnitAsync(Guid unitId);
     }
 }

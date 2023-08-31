@@ -8,7 +8,7 @@
       <!-- add new -->
       <m-button
         :type="this.$enums.buttonType.primary"
-        :click="showEmptyMaterialForm"
+        :click="onClickFeedback"
         :text="this.$resources['vn'].feedback"
         iconLeft="cukcuk-feedback"
       >
@@ -60,6 +60,7 @@
             :type="this.$enums.buttonType.linkIcon"
             :click="onReloadData"
             :text="this.$resources['vn'].reload"
+            :hasLoading="true"
             iconLeft="cukcuk-reload"
             tooltipContent="Ctrl + Y"
           >
@@ -69,6 +70,7 @@
             :click="exportToExcel"
             :text="this.$resources['vn'].export"
             :isDisabled="totalRecord <= 0"
+            :hasLoading="true"
             iconLeft="cukcuk-excel"
             tooltipContent="Ctrl + E"
           >
@@ -223,6 +225,7 @@ import {
 } from "@/js/utils/format.js";
 import { sortByName } from '@/js/utils/array.js'
 import { download } from '@/js/utils/file.js'
+import { openUrl } from "@/js/utils/window.js";
 import { materialService } from '@/services/services.js';
 import { useUnitStore, useWarehouseStore } from '@/stores/stores.js';
 import { mapStores, mapState } from 'pinia';
@@ -346,7 +349,7 @@ export default {
             title: this.$resources['vn'].minimumInventory,
             fullTitle: this.$resources['vn'].minimumInventoryFullTitle,
             textAlign: 'left',
-            widthCell: 140,
+            widthCell: 160,
             name: "MinimumInventory",
             sortType: this.$enums.sortType.blur,
             filterConfig: {
@@ -356,7 +359,7 @@ export default {
           {
             title: this.$resources['vn'].unit,
             textAlign: 'left',
-            widthCell: 180,
+            widthCell: 160,
             name: "UnitName",
             sortType: this.$enums.sortType.blur,
             filterConfig: {
@@ -421,7 +424,7 @@ export default {
   async created() {
     document.title = `${this.$resources['vn'].titleMaterials} - ${this.$resources['vn'].appName}`;
     await Promise.all([
-      await this.filterMaterialsOnCreated(),
+      this.filterMaterialsOnCreated(),
       this.getWarehouses(),
       this.getUnits()])
     this.isLoading = false
@@ -722,12 +725,25 @@ export default {
       }
     },
     /**
-     * Reload data 
+     * Reload all 
+     * 
+     * Author: nlnhat (26/06/2023)
+     */
+    async reloadAll() {
+      await this.makeLoadingEffect(async () => {
+        await Promise.all([
+          this.filterMaterials(),
+          this.getWarehouses(),
+          this.getUnits()]);
+      })
+    },
+    /**
+     * Reload material
      * 
      * Author: nlnhat (26/06/2023)
      */
     async reloadMaterials() {
-      await this.makeLoadingEffect(this.filterMaterials)
+      await this.makeLoadingEffect(this.filterMaterials);
     },
     /**
      * On click reload data button
@@ -735,8 +751,11 @@ export default {
      * Author: nlnhat (29/06/2023)
      */
     async onReloadData() {
-      await this.reloadMaterials();
-      if (this.isFilterSuccess) this.showToastReloadSuccess();
+      await this.reloadAll();
+      if (this.isFilterSuccess) {
+        this.showToastReloadSuccess();
+        return true;
+      }
     },
     /**
      * Delete one material
@@ -760,8 +779,7 @@ export default {
             this.focusedId = this.materials[0].MaterialId;
           }, 300);
           const message
-            = `${this.$resources['vn'].deleted} ${this.$resources['vn'].material} 
-            <${materialCode} - ${materialName}>`;
+            = `${this.$resources['vn'].deleted} ${this.$resources['vn'].material} <${materialCode} - ${materialName}>`;
           this.showToastDeleteSuccess(message);
         }
       } catch (error) {
@@ -814,8 +832,7 @@ export default {
           const materialName = material.MaterialName;
 
           this.deleteConfirmDialog.content =
-            `${this.$resources['vn'].deleteConfirm} ${this.$resources['vn'].material} 
-            <${materialCode} - ${materialName}> ${this.$resources['vn'].questionNo}`;
+            `${this.$resources['vn'].deleteConfirm} ${this.$resources['vn'].material} <${materialCode} - ${materialName}> ${this.$resources['vn'].questionNo}`;
 
           this.deleteConfirmDialog.onClickDelete = () => {
             this.deleteConfirmDialog.isShowed = false;
@@ -951,11 +968,20 @@ export default {
             { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' }
           );
           const fileName = `${this.$resources['vn'].materialListFileName}_${formatDate(new Date(), 'ddMMyyyy')}.xlsx`;
-          this.download(blob, fileName)
+          await this.download(blob, fileName);
+          return true;
         }
       } catch (error) {
         console.error(error);
       }
+    },
+    /**
+     * Handle click feedback
+     * 
+     * Author: nlnhat (25/08/2023)
+     */
+    onClickFeedback() {
+      this.openUrl(window.externalUrl.feedback);
     },
     /**
      * Handle shortcut keys
@@ -1003,11 +1029,11 @@ export default {
           this.onClickDeleteMaterials();
         }
         // Ctrl + A: Chọn tất
-        else if (event.ctrlKey && event.keyCode == code.a) {
-          event.preventDefault();
-          event.stopPropagation();
-          this.onChangeCheckAll();
-        }
+        // else if (event.ctrlKey && event.keyCode == code.a) {
+        //   event.preventDefault();
+        //   event.stopPropagation();
+        //   this.onChangeCheckAll();
+        // }
       } catch (error) {
         console.error(error);
       }
@@ -1146,6 +1172,7 @@ export default {
     formatDecimal,
     sortByName,
     download,
+    openUrl,
   }
 }
 </script>

@@ -40,7 +40,7 @@ export const stringify = (object) => {
 export const sameObject = (object1, object2) => {
     const object1Json = JSON.stringify(object1);
     const object2Json = JSON.stringify(object2);
-    // console.log(object1Json);
-    // console.log(object2Json);
+    console.log(object1Json);
+    console.log(object2Json);
     return (object1Json == object2Json)
 }

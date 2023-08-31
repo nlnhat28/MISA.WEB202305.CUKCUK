@@ -31,7 +31,6 @@ namespace MISA.CUKCUK.Application
         /// </summary>
         /// Created by: nlnhat (17/08/2023)
         private readonly IMaterialDomainService _domainService;
-
         #endregion
 
         #region Constructors
@@ -44,7 +43,8 @@ namespace MISA.CUKCUK.Application
         /// <param name="mapper">Mapper map nguyên vật liệu</param>
         /// <param name="unitOfWork">Unit of work</param>
         /// Created by: nlnhat (17/08/2023)
-        public MaterialService(IMaterialRepository repository, IConversionUnitRepository conversionUnitrepository,
+        public MaterialService(IMaterialRepository repository,
+                               IConversionUnitRepository conversionUnitrepository,
                                IMaterialDomainService domainService,
                                IStringLocalizer<Resource> resource, IMapper mapper, IUnitOfWork unitOfWork)
                              : base(repository, resource, mapper, unitOfWork)
@@ -64,12 +64,12 @@ namespace MISA.CUKCUK.Application
         /// Created by: nlnhat (17/08/2023)
         public override Material MapCreateDtoToEntity(MaterialDto materialDto)
         {
+
+            materialDto.MaterialId = Guid.NewGuid();
+            materialDto.IsUnfollow ??= false;
+            materialDto.CreatedDate ??= DateTime.UtcNow;
+
             var material = _mapper.Map<Material>(materialDto);
-
-            material.MaterialId = Guid.NewGuid();
-            material.IsUnfollow ??= false;
-            material.CreatedDate ??= DateTime.UtcNow;
-
             return material;
         }
         /// <summary>
@@ -80,10 +80,10 @@ namespace MISA.CUKCUK.Application
         /// Created by: nlnhat (17/08/2023)
         public override Material MapUpdateDtoToEntity(MaterialDto materialDto)
         {
+
+            materialDto.ModifiedDate = DateTime.UtcNow;
+
             var material = _mapper.Map<Material>(materialDto);
-
-            material.ModifiedDate = DateTime.UtcNow;
-
             return material;
         }
         /// <summary>
@@ -94,7 +94,45 @@ namespace MISA.CUKCUK.Application
         public override async Task ValidateAsync(Material material)
         {
             // Check trùng mã nguyên vật liệu
-            await _domainService.CheckDuplicatedCodeAsync(material);
+            await _domainService.CheckDuplicatedCodeAsync(material.MaterialId, material.MaterialCode);
+
+            // Check tồn tại đơn vị tính
+            await _domainService.CheckExistUnitAsync(material.UnitId);
+
+            // Check tồn tại nhà kho
+            if (material.WarehouseId != null)
+            {
+                await _domainService.CheckExistWarehouseAsync((Guid)material.WarehouseId);
+            }
+        }
+        /// <summary>
+        /// Validate danh sách đơn vị chuyển đổi
+        /// </summary>
+        /// <param name="conversionUnitDtos">Danh sách dto đơn vị chuyển đổi</param>
+        /// <param name="unitId">Id của đơn vị tính chính</param>
+        /// <exception cref="ValidateException">Đơn vị chuyển đổi bị trùng nhau hoặc trùng đơn vị tính chính</exception>
+        public void ValidateConversionUnit(List<ConversionUnitDto> conversionUnitDtos, Guid unitId)
+        {
+            // Check các tên đơn vị chuyển đổi bị trùng nhau hoặc trùng đơn vị tính chính hay không
+            foreach (var unit in conversionUnitDtos)
+            {
+                if (conversionUnitDtos.Any(otherUnit =>
+                    unit.DestinationUnitId == otherUnit.DestinationUnitId
+                    && unit.ConversionUnitId != otherUnit.ConversionUnitId))
+                {
+                    throw new ValidateException(
+                        MISAErrorCode.ConversionUnitDuplicated,
+                        $"{_resource["ConversionUnit"]} <{unit.DestinationUnitName}> {_resource["Duplicated"]}",
+                        new ExceptionData("DestinationUnit", unit.ConversionUnitId.ToString()));
+                }
+                else if (unit.DestinationUnitId == unitId)
+                {
+                    throw new ValidateException(
+                        MISAErrorCode.ConversionUnitDuplicatedUnit,
+                        $"{_resource["ConversionUnit"]} <{unit.DestinationUnitName}> {_resource["Duplicated"]} {_resource["Unit"]}",
+                        new ExceptionData("DestinationUnit", unit.ConversionUnitId.ToString()));
+                }
+            }
         }
         /// <summary>
         /// Map đơn vị chuyển đổi
@@ -103,7 +141,7 @@ namespace MISA.CUKCUK.Application
         /// <param name="materialId">Id nguyên vật liệu</param>
         /// <returns>Danh sách đơn vị chuyển đổi tạo mới</returns>
         /// Created by: nlnhat (17/08/2023)
-        private List<ConversionUnit> MapCreateConversionUnits(List<ConversionUnitDto>? conversionUnitDtos, Guid materialId)
+        public List<ConversionUnit> MapCreateConversionUnits(List<ConversionUnitDto>? conversionUnitDtos, Guid materialId)
         {
             var conversionUnits = _mapper.Map<List<ConversionUnit>>(conversionUnitDtos);
             conversionUnits.ForEach(unit =>
@@ -116,14 +154,17 @@ namespace MISA.CUKCUK.Application
         /// <summary>
         /// Lấy nguyên vật liệu theo id
         /// </summary>
-        /// <param name="id">Id nguyên vật liệu</param>
+        /// <param name="materialId">Id nguyên vật liệu</param>
         /// <returns>Dto nguyên vật liệu được tìm thấy</returns>
         /// <exception cref="NotFoundException">Không tìm thấy nguyên vật liệu</exception>
         /// Created by: nlnhat (18/08/2023)
-        public override async Task<MaterialDto> GetAsync(Guid id)
+        public override async Task<MaterialDto> GetAsync(Guid materialId)
         {
-            var material = await _repository.GetAsync(id) ??
-                throw new NotFoundException(data: new ExceptionData($"MaterialId", id.ToString()));
+            var material = await _repository.GetAsync(materialId) ??
+                throw new NotFoundException(
+                    MISAErrorCode.MaterialNotFound,
+                    _resource["MaterialNotFound"],
+                    new ExceptionData("MaterialId", materialId.ToString()));
 
             var materialDto = _mapper.Map<MaterialDto>(material);
             materialDto.ConversionUnits = _mapper.Map<List<ConversionUnitDto>>(material.ConversionUnits);
@@ -138,13 +179,17 @@ namespace MISA.CUKCUK.Application
         /// Created by: nlnhat (18/08/2023)
         public override async Task<Guid> CreateAsync(MaterialDto materialDto)
         {
+            var material = MapCreateDtoToEntity(materialDto);
+            await ValidateAsync(material);
+
+            var conversionUnitDtos = materialDto.ConversionUnits;
+            if (conversionUnitDtos != null)
+                ValidateConversionUnit(conversionUnitDtos, material.UnitId);
+
+            var conversionUnits = MapCreateConversionUnits(conversionUnitDtos, material.MaterialId);
+
             try
             {
-                var material = MapCreateDtoToEntity(materialDto);
-                await ValidateAsync(material);
-
-                var conversionUnits = MapCreateConversionUnits(materialDto.ConversionUnits, material.MaterialId);
-
                 await _unitOfWork.BeginTransactionAsync();
 
                 var result = await _repository.InsertAsync(material);
@@ -166,52 +211,62 @@ namespace MISA.CUKCUK.Application
         /// <summary>
         /// Cập nhật 1 nguyên vật liệu
         /// </summary>
-        /// <param name="id">Id nguyên vật liệu</param>
+        /// <param name="materialId">Id nguyên vật liệu</param>
         /// <param name="materialDto">Dto nguyên vật liệu</param>
         /// <returns>Số bản ghi ảnh hưởng</returns>
         /// Created by: nlnhat (18/08/2023)
-        public override async Task<int> UpdateAsync(Guid id, MaterialDto materialDto)
+        public override async Task<int> UpdateAsync(Guid materialId, MaterialDto materialDto)
         {
-            try
+            // Kiểm tra nguyên vật liệu tồn tại không
+            _ = await _repository.GetAsync(materialId) ??
+                throw new NotFoundException(
+                    MISAErrorCode.MaterialNotFound,
+                    _resource["MaterialNotFound"],
+                    new ExceptionData(materialId.ToString()));
+
+            // Map và validate
+            var material = MapUpdateDtoToEntity(materialDto);
+            await ValidateAsync(material);
+
+            // Phân loại edit mode 
+            var conversionUnitDtos = materialDto.ConversionUnits;
+            if (conversionUnitDtos != null)
+                ValidateConversionUnit(conversionUnitDtos, material.UnitId);
+
+            var createConversionUnits = new List<ConversionUnit>();
+            var updateConversionUnits = new List<ConversionUnit>();
+            var deleteConversionUnits = new List<Guid>();
+
+            if (conversionUnitDtos != null)
             {
-                var material = MapUpdateDtoToEntity(materialDto);
-                await ValidateAsync(material);
-
-                // Phân loại edit mode 
-                var conversionUnitDtos = materialDto.ConversionUnits;
-                var createConversionUnits = new List<ConversionUnit>();
-                var updateConversionUnits = new List<ConversionUnit>();
-                var deleteConversionUnits = new List<Guid>();
-
-                if (conversionUnitDtos != null)
+                foreach (var unitDto in conversionUnitDtos)
                 {
-                    foreach (var unitDto in conversionUnitDtos)
-                    {
-                        var unit = _mapper.Map<ConversionUnit>(unitDto);
-                        unit.MaterialId = material.MaterialId;
+                    var unit = _mapper.Map<ConversionUnit>(unitDto);
+                    unit.MaterialId = material.MaterialId;
 
-                        switch (unitDto.EditMode)
-                        {
-                            case EditMode.Create:
-                                {
-                                    createConversionUnits.Add(unit);
-                                    break;
-                                }
-                            case EditMode.Update:
-                                {
-                                    updateConversionUnits.Add(unit);
-                                    break;
-                                }
-                            case EditMode.Delete:
-                                {
-                                    deleteConversionUnits.Add(unit.ConversionUnitId);
-                                    break;
-                                }
-                            default: break;
-                        }
+                    switch (unitDto.EditMode)
+                    {
+                        case EditMode.Create:
+                            {
+                                createConversionUnits.Add(unit);
+                                break;
+                            }
+                        case EditMode.Update:
+                            {
+                                updateConversionUnits.Add(unit);
+                                break;
+                            }
+                        case EditMode.Delete:
+                            {
+                                deleteConversionUnits.Add(unit.ConversionUnitId);
+                                break;
+                            }
+                        default: break;
                     }
                 }
-
+            }
+            try
+            {
                 await _unitOfWork.BeginTransactionAsync();
 
                 var result = await _repository.UpdateAsync(material);
@@ -281,134 +336,6 @@ namespace MISA.CUKCUK.Application
             return result;
         }
         /// <summary>
-        /// Lấy nguyên vật liệu theo để export
-        /// </summary>
-        /// <param name="keySearch">Từ khoá tìm kiếm</param>
-        /// <param name="sortModels">Các điều kiện sắp xếp</param>
-        /// <param name="filterModels">Các điều kiện lọc</param>
-        /// <returns>Dto nguyên vật liệu được tìm thấy</returns>
-        /// <exception cref="NotFoundException">Không tìm thấy nguyên vật liệu</exception>
-        /// Created by: nlnhat (18/08/2023)
-        public async Task<IEnumerable<MaterialDto>> ExportAsync(string? keySearch, List<SortModel>? sortModels, List<FilterModel>? filterModels)
-        {
-            var materials = await _repository.ExportAsync(keySearch, sortModels, filterModels) ??
-                throw new NotFoundException();
-
-            var materialDtos = new List<MaterialDto>();
-            foreach (var material in materials)
-            {
-                var materialDto = _mapper.Map<MaterialDto>(material);
-                materialDto.ConversionUnits = _mapper.Map<List<ConversionUnitDto>>(material.ConversionUnits);
-                materialDtos.Add(materialDto);
-            }
-
-            return materialDtos;
-        }
-        /// <summary>
-        /// Xuất dữ liệu ra file excel
-        /// </summary>
-        /// <param name="keySearch">Từ khoá tìm kiếm</param>
-        /// <param name="sortModels">Các điều kiện sắp xếp</param>
-        /// <param name="filterModels">Các điều kiện lọc</param>
-        /// <returns>Excel data</returns>
-        /// <exception cref="NotFoundException">Không tìm thấy nguyên vật liệu</exception>
-        /// Created by: nlnhat (18/08/2023)
-        public async Task<MemoryStream> ExportExcelAsync(string? keySearch, List<SortModel>? sortModels, List<FilterModel>? filterModels)
-        {
-            //Lấy data
-            var materials = await _repository.ExportAsync(keySearch, sortModels, filterModels) ??
-                throw new NotFoundException();
-
-            var materialExcelDtos = new List<MaterialExcelDto>();
-            var index = 0;
-            foreach (var material in materials)
-            {
-                var materialDto = _mapper.Map<MaterialExcelDto>(material);
-                materialDto.Index = ++index;
-                materialDto.ConversionUnits = _mapper.Map<List<ConversionUnitExcelDto>>(material.ConversionUnits);
-                materialExcelDtos.Add(materialDto);
-            }
-
-            var lengthRow = materialExcelDtos.Count;
-            var startRow = 3;
-            var endRow = startRow + lengthRow;
-            var firstColumn = MaterialExcelDto.FirstColumn;
-            var lastColumn = MaterialExcelDto.LastColumn;
-
-            try
-            {
-                // Khởi tạo excel package
-                ExcelPackage.LicenseContext = OfficeOpenXml.LicenseContext.NonCommercial;
-                using var package = new ExcelPackage();
-
-                var type = typeof(MaterialExcelDto);
-
-                var sheetName = type.GetCustomAttribute<DisplayNameAttribute>()?.DisplayName;
-                var sheet = package.Workbook.Worksheets.Add(sheetName);
-                sheet.Cells[$"{firstColumn}{startRow + 1}"].LoadFromCollection(materialExcelDtos, false);
-
-                // Chỉnh lại style các cột
-                var properties = type.GetProperties();
-                foreach (var property in properties)
-                {
-                    // Lấy thông tin cột
-                    var excelDisplayAttribute = property.GetCustomAttribute<ExcelDisplayAttribute>();
-                    if (excelDisplayAttribute == null)
-                        continue;
-                    var columnLetter = excelDisplayAttribute.ColumnLetter;
-                    var columnName = excelDisplayAttribute.ColumnName;
-                    var horizontalAlign = excelDisplayAttribute?.HorizontalAlignment ?? ExcelHorizontalAlignment.Left;
-                    var numberFormat = excelDisplayAttribute?.NumberFormat;
-
-                    // Chỉnh phần header
-                    var headerCell = sheet.Cells[$"{columnLetter}{startRow}"];
-                    headerCell.Value = columnName;
-                    headerCell.Style.Font.Bold = true;
-                    headerCell.Style.Fill.PatternType = ExcelFillStyle.Solid;
-                    headerCell.Style.Fill.BackgroundColor.SetColor(Color.LightGray);
-
-                    // Format dữ liệu
-                    if (numberFormat != null)
-                    {
-                        sheet.Cells[$"{columnLetter}:{columnLetter}"].Style.Numberformat.Format = numberFormat;
-                    }
-
-                    // Chỉnh cho 1 cột
-                    var column = sheet.Cells[$"{columnLetter}:{columnLetter}"];
-                    column.AutoFitColumns();
-                    column.Style.HorizontalAlignment = horizontalAlign;
-                    column.Style.VerticalAlignment = ExcelVerticalAlignment.Center;
-
-                    // Thêm border
-                    sheet.Cells[$"{columnLetter}{startRow}:{columnLetter}{endRow}"].Style.Border.BorderAround(ExcelBorderStyle.Thin, Color.Gray);
-                }
-
-                // Chỉnh chiều cao dòng header
-                var header = sheet.Cells[$"{firstColumn}{startRow}:{lastColumn}{startRow}"];
-                header.Style.Border.BorderAround(ExcelBorderStyle.Thin, Color.Gray);
-                sheet.Rows[startRow].Height = 22;
-
-                // Chỉnh tiêu đề
-                var titleRange = sheet.Cells[$"{firstColumn}1:{lastColumn}1"];
-                titleRange.Merge = true;
-                titleRange.Value = sheetName;
-                titleRange.Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
-                titleRange.Style.VerticalAlignment = ExcelVerticalAlignment.Center;
-                titleRange.Style.Font.Bold = true;
-                titleRange.Style.Font.Size = 22;
-
-                var memoryStream = new MemoryStream();
-                package.SaveAs(memoryStream);
-                memoryStream.Position = 0;
-
-                return memoryStream;
-            }
-            catch (Exception exception)
-            {
-                throw new IncompleteException(MISAErrorCode.MaterialExportError, _resource["MaterialExportError"], exception.Message);
-            }
-        }
-        /// <summary>
         /// Xuất dữ liệu ra file excel
         /// </summary>
         /// <param name="keySearch">Từ khoá tìm kiếm</param>
@@ -421,7 +348,9 @@ namespace MISA.CUKCUK.Application
         {
             //Lấy data
             var materials = await _repository.ExportAsync(keySearch, sortModels, filterModels) ??
-                throw new NotFoundException();
+                     throw new NotFoundException(
+                    MISAErrorCode.MaterialNotFound,
+                    _resource["MaterialNotFound"]);
 
             var materialExcelDtos = new List<MaterialExcelDto>();
             var index = 0;
@@ -498,7 +427,7 @@ namespace MISA.CUKCUK.Application
                         }
                         sheet.Cells[$"{conversionFirstColumn}{row}"].LoadFromCollection(conversionUnits);
                         row += conversionLength;
-                    }               
+                    }
                 }
 
                 // Chỉnh lại style các cột

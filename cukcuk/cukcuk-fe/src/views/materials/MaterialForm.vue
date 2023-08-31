@@ -65,7 +65,6 @@
               :maxLength="fields.unit.maxLength"
               :validate="validateUnit"
               :action="actionCreateUnit"
-              @emitSelected="this.$refs['Warehouse'].focus()"
               ref="Unit"
             >
             </m-combobox>
@@ -83,7 +82,6 @@
               :maxLength="fields.warehouse.maxLength"
               :validate="validateWarehouse"
               :action="actionCreateWarehouse"
-              @emitSelected="this.$refs['ExpiryTime'].focus()"
               ref="Warehouse"
             >
             </m-combobox>
@@ -117,7 +115,6 @@
                 :label="fields.timeUnit.label"
                 :maxLength="fields.timeUnit.maxLength"
                 style="width: 49%"
-                @emitSelected="this.$refs['MinimumInventory'].focus()"
                 ref="TimeUnit"
               >
               </m-combobox>
@@ -279,7 +276,7 @@ import { fields } from "@/js/form/form.js";
 import { isNullOrEmpty } from '@/js/utils/string.js';
 import { sortByName } from "@/js/utils/array.js";
 import { reformatDecimal, cleanFormatIntNumber } from "@/js/utils/clean-format.js";
-import { copyObject, sameObject } from "@/js/utils/json.js";
+import { copyObject, sameObject } from "@/js/utils/object.js";
 import {
   validateMaterialCode,
   validateMaterialName,
@@ -466,16 +463,7 @@ export default {
     });
 
     await this.makeLoadingEffect(async () => {
-      if (this.mode == this.$enums.formMode.update) {
-        await this.getMaterial(this.materialId)
-      }
-      else if (this.mode == this.$enums.formMode.duplicate) {
-        await this.getMaterial(this.materialId)
-        await this.getNewMaterialCode();
-      }
-      else {
-        this.originalMaterial = this.material;
-      }
+      await this.handleMaterialOnCreate();
     });
   },
   mounted() {
@@ -624,6 +612,36 @@ export default {
       }
     },
     /**
+     * Handle material on created()
+     *
+     * Author: nlnhat (05/07/2023)
+     */
+    async handleMaterialOnCreate() {
+      // Cập nhật
+      if (this.mode == this.$enums.formMode.update) {
+        await this.getMaterial(this.materialId)
+      }
+      // Nhân bản
+      else if (this.mode == this.$enums.formMode.duplicate) {
+        await this.getMaterial(this.materialId)
+        await this.getNewMaterialCode();
+      }
+      // Thêm mới
+      else {
+        if (this.material.ConversionUnits == null)
+          this.material.ConversionUnits = [];
+        this.storeOriginalMaterial();
+      }
+    },
+    /**
+     * Lưu nguyên vật liệu gốc
+     * 
+     * Author: nlnhat (30/08/2023)
+     */
+    storeOriginalMaterial() {
+      this.originalMaterial = this.copyObject(this.material);
+    },
+    /**
      * Get units
      *
      * Author: nlnhat (02/07/2023)
@@ -633,7 +651,14 @@ export default {
         const response = await materialService.get(id);
         if (response?.status == this.$enums.status.ok) {
           this.material = response.data;
-          this.originalMaterial = this.copyObject(this.material);
+
+          if (this.mode == this.$enums.formMode.duplicate) {
+            if (this.material.ConversionUnits?.length > 0) {
+              this.material.ConversionUnits.map(unit => unit.EditMode = this.$enums.editMode.create);
+            }
+          }
+
+          this.storeOriginalMaterial();
         }
       } catch (error) {
         console.error(error);
@@ -1080,7 +1105,7 @@ export default {
      * Author: nlnhat (26/06/2023)
      */
     onClickHelp() {
-      this.openUrl('https://helpv2.cukcuk.com/vi/kb/add-ingredient-to-the-list');
+      this.openUrl(window.externalUrl.helpAddMaterial);
     },
     /**
      * Validate methods

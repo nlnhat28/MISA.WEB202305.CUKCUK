@@ -140,7 +140,7 @@ import enums from "@/constants/enums.js";
 const formMode = enums.formMode;
 import { fields } from "@/js/form/form.js";
 import { validateWarehouseCode, validateWarehouseName } from "@/js/form/validate.js";
-import { copyObject, sameObject } from "@/js/utils/json.js";
+import { copyObject, sameObject } from "@/js/utils/object.js";
 import { openUrl } from "@/js/utils/window.js";
 import { warehouseService } from '@/services/services.js';
 import { useWarehouseStore } from "@/stores/stores.js";
@@ -684,7 +684,7 @@ export default {
          * Author: nlnhat (26/06/2023)
          */
         onClickHelp() {
-            this.openUrl('https://helpv2.cukcuk.com/vi/kb/enter-storehouse-utilities/');
+            this.openUrl(window.externalUrl.helpAddWarehouse);
         },
         /**
          * Validate methods

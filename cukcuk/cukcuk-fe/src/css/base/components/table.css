@@ -70,7 +70,7 @@
   overflow: auto;
   width: 100%;
   flex: 1px;
-  border-bottom: 1px solid var(--border-color);
+  /* border-bottom: 1px solid var(--border-color); */
   border-top: 1px solid var(--border-color);
   z-index: 2;
 }
@@ -245,6 +245,9 @@
   border-bottom: 1px solid var(--border-color);
   outline: none;
 }
+.table tr:not(:last-child) td {
+  /* border-bottom: 1px solid var(--border-color); */
+}
 .table td.td--resizable {
   overflow: hidden;
   text-overflow: ellipsis;
@@ -312,6 +315,7 @@ td .checkbox-wrapper {
   width: 100%;
   background-color: #fff;
   padding: 0px 16px 0px 8px;
+  border-top: 1px solid var(--border-color);
 }
 .count-wrapper {
   display: flex;

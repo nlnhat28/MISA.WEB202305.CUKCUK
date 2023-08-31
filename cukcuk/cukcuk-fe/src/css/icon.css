@@ -265,6 +265,7 @@
   background: var(--misa-sprite) no-repeat -1602px -258px;
   width: 20px;
   height: 20px;
+  filter: brightness(1.2) hue-rotate(100deg);
 }
 .icon--error {
   background: var(--misa-sprite) no-repeat -762px -146px;
@@ -298,6 +299,7 @@
   background: var(--misa-sprite) no-repeat -752px -462px;
   width: 36px;
   height: 36px;
+  filter: brightness(0.8) contrast(200%);
 }
 .icon--warning--lg {
   background: var(--misa-sprite) no-repeat -598px -463px;

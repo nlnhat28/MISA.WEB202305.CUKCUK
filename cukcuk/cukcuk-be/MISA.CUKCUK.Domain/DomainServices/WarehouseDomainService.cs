@@ -31,20 +31,34 @@ namespace MISA.CUKCUK.Domain
         /// <summary>
         /// Check trùng mã nhà kho
         /// </summary>
-        /// <param name="warehouse">Entity nhà kho để check</param>
+        /// <param name="warehouseId">Id nhà kho để check</param>
+        /// <param name="warehouseCode">Mã nhà kho để check</param>
         /// <exception cref="ConflictException">Exception mã đã tồn tại</exception>
         /// Created by: nlnhat (17/08/2023)
-        public async Task CheckDuplicatedCodeAsync(Warehouse warehouse)
+        public async Task CheckDuplicatedCodeAsync(Guid warehouseId, string warehouseCode)
         {
-            var warehouseCode = warehouse.WarehouseCode;
             var warehouseExist = await _repository.GetByCodeAsync(warehouseCode);
 
             // Nếu trùng mã và trùng với kho khác (tránh trường hợp trùng vs chính kho đấy)
-            if (warehouseExist != null && warehouse?.WarehouseId != warehouseExist?.WarehouseId)
+            if (warehouseExist != null && warehouseId != warehouseExist?.WarehouseId)
                 throw new ConflictException(
                     MISAErrorCode.WarehouseCodeDuplicated,
                     $"{_resource["WarehouseCode"]} <{warehouseCode}> {_resource["Duplicated"]}",
                     new ExceptionData("WarehouseCode", warehouseCode, ExceptionKey.FormItem, "FormItem"));
+        }
+        /// <summary>
+        /// Check tồn tại nhà kho
+        /// </summary>
+        /// <param name="warehouseId">Id của nhà kho</param>
+        /// <exception cref="NotFoundException">Không tìm thấy nhà kho</exception>
+        /// Created by: nlnhat (30/08/2023)
+        public async Task CheckExistWarehouseAsync(Guid warehouseId)
+        {
+            _ = await _repository.GetAsync(warehouseId) ??
+                throw new NotFoundException(
+                    MISAErrorCode.WarehouseNotFound,
+                    _resource["WarehouseNotFound"],
+                    new ExceptionData("Warehouse", warehouseId.ToString(), ExceptionKey.FormItem, "FormItem"));
         }
         #endregion
     }

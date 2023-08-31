@@ -27,15 +27,6 @@ namespace MISA.CUKCUK.Application
         Task<FilterResultModel<Material>> FilterAsync(string? keySearch, PagingModel? pagingModel,
             List<SortModel>? sortModels, List<FilterModel>? filterModels);
         /// <summary>
-        /// Lọc nguyên vật liệu để export
-        /// </summary>
-        /// <param name="keySearch">Từ khoá tìm kiếm</param>
-        /// <param name="sortModels">Các điều kiện sắp xếp</param>
-        /// <param name="filterModels">Các điều kiện lọc</param>
-        /// <returns>Kết quả nguyên vật liệu thoả mãn điều kiện lọc</returns>
-        /// Created by: nlnhat (16/08/2023)
-        Task<IEnumerable<MaterialDto>> ExportAsync(string? keySearch, List<SortModel>? sortModels, List<FilterModel>? filterModels);
-        /// <summary>
         /// Export to excel
         /// </summary>
         /// <param name="keySearch">Từ khoá tìm kiếm</param>
@@ -44,5 +35,20 @@ namespace MISA.CUKCUK.Application
         /// <returns>Kết quả nguyên vật liệu thoả mãn điều kiện lọc</returns>
         /// Created by: nlnhat (16/08/2023)
         Task<MemoryStream> ExportToExcelAsync(string? keySearch, List<SortModel>? sortModels, List<FilterModel>? filterModels);
+        /// <summary>
+        /// Map đơn vị chuyển đổi
+        /// </summary>
+        /// <param name="conversionUnitDtos">Danh sách dto đơn vị chuyển đổi</param>
+        /// <param name="materialId">Id nguyên vật liệu</param>
+        /// <returns>Danh sách đơn vị chuyển đổi tạo mới</returns>
+        /// Created by: nlnhat (17/08/2023)
+        List<ConversionUnit> MapCreateConversionUnits(List<ConversionUnitDto>? conversionUnitDtos, Guid materialId);
+        /// <summary>
+        /// Validate danh sách đơn vị chuyển đổi
+        /// </summary>
+        /// <param name="conversionUnitDtos">Danh sách dto đơn vị chuyển đổi</param>
+        /// <param name="unitId">Id của đơn vị tính chính</param>
+        /// <exception cref="ValidateException">Đơn vị chuyển đổi bị trùng nhau hoặc trùng đơn vị tính chính</exception>
+        void ValidateConversionUnit(List<ConversionUnitDto> conversionUnitDtos, Guid unitId);
     }
 }

@@ -93,7 +93,7 @@ import { fields } from "@/js/form/form.js";
 import { validateUnit } from "@/js/form/validate.js";
 import { isNullOrEmpty } from "@/js/utils/string.js";
 import { formatDecimalInput, formatDecimal } from "@/js/utils/format.js";
-import { copyObject, sameObject } from "@/js/utils/json.js";
+import { copyObject, sameObject } from "@/js/utils/object.js";
 import { duplicatedItem } from "@/js/utils/array.js";
 import { useUnitStore } from "@/stores/stores.js";
 import { mapStores, mapState } from 'pinia';

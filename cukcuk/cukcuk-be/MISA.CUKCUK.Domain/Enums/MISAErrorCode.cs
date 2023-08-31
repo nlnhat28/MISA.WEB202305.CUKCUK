@@ -101,5 +101,16 @@
         /// </summary>
         UnitNotFound = 4002,
         #endregion
+
+        #region Mã lỗi phân hệ đơn vị chuyển đổi
+        /// <summary>
+        /// Trùng đơn vị chuyển đổi
+        /// </summary>
+        ConversionUnitDuplicated = 5001,
+        /// <summary>
+        /// Trùng đơn vị tính chính
+        /// </summary>
+        ConversionUnitDuplicatedUnit = 5002,
+        #endregion
     }
 }

@@ -36,7 +36,19 @@ namespace MISA.CUKCUK.Application
                 opt.MapFrom(src =>
                     ApplicationHelper.ConvertDateUtcToLocal(src.ModifiedDate));
             });
-            CreateMap<MaterialDto, Material>();
+
+            CreateMap<MaterialDto, Material>()
+            .ForMember(dest => dest.CreatedDate, opt =>
+            {
+                opt.MapFrom(src =>
+                 ApplicationHelper.ConvertDateLocalToUtc(src.CreatedDate));
+            })
+            .ForMember(dest => dest.ModifiedDate, opt =>
+            {
+                opt.MapFrom(src =>
+                    ApplicationHelper.ConvertDateLocalToUtc(src.ModifiedDate));
+            });
+
             CreateMap<MaterialModel, MaterialExcelDto>()
            .ForMember(dest => dest.TimeUnitName, opt =>
            {

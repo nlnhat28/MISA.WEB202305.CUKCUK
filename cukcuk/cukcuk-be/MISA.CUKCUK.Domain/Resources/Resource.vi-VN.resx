@@ -123,11 +123,17 @@
   <data name="ConflictData" xml:space="preserve">
     <value>Dữ liệu bị xung đột</value>
   </data>
+  <data name="ConversionUnit" xml:space="preserve">
+    <value>Đơn vị chuyển đổi</value>
+  </data>
   <data name="Day" xml:space="preserve">
     <value>Ngày</value>
   </data>
   <data name="DepartmentNotFound" xml:space="preserve">
     <value>Không tìm thấy phòng ban</value>
+  </data>
+  <data name="DestinationUnitName" xml:space="preserve">
+    <value>Tên đơn vị chuyển đổi</value>
   </data>
   <data name="Divide" xml:space="preserve">
     <value>Chia</value>
@@ -201,17 +207,29 @@
   <data name="ServerError" xml:space="preserve">
     <value>Lỗi hệ thống</value>
   </data>
+  <data name="Unit" xml:space="preserve">
+    <value>Đơn vị tính</value>
+  </data>
   <data name="UnitName" xml:space="preserve">
     <value>Tên đơn vị</value>
   </data>
   <data name="UnitNameDuplicated" xml:space="preserve">
     <value>Tên đơn vị bị trùng</value>
   </data>
+  <data name="UnitNotFound" xml:space="preserve">
+    <value>Không tìm thấy đơn vị tính</value>
+  </data>
+  <data name="Used" xml:space="preserve">
+    <value>đã được sử dụng</value>
+  </data>
   <data name="WarehouseCode" xml:space="preserve">
     <value>Mã kho</value>
   </data>
   <data name="WarehouseCodeDuplicated" xml:space="preserve">
     <value>Mã kho bị trùng</value>
+  </data>
+  <data name="WarehouseNotFound" xml:space="preserve">
+    <value>Không tìm thấy kho ngầm định</value>
   </data>
   <data name="Year" xml:space="preserve">
     <value>Năm</value>

@@ -20,14 +20,14 @@
             >
                 <m-icon
                     :icon="iconLeft"
-                    v-if="iconLeft"
+                    v-if="iconLeft && !isLoading && !isSuccess"
                 ></m-icon>
                 <m-icon
                     :icon="iconCenter"
                     v-if="iconCenter && !isLoading && !isSuccess"
                 ></m-icon>
                 <m-icon
-                    icon="check--green"
+                    icon="check--blue"
                     v-if="isSuccess"
                 ></m-icon>
                 <m-spinner v-if="isLoading && !isSuccess"></m-spinner>
@@ -251,7 +251,7 @@ export default {
 <style scoped>
 .loading-spinner {
     position: absolute;
-    scale: 0.26;
+    scale: 0.24;
 }
 
 .icon--check--green {

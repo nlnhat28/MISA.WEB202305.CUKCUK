@@ -124,7 +124,7 @@ import enums from "@/constants/enums.js";
 const formMode = enums.formMode;
 import { fields } from "@/js/form/form.js";
 import { validateUnitName } from "@/js/form/validate.js";
-import { copyObject, sameObject } from "@/js/utils/json.js";
+import { copyObject, sameObject } from "@/js/utils/object.js";
 import { openUrl } from "@/js/utils/window.js";
 import { unitService } from '@/services/services.js';
 import { useUnitStore } from "@/stores/stores.js";
@@ -671,7 +671,7 @@ export default {
          * Author: nlnhat (26/06/2023)
          */
         onClickHelp() {
-            this.openUrl('https://helpv2.cukcuk.com/vi/kb/enter-unit/');
+            this.openUrl(window.externalUrl.helpAddUnit);
         },
         /**
          * Validate methods

@@ -70,7 +70,7 @@ namespace MISA.CUKCUK.Application
         /// <summary>
         /// Tạo mới đối tượng 
         /// </summary>
-        /// <param name="entityCreateDto">Dto tạo mới đối tượng</param>
+        /// <param name="entityDto">Dto tạo mới đối tượng</param>
         /// <returns>Id của bản ghi mới</returns>
         /// Created by: nlnhat (18/07/2023)
         public virtual async Task<Guid> CreateAsync(TEntityDto entityDto)
@@ -124,46 +124,6 @@ namespace MISA.CUKCUK.Application
         {
             var result = await _repository.DeleteManyAsync(ids);
             return result;
-        }
-        /// <summary>
-        /// [Test]
-        /// Xoá nhiều đối tượng
-        /// </summary>
-        /// <param name="ids">List id muốn xoá</param>
-        /// <returns>Số bản ghi bị ảnh hưởng</returns>
-        /// Created by: nlnhat (18/07/2023)
-        public async Task<int> DeleteManyTestAsync(IEnumerable<Guid> ids)
-        {
-            // Danh sách rỗng
-            if (!ids.Any())
-                throw new ValidateException(
-                    MISAErrorCode.Parameterless,
-                    _resource["Parameterless"]);
-
-            var entities = await _repository.GetManyAsync(ids);
-
-            // Không tìm được hết
-            if (entities.Count() < ids.Count())
-                throw new NotFoundException(userMsg: _resource["NotFoundAll"]);
-
-            await _unitOfWork.BeginTransactionAsync();
-            try
-            {
-                var result = await _repository.DeleteManyAsync(ids);
-
-                // Không xoá được hết
-                if (result < ids.Count())
-                    throw new IncompleteException(MISAErrorCode.IncompleteDelete, _resource["IncompleteDelete"]);
-
-                await _unitOfWork.CommitAsync();
-
-                return result;
-            }
-            catch
-            {
-                await _unitOfWork.RollbackAsync();
-                throw;
-            }
         }
         #endregion
     }

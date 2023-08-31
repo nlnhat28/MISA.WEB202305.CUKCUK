@@ -52,7 +52,8 @@ body::-webkit-scrollbar {
 
 /* color notify */
 .color--success {
-  color: var(--green-500);
+  /* color: var(--green-500); */
+  color: var(--blue-500);
 }
 .color--error {
   color: var(--red-500);

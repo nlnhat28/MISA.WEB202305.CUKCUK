@@ -33,20 +33,34 @@ namespace MISA.CUKCUK.Domain
         /// <summary>
         /// Check trùng tên đơn vị tính
         /// </summary>
-        /// <param name="unit">Entity đơn vị tính để check</param>
+        /// <param name="unitId">Id đơn vị tính để check</param>
+        /// <param name="unitName">Tên đơn vị tính để check</param>
         /// <exception cref="ConflictException">Exception tên đã tồn tại</exception>
         /// Created by: nlnhat (17/08/2023)
-        public async Task CheckDuplicatedNameAsync(Unit unit)
+        public async Task CheckDuplicatedNameAsync(Guid unitId, string unitName)
         {
-            var unitName = unit.UnitName;
             var unitExist = await _repository.GetByNameAsync(unitName);
 
             // Nếu trùng tên và trùng với đơn vị khác (tránh trường hợp trùng vs chính đơn vị đấy)
-            if (unitExist != null && unit?.UnitId != unitExist?.UnitId)
+            if (unitExist != null && unitId != unitExist?.UnitId)
                 throw new ConflictException(
                     MISAErrorCode.UnitNameDuplicated,
                     $"{_resource["UnitName"]} <{unitName}> {_resource["Duplicated"]}",
                     new ExceptionData("UnitName", unitName, ExceptionKey.FormItem, "FormItem"));
+        }
+        /// <summary>
+        /// Check tồn tại đơn vị tính
+        /// </summary>
+        /// <param name="unitId">Id của đơn vị tính</param>
+        /// <exception cref="NotFoundException">Không tìm thấy đơn vị tính</exception>
+        /// Created by: nlnhat (30/08/2023)
+        public async Task CheckExistUnitAsync(Guid unitId)
+        {
+            _ = await _repository.GetAsync(unitId) ??
+                throw new NotFoundException(
+                    MISAErrorCode.UnitNotFound,
+                    _resource["UnitNotFound"],
+                    new ExceptionData("Unit", unitId.ToString(), ExceptionKey.FormItem, "FormItem"));
         }
         #endregion
     }

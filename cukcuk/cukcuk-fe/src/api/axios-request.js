@@ -2,14 +2,13 @@ import axios from "axios";
 import emitter from "tiny-emitter/instance";
 import resources from "@/constants/resources.js";
 import enums from "@/constants/enums.js";
-import config from "@/config/config.js";
 
 const axiosRequest = axios.create({
-  baseURL: config.api.baseURL,
+  baseURL: window.config.api.baseURL,
   headers: {
     "Content-Type": "application/json",
   },
-  timeout: config.api.timeout,
+  timeout: window.config.api.timeout,
 });
 /**
  * Add a response interceptor
