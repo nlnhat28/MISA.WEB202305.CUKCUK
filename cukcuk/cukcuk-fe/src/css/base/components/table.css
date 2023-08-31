@@ -123,7 +123,6 @@
   border-right: 1px solid var(--border-color);
   font-weight: 500;
   height: 55px;
-  /* white-space: break-spaces; */
 }
 .table th:last-child {
   border-right: none;
@@ -149,6 +148,7 @@
   align-items: center;
   line-height: 30px;
   height: 30px;
+  /* white-space: break-spaces; */
 }
 .th-wrapper__filter {
   display: flex;

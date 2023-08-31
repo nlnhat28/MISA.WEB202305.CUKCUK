@@ -492,3 +492,6 @@
 .icon-container.disabled {
   opacity: 56%;
 }
+.icon-container.cursor--default {
+  cursor: default;
+}

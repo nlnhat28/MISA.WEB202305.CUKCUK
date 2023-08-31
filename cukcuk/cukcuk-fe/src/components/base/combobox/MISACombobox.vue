@@ -65,7 +65,7 @@
         <m-icon-container
             v-if="errorMessage"
             :icon="'error'"
-            class="tooltip--light"
+            class="cursor--default tooltip--light"
             v-tooltip="`⛔ ${errorMessage}`"
         ></m-icon-container>
     </div>
