@@ -221,6 +221,7 @@ export default {
     expose: [
         'checkValidate',
         'focus',
+        'hideSelects',
         'errorMessage'],
     watch: {
         /**
@@ -338,10 +339,9 @@ export default {
             return this.theSelects;
         },
         /**
-         * Search in list
+         * Scroll position
          * 
          * Author: nlnhat (06/07/2023)
-         * @returns Selects include input
          */
         scrollTopComputed() {
             if (this.selects.length > 0)
@@ -535,11 +535,11 @@ export default {
 </script>
 <style>
 .select-list {
-    max-height: 200px;
+    max-height: 208px;
 }
 
 .select-list:has(.mask) {
-    min-height: 200px;
+    min-height: 208px;
 }
 
 .input-action:hover .icon {

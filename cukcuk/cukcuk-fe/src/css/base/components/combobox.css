@@ -198,8 +198,13 @@
   display: none;
 }
 .combobox.fixed:focus-within {
-  position: fixed;
-  z-index: 3;
+  /* position: fixed; */
+  z-index: 1;
+}
+.combobox.fixed:has(.icon-container:hover):focus-within,
+.combobox.fixed:has(.input-action:hover):focus-within {
+  /* position: fixed; */
+  z-index: 2;
 }
 .combobox.fixed:focus-within .select-list {
   display: block;

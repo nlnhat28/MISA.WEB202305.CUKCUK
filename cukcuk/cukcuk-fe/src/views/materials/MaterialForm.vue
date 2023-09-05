@@ -3,6 +3,7 @@
     :title="title"
     class="popup--md"
     @emitClose="onClickCloseForm()"
+    @emitStartMove="onStartMove()"
     @keydown="handleShortKey"
     tabindex="0"
   >
@@ -158,7 +159,6 @@
         <m-form-row>
           <ConversionUnitTab
             :material="material"
-            :unitSelects="unitsComputed"
             ref="ConversionUnits"
           >
           </ConversionUnitTab>
@@ -1061,7 +1061,7 @@ export default {
     /**
      * Hide unit form
      * 
-     * Author: nlnhat (26/06/2023)
+     * Author: nlnhat (26/08/2023)
      */
     hideUnitForm() {
       this.isShowedUnitForm = false;
@@ -1078,7 +1078,7 @@ export default {
     /**
      * Hide warehouse form
      * 
-     * Author: nlnhat (26/06/2023)
+     * Author: nlnhat (26/08/2023)
      */
     hideWarehouseForm() {
       this.isShowedWarehouseForm = false;
@@ -1086,7 +1086,7 @@ export default {
     /**
      * Update new unit id
      * 
-     * Author: nlnhat (26/06/2023)
+     * Author: nlnhat (26/08/2023)
      */
     updateUnit(id) {
       this.material.UnitId = id;
@@ -1094,7 +1094,7 @@ export default {
     /**
      * Update new warehouse id
      * 
-     * Author: nlnhat (26/06/2023)
+     * Author: nlnhat (26/08/2023)
      */
     updateWarehouse(id) {
       this.material.WarehouseId = id;
@@ -1102,10 +1102,19 @@ export default {
     /**
      * On click help
      * 
-     * Author: nlnhat (26/06/2023)
+     * Author: nlnhat (26/08/2023)
      */
     onClickHelp() {
       this.openUrl(window.externalUrl.helpAddMaterial);
+    },
+    /**
+     * On start move popup
+     * 
+     * Author: nlnhat (26/08/2023)
+     */
+    onStartMove() {
+      if (this.$refs.ConversionUnits)
+        this.$refs.ConversionUnits.resetComboboxes()
     },
     /**
      * Validate methods

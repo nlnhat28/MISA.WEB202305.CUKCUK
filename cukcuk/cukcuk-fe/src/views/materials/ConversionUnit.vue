@@ -14,9 +14,11 @@
         <td class="td--nopadding">
             <!-- Destination unit -->
             <div
-                ref="refDesUnit"
+                ref="DesUnitWrapper"
                 style="height: 30px; width: 100%"
-                @click="setWidthDesUnit()"
+                tabindex="-1"
+                v-click-outside="resetDesUnitCombobox"
+                @click="onClickDesUnit()"
             >
                 <m-combobox
                     v-model:id="conversionUnit.DestinationUnitId"
@@ -26,11 +28,9 @@
                     :label="fields.conversionUnit.label"
                     :maxLength="fields.conversionUnit.maxLength"
                     :action="actionCreateUnit"
-                    :style="`width: ${styleDesUnit.width}px;`"
+                    :style="`position: ${styleDesUnit.position}; width: ${styleDesUnit.width}px; top: ${styleDesUnit.top}px; left: ${styleDesUnit.left}px;`"
                     class="fixed"
-                    v-click-outside="setWidthDesUnit"
                     ref="DestinationUnit"
-                    @emitSelected="this.$refs['DestinationUnit'].focus()"
                 >
                 </m-combobox>
             </div>
@@ -51,9 +51,11 @@
         </td>
         <td class="td--nopadding">
             <div
-                ref="refOperator"
+                ref="OperatorWrapper"
                 style="height: 30px; width: 100%"
-                @click="setWidthOperator()"
+                v-click-outside="resetOperatorCombobox"
+                tabindex="-1"
+                @click="onClickOperator()"
             >
                 <!-- Operator -->
                 <m-combobox
@@ -64,10 +66,8 @@
                     :maxLength="fields.operator.maxLength"
                     :isReadOnly="true"
                     :canUnselect="false"
-                    :style="`width: ${styleOperator.width}px;`"
-                    v-click-outside="setWidthOperator"
+                    :style="`position: ${styleOperator.position}; width: ${styleOperator.width}px; top: ${styleOperator.top}px; left: ${styleOperator.left}px;`"
                     class="fixed"
-                    @emitSelected="() => { }"
                     ref="Operator"
                 >
                 </m-combobox>
@@ -153,7 +153,8 @@ export default {
             styleDesUnit: {
                 width: null,
                 top: null,
-                left: null
+                left: null,
+                position: null,
             },
             /**
              * Style of Operator combobox
@@ -161,7 +162,8 @@ export default {
             styleOperator: {
                 width: null,
                 top: null,
-                left: null
+                left: null,
+                position: null,
             },
             /**
              * Original conversion unit
@@ -213,8 +215,11 @@ export default {
     mounted() {
         this.conversionUnit.RowIndex = this.index + 1;
 
-        this.setWidthDesUnit();
-        this.setWidthOperator();
+        this.setWidthDesUnitCombobox();
+        // this.setPositionDesUnitCombobox();
+
+        this.setWidthOperatorCombobox();
+        // this.setPositionOperatorCombobox();
 
         if (this.focusedId) {
             this.focusOnFirst();
@@ -227,6 +232,8 @@ export default {
     expose: [
         'checkValidate',
         'focus',
+        'focusOnFirst',
+        'resetComboboxes',
         'errorMessage'],
     watch: {
         /**
@@ -339,40 +346,105 @@ export default {
             unitsComputed: 'unitSelects'
         }),
     },
-    expose: [
-        'focus',
-        'focusOnFirst',
-        'checkValidate'
-    ],
     methods: {
         /**
-         * Set width for destination unit
+         * Set width for destination unit combobox
          * 
          * Author: nlnhat (22/08/2023)
          */
-        setWidthDesUnit() {
-            const refParent = this.$refs.refDesUnit;
-            this.styleDesUnit = {
-                width: refParent.offsetWidth,
-                top: refParent.getBoundingClientRect().y,
-                left: refParent.getBoundingClientRect().x,
-            }
+        setWidthDesUnitCombobox() {
+            const wrapper = this.$refs.DesUnitWrapper;
+            this.styleDesUnit.width = wrapper.offsetWidth;
         },
         /**
-         * Set width for operator unit
+         * Set position for destination unit combobox
          * 
          * Author: nlnhat (22/08/2023)
          */
-        setWidthOperator() {
-            const refParent = this.$refs.refOperator;
-            this.styleOperator = {
-                width: refParent.offsetWidth,
-                top: refParent.getBoundingClientRect().y,
-                left: refParent.getBoundingClientRect().x,
-            }
+        setPositionDesUnitCombobox() {
+            const wrapper = this.$refs.DesUnitWrapper;
+            console.log(wrapper.getBoundingClientRect());
+            this.styleDesUnit.top = wrapper.getBoundingClientRect().top;
+            this.styleDesUnit.left = wrapper.getBoundingClientRect().left;
+            this.styleDesUnit.position = "fixed";
         },
         /**
-         * Set width for operator unit
+         * Set width for operator unit combobox
+         * 
+         * Author: nlnhat (22/08/2023)
+         */
+        setWidthOperatorCombobox() {
+            const wrapper = this.$refs.OperatorWrapper;
+            this.styleOperator.width = wrapper.offsetWidth;
+        },
+
+        /**
+         * Set position for operator unit combobox
+         * 
+         * Author: nlnhat (22/08/2023)
+         */
+        setPositionOperatorCombobox() {
+            const wrapper = this.$refs.OperatorWrapper;
+            console.log(wrapper.getBoundingClientRect());
+            this.styleOperator.top = wrapper.getBoundingClientRect().top;
+            this.styleOperator.left = wrapper.getBoundingClientRect().left;
+            this.styleOperator.position = "fixed";
+        },
+        /**
+         * Handle click wrapper combobox destination unit
+         * 
+         * Author: nlnhat (26/08/2023)
+         */
+        onClickDesUnit() {
+            // this.setWidthDesUnitCombobox();
+            this.setPositionDesUnitCombobox();
+        },
+        /**
+         * Handle click wrapper combobox operator
+         * 
+         * Author: nlnhat (26/08/2023)
+         */
+        onClickOperator() {
+            // this.setWidthOperatorCombobox();
+            this.setPositionOperatorCombobox();
+        },
+        /**
+         * Reset combobox destination unit
+         * 
+         * Author: nlnhat (26/08/2023)
+         */
+        resetDesUnitCombobox() {
+            if (this.$refs.DestinationUnit)
+                this.$refs.DestinationUnit.hideSelects();
+            this.setWidthDesUnitCombobox();
+            this.styleDesUnit.position = "relative";
+            this.styleDesUnit.top = 0;
+            this.styleDesUnit.left = 0;
+        },
+        /**
+         * Reset combobox operator
+         * 
+         * Author: nlnhat (26/08/2023)
+         */
+        resetOperatorCombobox() {
+            if (this.$refs.Operator)
+                this.$refs.Operator.hideSelects();
+            this.setWidthOperatorCombobox();
+            this.styleOperator.position = "relative";
+            this.styleOperator.top = 0;
+            this.styleOperator.left = 0;
+        },
+        /**
+         * Reset comboboxes
+         * 
+         * Author: nlnhat (26/08/2023)
+         */
+        resetComboboxes() {
+            this.resetDesUnitCombobox();
+            this.resetOperatorCombobox();
+        },
+        /**
+         * Format rate input
          * 
          * Author: nlnhat (22/08/2023)
          */

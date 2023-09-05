@@ -13,7 +13,7 @@
             <!-- table content -->
             <div
                 class="table-content"
-                @scroll=showHideTheadShadow()
+                @scroll="onScroll()"
                 ref="tableContent"
             >
                 <table :class="{ 'table': true, '.disabled': isLoading }">
@@ -66,7 +66,31 @@ export default {
             type: Boolean
         }
     },
+    expose: [
+        'scrollTop',
+    ],
+    beforeUnmount() {
+        this.$refs.tableContent.scrollTop = 0;
+    },
     methods: {
+        /**
+         * Handle scroll table content
+         *
+         * Author: nlnhat (26/06/2023)
+         */
+        onScroll() {
+            this.showHideTheadShadow();
+            this.$emit('emitScroll');
+        },
+        /**
+         * Scroll to postion
+         * 
+         * Author: nlnhat (26/06/2023)
+         * @param {number} position 
+         */
+        scrollTop(position) {
+            this.$refs.tableContent.scrollTop = position;
+        },
         /**
          * Remove thead shadow when scroll at top
          *

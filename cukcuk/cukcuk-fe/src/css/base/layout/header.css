@@ -82,9 +82,10 @@
   top: -4px;
   right: -4px;
   font-size: 10px;
-  font-weight: 700;
+  font-weight: 500;
   width: 16px;
   height: 16px;
+  line-height: 14px;
   border-radius: 50%;
   color: #fff;
   background-color: var(--red-500);

@@ -325,7 +325,7 @@ namespace MISA.CUKCUK.Infrastructure
 
             return query;
         }
-        #endregion
     }
+    #endregion
 }
 

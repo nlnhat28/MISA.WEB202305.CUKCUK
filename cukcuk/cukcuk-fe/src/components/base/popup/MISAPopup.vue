@@ -71,17 +71,29 @@ export default {
              * Limit of position to keep dialog on screen
              */
             limitPosition: {},
+            /**
+             * Center position
+             */
+            centerPosition: {},
+
         }
     },
     mounted() {
         try {
             this.refPopup = this.$refs.refPopup;
             this.limitPosition = {
-                minX: this.refPopup.offsetWidth / 2,
-                minY: this.refPopup.offsetHeight / 2,
-                maxX: window.innerWidth - this.refPopup.offsetWidth / 2,
-                maxY: window.innerHeight - this.refPopup.offsetHeight / 2,
-            }
+                minLeft: 0,
+                minTop: 0,
+                maxLeft: window.innerWidth - this.refPopup.offsetWidth,
+                maxTop: window.innerHeight - this.refPopup.offsetHeight,
+            };
+
+            this.centerPosition = {
+                left: (window.innerWidth - this.refPopup.offsetWidth) / 2,
+                top: (window.innerHeight - this.refPopup.offsetHeight) / 2
+            };
+
+            this.resetPosition();
         } catch (error) {
             console.error(error);
         }
@@ -107,6 +119,7 @@ export default {
                 this.refPopup.offsetLeft - event.clientX,
                 this.refPopup.offsetTop - event.clientY
             ];
+            this.$emit('emitStartMove');
             window.addEventListener('mousemove', this.onMove);
             window.addEventListener('mouseup', this.endMove);
         },
@@ -122,11 +135,11 @@ export default {
                     event.preventDefault();
 
                     // Giữ popup trong màn hình
-                    const newX = Math.max(this.limitPosition.minX,
-                        Math.min((event.clientX + this.offset[0]), this.limitPosition.maxX));
+                    const newX = Math.max(this.limitPosition.minLeft,
+                        Math.min((event.clientX + this.offset[0]), this.limitPosition.maxLeft));
 
-                    const newY = Math.max(this.limitPosition.minY,
-                        Math.min((event.clientY + this.offset[1]), this.limitPosition.maxY));
+                    const newY = Math.max(this.limitPosition.minTop,
+                        Math.min((event.clientY + this.offset[1]), this.limitPosition.maxTop));
 
                     // Thiết lập toạ độ mới
                     this.refPopup.style.left = newX + 'px';
@@ -145,7 +158,7 @@ export default {
          */
         endMove() {
             this.isMoving = false;
-            if (this.refPopup.style.left != '50%' && this.refPopup.style.top != '50%') {
+            if (this.refPopup.style.left != this.centerPosition.left && this.refPopup.style.top != this.centerPosition.top) {
                 this.tooltip = `${this.$resources['vn'].doubleClick} ${this.$resources['vn'].toResetPosition}`;
             };
             window.removeEventListener('mousemove', this.onMove);
@@ -157,8 +170,8 @@ export default {
          * Author: nlnhat (01/07/2023)
          */
         resetPosition() {
-            this.refPopup.style.left = '50%';
-            this.refPopup.style.top = '50%';
+            this.refPopup.style.left = this.centerPosition.left + 'px';
+            this.refPopup.style.top = this.centerPosition.top + 'px';
             this.tooltip = null;
         },
     }

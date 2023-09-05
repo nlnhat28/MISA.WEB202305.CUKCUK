@@ -6,7 +6,7 @@
             </div>
         </div>
         <div class="tab-menu__body">
-            <m-table>
+            <m-table @emitScroll="resetComboboxes()">
                 <template #thead>
                     <!-- table head -->
                     <th
@@ -129,7 +129,11 @@ export default {
     created() {
         this.updateConversionUnits();
     },
-    expose: ['checkValidate', 'focus'],
+    expose: [
+        'checkValidate',
+        'focus',
+        'resetComboboxes'
+    ],
     watch: {
         material: {
             handler() {
@@ -256,6 +260,18 @@ export default {
         focus() {
             if (this.refFocus)
                 this.refFocus.focus();
+        },
+        /**
+         * Handle scroll table content
+         *
+         * Author: nlnhat (26/06/2023)
+         */
+        resetComboboxes() {
+            if (this.$refs.ConversionUnit) {
+                for (const ref of this.$refs.ConversionUnit) {
+                    ref.resetComboboxes();
+                };
+            };
         },
         /**
          * Imported methods

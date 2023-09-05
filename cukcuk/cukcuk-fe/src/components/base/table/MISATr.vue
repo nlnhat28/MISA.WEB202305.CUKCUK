@@ -64,7 +64,7 @@ export default {
         }
     },
     mounted() {
-        // this.focusById();
+        this.focusById();
     },
     expose: ['focus', 'index', 'id', 'vanish', 'setFocus', 'clearFocus'],
     watch: {

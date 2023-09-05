@@ -19,6 +19,7 @@
       <m-table
         :totalRecord="totalRecord"
         :isLoading="isLoading"
+        ref="table"
       >
         <template #toolbarLeft>
           <m-button
@@ -188,7 +189,7 @@
     @emitUpdateFocusedId="updateFocusedId"
   >
   </MaterialForm>
-  <!-- Dialog delete confiem -->
+  <!-- Dialog delete confirm -->
   <m-dialog
     :type="this.deleteConfirmDialog.type"
     :title="this.deleteConfirmDialog.title"
@@ -508,7 +509,13 @@ export default {
     "warehouseStore.warehouseSelects": function () {
       const head = this.table.heads.find(head => head.name == "WarehouseName")
       head.filterConfig.selects = this.warehouseStore.warehouseSelects;
-    }
+    },
+    /**
+     * Handle when focused id changes
+     */
+    // focusedId() {
+    //   this.$refs.table.scrollTop(this.scrollTopComputed);
+    // }
   },
   computed: {
     /**
@@ -577,6 +584,18 @@ export default {
         filterValue: item.value.key,
       }));
       return filterModelsDto;
+    },
+    /**
+     * Scroll position
+     * 
+     * Author: nlnhat (06/07/2023)
+     */
+    scrollTopComputed() {
+      if (this.materials.length > 0) {
+        const index = this.materials.indexOf(this.materials.find(material => material.MaterialId == this.focusedId));
+        return index * 28;
+      }
+      return 0;
     },
     /**
      * Map unit store
@@ -761,23 +780,39 @@ export default {
      * Delete one material
      * 
      * Author: nlnhat (26/06/2023)
-     * @param {string} materialId Id of material
+     * @param {object} material Material object to delete
      */
-    async deleteMaterial(materialId, materialCode, materialName) {
+    async deleteMaterial(material) {
       try {
+        const materialId = material.MaterialId;
+        const materialCode = material.MaterialCode;
+        const materialName = material.MaterialName;
+
+        const oldIndex = this.materials.indexOf(material);
+
         const response = await materialService.delete(materialId);
-        const refFocus = this.$refs.tr.find(tr => tr.id == materialId);
+        const refDelete = this.$refs.tr.find(tr => tr.id == materialId);
 
         if (response?.status == this.$enums.status.ok) {
-          if (refFocus) {
-            refFocus.vanish();
+          if (refDelete) {
+            refDelete.vanish();
           }
           setTimeout(async () => {
+            // Làm mới danh sách
             this.materialsSelect = this.materialsSelect.filter(id => id != materialId);
             this.materials = this.materials.filter(id => id != materialId);
             await this.filterMaterials();
-            this.focusedId = this.materials[0].MaterialId;
+
+            // Focus vào dòng mới
+            const length = this.materials.length;
+            if (length > 0) {
+              const indexFocus = oldIndex < length ? oldIndex : length - 1;
+              this.focusedId = this.materials[indexFocus].MaterialId;
+              this.focusFocusedId();
+            }
           }, 300);
+
+          // Hiện thông báo
           const message
             = `${this.$resources['vn'].deleted} ${this.$resources['vn'].material} <${materialCode} - ${materialName}>`;
           this.showToastDeleteSuccess(message);
@@ -836,7 +871,7 @@ export default {
 
           this.deleteConfirmDialog.onClickDelete = () => {
             this.deleteConfirmDialog.isShowed = false;
-            this.deleteMaterial(materialId, materialCode, materialName);
+            this.deleteMaterial(material);
           }
           this.deleteConfirmDialog.onClickCancel = () => {
             this.deleteConfirmDialog.isShowed = false;
@@ -908,6 +943,7 @@ export default {
      */
     hideMaterialForm() {
       this.isShowedMaterialForm = false;
+      this.focusFocusedId();
     },
     /**
      * Show toast message after reload
@@ -1125,7 +1161,7 @@ export default {
       this.focusRow(newIndex);
     },
     /**
-     * Focus on a row by id
+     * Focus on a row by index
      * 
      * Author: nlnhat (08/08/2023)
      * @param {number} index Index of row 
@@ -1134,6 +1170,28 @@ export default {
       const refFocus = this.$refs.tr.find(tr => tr.index == index);
       if (refFocus)
         refFocus.focus();
+    },
+    /**
+     * Focus on a row by id
+     * 
+     * Author: nlnhat (08/08/2023)
+     * @param {string} id Id of row 
+     */
+    focusById(id) {
+      const refFocus = this.$refs.tr.find(tr => tr.id == id);
+      if (refFocus)
+        refFocus.focus();
+    },
+    /**
+     * Focus on a row has id == focusedId
+     * 
+     * Author: nlnhat (08/08/2023)
+     */
+    focusFocusedId() {
+      const refFocus = this.$refs.tr.find(tr => tr.id == this.focusedId);
+      if (refFocus) {
+        refFocus.focus();
+      }
     },
     /**
      * Update focused id

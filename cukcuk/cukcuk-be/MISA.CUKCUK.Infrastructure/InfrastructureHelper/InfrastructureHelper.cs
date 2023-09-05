@@ -62,15 +62,12 @@ namespace MISA.CUKCUK.Domain
         /// <returns>Chuỗi AND hoặc OR</returns>
         public static string GetLogicTypeQuery(LogicType logicType)
         {
-            switch (logicType)
+            return logicType switch
             {
-                case LogicType.And:
-                    return "AND";
-                case LogicType.Or:
-                    return "OR";
-                default:
-                    return "AND";
-            }
+                LogicType.And => "AND",
+                LogicType.Or => "OR",
+                _ => "AND",
+            };
         }
         /// <summary>
         /// Tạo query sort type 
@@ -79,15 +76,12 @@ namespace MISA.CUKCUK.Domain
         /// <returns>Chuỗi ASC hoặc DESC</returns>
         public static string GetSortTypeQuery(SortType sortType)
         {
-            switch (sortType)
+            return sortType switch
             {
-                case SortType.Ascending:
-                    return "ASC";
-                case SortType.Descending:
-                    return "DESC";
-                default:
-                    return "ASC";
-            }
+                SortType.Ascending => "ASC",
+                SortType.Descending => "DESC",
+                _ => "ASC",
+            };
         }
         /// <summary>
         /// Thoát ký tự đặc biệt trong Mysql

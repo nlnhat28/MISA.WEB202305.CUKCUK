@@ -9,13 +9,18 @@
   height: 100vh;
   z-index: 4;
   overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 .popup-container:last-child {
   background-color: rgba(0, 0, 0, 0.56);
 }
-.popup-container > .popup,
-.dialog,
-.form {
+.popup-container > .popup {
+  position: absolute;
+}
+.popup-container > .dialog,
+.popup-container > .form {
   position: absolute;
   top: 50%;
   left: 50%;
