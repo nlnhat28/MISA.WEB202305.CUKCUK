@@ -111,6 +111,10 @@
         /// Trùng đơn vị tính chính
         /// </summary>
         ConversionUnitDuplicatedUnit = 5002,
+        /// <summary>
+        /// Không tìm thấy đơn vị chuyển đổi
+        /// </summary>
+        ConversionUnitNotFound = 5003,
         #endregion
     }
 }

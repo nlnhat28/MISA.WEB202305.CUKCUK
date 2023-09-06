@@ -15,9 +15,9 @@ namespace MISA.CUKCUK.Domain
         /// </summary>
         private readonly IConversionUnitRepository _repository;
         /// <summary>
-        /// Repository đơn vị tính
+        /// Domain service đơn vị tính
         /// </summary>
-        private readonly IUnitRepository _unitRepository;
+        private readonly IUnitDomainService _unitDomainService;
         /// <summary>
         /// Resource lưu trữ thông báo
         /// </summary>
@@ -27,16 +27,37 @@ namespace MISA.CUKCUK.Domain
         #region Constructors
         public ConversionUnitDomainService(
             IConversionUnitRepository repository,
-            IUnitRepository unitRepository,
+            IUnitDomainService unitDomainService,
             IStringLocalizer<Resource> resource)
         {
             _repository = repository;
-            _unitRepository = unitRepository;
+            _unitDomainService = unitDomainService;
             _resource = resource;
         }
         #endregion
 
         #region Methods
+        /// <summary>
+        /// Check tồn tại danh sách đơn vị chuyển đổi theo nguyên vật liệu
+        /// </summary>
+        /// <param name="conversionUnitIds">Danh sách id đơn vị chuyển đổi</param>
+        /// <param name="materialId">Id nguyên vật liệu</param>
+        /// Created by: nlnhat (30/08/2023)
+        public async Task CheckExistConversionUnitsAsync(List<Guid> conversionUnitIds, Guid materialId)
+        {
+            var ids = await _repository.GetByMaterialId(materialId);
+
+            foreach (var conversionUnitId in conversionUnitIds)
+            {
+                if (!ids.Any(id => id == conversionUnitId))
+                {
+                    throw new NotFoundException(
+                        MISAErrorCode.ConversionUnitNotFound,
+                        _resource["ConversionUnitNotFound"],
+                        new ExceptionData("ConversionUnitId", conversionUnitId.ToString()));
+                }
+            }
+        }
         /// <summary>
         /// Check tồn tại danh sách đơn vị muốn chuyển đổi
         /// </summary>
@@ -45,23 +66,7 @@ namespace MISA.CUKCUK.Domain
         /// Created by: nlnhat (30/08/2023)
         public async Task CheckExistDestinationUnitsAsync(List<Guid> destinationUnitIds)
         {
-            var units = await _unitRepository.GetAllAsync() ?? 
-                throw new NotFoundException(
-                    MISAErrorCode.UnitNotFound,
-                    _resource["UnitNotFound"]);
-
-            var unitIds = units.Select(unit => unit.UnitId);
-
-            foreach (var destinationUnitId in destinationUnitIds)
-            {
-                if (!unitIds.Any(unitId => unitId == destinationUnitId))
-                {
-                    throw new NotFoundException(
-                        MISAErrorCode.UnitNotFound,
-                        _resource["UnitNotFound"],
-                        new ExceptionData("DestinationUnit", destinationUnitId.ToString()));
-                }
-            }
+            await _unitDomainService.CheckExistUnitsAsync(destinationUnitIds);
         }
         #endregion
     }

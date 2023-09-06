@@ -126,6 +126,9 @@
   <data name="ConversionUnit" xml:space="preserve">
     <value>Đơn vị chuyển đổi</value>
   </data>
+  <data name="ConversionUnitNotFound" xml:space="preserve">
+    <value>Không tìm thấy đơn vị chuyển đổi</value>
+  </data>
   <data name="Day" xml:space="preserve">
     <value>Ngày</value>
   </data>
@@ -205,7 +208,7 @@
     <value>Thiếu tham số. Vui lòng bổ sung và thử lại</value>
   </data>
   <data name="ServerError" xml:space="preserve">
-    <value>Lỗi hệ thống</value>
+    <value>Lỗi hệ thống. Vui lòng liên hệ MISA để được hỗ trợ!</value>
   </data>
   <data name="Unit" xml:space="preserve">
     <value>Đơn vị tính</value>

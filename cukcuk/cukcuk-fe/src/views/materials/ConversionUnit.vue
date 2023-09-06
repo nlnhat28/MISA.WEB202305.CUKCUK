@@ -15,7 +15,7 @@
             <!-- Destination unit -->
             <div
                 ref="DesUnitWrapper"
-                style="height: 30px; width: 100%"
+                style="height: 30px; width: 100%;"
                 tabindex="-1"
                 v-click-outside="resetDesUnitCombobox"
                 @click="onClickDesUnit()"
@@ -178,10 +178,6 @@ export default {
              */
             refs: [],
             /**
-             * 
-             */
-            checkDuplicateOnly: false,
-            /**
              * Error message
              */
             errorMessage: null,
@@ -213,13 +209,8 @@ export default {
         this.originalModel = this.copyObject(this.conversionUnit);
     },
     mounted() {
-        this.conversionUnit.RowIndex = this.index + 1;
-
         this.setWidthDesUnitCombobox();
-        // this.setPositionDesUnitCombobox();
-
         this.setWidthOperatorCombobox();
-        // this.setPositionOperatorCombobox();
 
         if (this.focusedId) {
             this.focusOnFirst();
@@ -231,6 +222,7 @@ export default {
     },
     expose: [
         'checkValidate',
+        'assignEditMode',
         'focus',
         'focusOnFirst',
         'resetComboboxes',
@@ -241,23 +233,28 @@ export default {
          * 
          * Author: nlnhat (26/08/2023)
          */
-        conversionUnit: {
-            handler() {
-                if (this.conversionUnit.EditMode != this.$enums.editMode.create &&
-                    this.conversionUnit.EditMode != this.$enums.editMode.delete) {
+        // conversionUnit: {
+        //     handler() {
+        //         if (this.conversionUnit.EditMode != this.$enums.editMode.create &&
+        //             this.conversionUnit.EditMode != this.$enums.editMode.delete) {
 
-                    if (this.sameObject(this.conversionUnit, this.originalModel)) {
-                        this.originalModel.EditMode = this.$enums.editMode.noEdit;
-                        this.conversionUnit.EditMode = this.$enums.editMode.noEdit;
-                    }
-                    else {
-                        this.originalModel.EditMode = this.$enums.editMode.update;
-                        this.conversionUnit.EditMode = this.$enums.editMode.update;
-                    }
-                }
-            },
-            deep: true,
-        },
+        //             if (this.sameObject(this.conversionUnit, this.originalModel)) {
+        //                 this.originalModel.EditMode = this.$enums.editMode.noEdit;
+        //                 this.conversionUnit.EditMode = this.$enums.editMode.noEdit;
+        //             }
+        //             else {
+        //                 this.originalModel.EditMode = this.$enums.editMode.update;
+        //                 this.conversionUnit.EditMode = this.$enums.editMode.update;
+        //             }
+        //         }
+        //     },
+        //     deep: true,
+        // },
+        /**
+         * Gán số thứ tự khi row index thay đổi
+         * 
+         * Author: nlnhat (26/08/2023)
+         */
         index() {
             this.conversionUnit.RowIndex = this.index + 1;
         },
@@ -314,7 +311,8 @@ export default {
          * Author: nlnhat (26/08/2023)
          */
         destinationUnits() {
-            return this.material.ConversionUnits.map(unit => unit.DestinationUnitName);
+            return this.material.ConversionUnits.filter(unit => unit.EditMode != this.$enums.editMode.delete)
+                .map(unit => unit.DestinationUnitName);
         },
         /**
          * Validate các input
@@ -363,7 +361,6 @@ export default {
          */
         setPositionDesUnitCombobox() {
             const wrapper = this.$refs.DesUnitWrapper;
-            console.log(wrapper.getBoundingClientRect());
             this.styleDesUnit.top = wrapper.getBoundingClientRect().top;
             this.styleDesUnit.left = wrapper.getBoundingClientRect().left;
             this.styleDesUnit.position = "fixed";
@@ -385,7 +382,7 @@ export default {
          */
         setPositionOperatorCombobox() {
             const wrapper = this.$refs.OperatorWrapper;
-            console.log(wrapper.getBoundingClientRect());
+            // console.log(wrapper.getBoundingClientRect());
             this.styleOperator.top = wrapper.getBoundingClientRect().top;
             this.styleOperator.left = wrapper.getBoundingClientRect().left;
             this.styleOperator.position = "fixed";
@@ -525,17 +522,22 @@ export default {
             }
         },
         /**
-         * Check validate value
+         * Gán edit mode
          * 
-         * Author: nlnhat (21/08/2023)
-         * @param {*} value Value to validate 
+         * Author: nlnhat (26/08/2023)
          */
-        checkValidateDestinationUnit() {
-            try {
-                this.checkDuplicateOnly = true;
-            } catch (error) {
-                console.error(error);
-                return null
+        assignEditMode() {
+            if (this.conversionUnit.EditMode != this.$enums.editMode.create &&
+                this.conversionUnit.EditMode != this.$enums.editMode.delete) {
+
+                if (this.sameObject(this.conversionUnit, this.originalModel)) {
+                    this.originalModel.EditMode = this.$enums.editMode.noEdit;
+                    this.conversionUnit.EditMode = this.$enums.editMode.noEdit;
+                }
+                else {
+                    this.originalModel.EditMode = this.$enums.editMode.update;
+                    this.conversionUnit.EditMode = this.$enums.editMode.update;
+                }
             }
         },
         /**

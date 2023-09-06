@@ -59,6 +59,7 @@ namespace MISA.CUKCUK.Infrastructure
 
             var result = await _unitOfWork.Connection.QueryAsync<TEntity>(
                 proc, transaction: _unitOfWork.Transaction, commandType: CommandType.StoredProcedure);
+
             return result;
         }
         /// <summary>
@@ -96,6 +97,7 @@ namespace MISA.CUKCUK.Infrastructure
 
             var result = await _unitOfWork.Connection.QueryFirstOrDefaultAsync<TEntity>(
                 proc, param, transaction: _unitOfWork.Transaction, commandType: CommandType.StoredProcedure);
+
             return result;
         }
         #endregion

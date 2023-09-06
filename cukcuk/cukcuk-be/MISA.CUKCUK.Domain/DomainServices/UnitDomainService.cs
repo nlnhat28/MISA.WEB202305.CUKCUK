@@ -62,6 +62,27 @@ namespace MISA.CUKCUK.Domain
                     _resource["UnitNotFound"],
                     new ExceptionData("Unit", unitId.ToString(), ExceptionKey.FormItem, "FormItem"));
         }
+        /// <summary>
+        /// Check tồn tại danh sách đơn vị tính
+        /// </summary>
+        /// <param name="unitIds">Danh sách id đơn vị để check tính</param>
+        /// <exception cref="NotFoundException">Không tìm thấy đơn vị tính</exception>
+        /// Created by: nlnhat (30/08/2023)
+        public async Task CheckExistUnitsAsync(List<Guid> unitIds)
+        {
+            var ids = await _repository.GetAllIdAsync();
+
+            foreach (var unitId in unitIds)
+            {
+                if (!ids.Any(id => id == unitId))
+                {
+                    throw new NotFoundException(
+                        MISAErrorCode.UnitNotFound,
+                        _resource["UnitNotFound"],
+                        new ExceptionData("UnitId", unitId.ToString()));
+                }
+            }
+        }
         #endregion
     }
 }

@@ -46,9 +46,14 @@ namespace MISA.CUKCUK.Application
         /// <summary>
         /// Validate danh sách đơn vị chuyển đổi
         /// </summary>
-        /// <param name="conversionUnitDtos">Danh sách dto đơn vị chuyển đổi</param>
+        /// <param name="conversionUnits">Danh sách dto đơn vị chuyển đổi</param>
         /// <param name="unitId">Id của đơn vị tính chính</param>
-        /// <exception cref="ValidateException">Đơn vị chuyển đổi bị trùng nhau hoặc trùng đơn vị tính chính</exception>
-        void ValidateConversionUnit(List<ConversionUnitDto> conversionUnitDtos, Guid unitId);
+        Task ValidateConversionUnitsAsync(List<ConversionUnit> conversionUnits, Guid unitId);
+        /// <summary>
+        /// Validate danh sách đơn vị chuyển đổi cập nhật
+        /// </summary>
+        /// <param name="conversionUnits">Danh sách đơn vị chuyển đổi</param>
+        /// <param name="materialId">Id của nguyên vật liệu</param>
+        Task ValidateUpdateConversionUnitsAsync(List<ConversionUnit> conversionUnits, Guid materialId);
     }
 }

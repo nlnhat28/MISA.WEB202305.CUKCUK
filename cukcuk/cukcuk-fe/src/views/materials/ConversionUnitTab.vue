@@ -132,7 +132,8 @@ export default {
     expose: [
         'checkValidate',
         'focus',
-        'resetComboboxes'
+        'resetComboboxes',
+        'assignEditMode',
     ],
     watch: {
         material: {
@@ -255,6 +256,18 @@ export default {
             }
         },
         /**
+         * Gán edit mode
+         * 
+         * Author: nlnhat (26/08/2023)
+         */
+        assignEditMode() {
+            if (this.$refs.ConversionUnit) {
+                for (const ref of this.$refs.ConversionUnit) {
+                    ref.assignEditMode();
+                };
+            };
+        },
+        /**
          * Focus on error
          */
         focus() {
@@ -262,7 +275,7 @@ export default {
                 this.refFocus.focus();
         },
         /**
-         * Handle scroll table content
+         * Reset style comboboxes
          *
          * Author: nlnhat (26/06/2023)
          */

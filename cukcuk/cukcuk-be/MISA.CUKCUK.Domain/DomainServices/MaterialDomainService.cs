@@ -22,6 +22,10 @@ namespace MISA.CUKCUK.Domain
         /// </summary>
         private readonly IWarehouseDomainService _warehouseDomainService;
         /// <summary>
+        /// Domain service đơn vị chuyển đổi
+        /// </summary>
+        private readonly IConversionUnitDomainService _conversionUnitDomainService;
+        /// <summary>
         /// Resource lưu trữ thông báo
         /// </summary>
         private readonly IStringLocalizer<Resource> _resource;
@@ -32,11 +36,13 @@ namespace MISA.CUKCUK.Domain
             IMaterialRepository repository,
             IUnitDomainService unitDomainService,
             IWarehouseDomainService warehouseDomainService,
+            IConversionUnitDomainService conversionUnitDomainService,
             IStringLocalizer<Resource> resource)
         {
             _repository = repository;
             _unitDomainService = unitDomainService;
             _warehouseDomainService = warehouseDomainService;
+            _conversionUnitDomainService = conversionUnitDomainService;
             _resource = resource;
         }
         #endregion
@@ -77,6 +83,25 @@ namespace MISA.CUKCUK.Domain
         public async Task CheckExistWarehouseAsync(Guid warehouseId)
         {
             await _warehouseDomainService.CheckExistWarehouseAsync(warehouseId);
+        }
+        /// <summary>
+        /// Check tồn tại danh sách đơn vị chuyển đổi
+        /// </summary>
+        /// <param name="conversionUnitIds">Danh sách id đơn vị chuyển đổi</param>
+        /// <param name="materialId">Id nguyên vật liệu</param>
+        /// Created by: nlnhat (30/08/2023)
+        public async Task CheckExistConversionUnitsAsync(List<Guid> conversionUnitIds, Guid materialId)
+        {
+            await _conversionUnitDomainService.CheckExistConversionUnitsAsync(conversionUnitIds, materialId);
+        }
+        /// <summary>
+        /// Check tồn tại danh sách đơn vị muốn chuyển đổi
+        /// </summary>
+        /// <param name="destinationUnitIds">Danh sách id đơn vị muốn chuyển đổi</param>
+        /// Created by: nlnhat (30/08/2023)
+        public async Task CheckExistDestinationUnitsAsync(List<Guid> destinationUnitIds)
+        {
+            await _conversionUnitDomainService.CheckExistDestinationUnitsAsync(destinationUnitIds);
         }
         #endregion
     }

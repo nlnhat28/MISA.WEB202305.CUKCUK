@@ -19,5 +19,11 @@
         /// <param name="unitId">Id của đơn vị tính</param>
         /// Created by: nlnhat (30/08/2023)
         Task CheckExistUnitAsync(Guid unitId);
+        /// <summary>
+        /// Check tồn tại danh sách đơn vị tính
+        /// </summary>
+        /// <param name="unitIds">Danh sách id đơn vị tính</param>
+        /// Created by: nlnhat (30/08/2023)
+        Task CheckExistUnitsAsync(List<Guid> unitIds);
     }
 }

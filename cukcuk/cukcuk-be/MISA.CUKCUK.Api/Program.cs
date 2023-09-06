@@ -37,6 +37,7 @@ namespace MISA.CUKCUK.Api
             builder.Services.AddScoped<IMaterialDomainService, MaterialDomainService>();
             builder.Services.AddScoped<IUnitDomainService, UnitDomainService>();
             builder.Services.AddScoped<IWarehouseDomainService, WarehouseDomainService>();
+            builder.Services.AddScoped<IConversionUnitDomainService, ConversionUnitDomainService>();
 
             // Add repositories
             builder.Services.AddScoped<IMaterialRepository, MaterialRepository>();

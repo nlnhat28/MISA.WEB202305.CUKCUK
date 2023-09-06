@@ -46,10 +46,6 @@
 .combobox .input-group:has(input):hover {
   background-color: var(--grey-100) !important;
 }
-.combobox .input-group:focus-within {
-  border: 1px solid var(--blue-bold) !important; 
-  background-color: #fff !important;
-}
 .combobox .input-group input {
   height: 100%;
   /* width: calc(100% - 30px); */
@@ -144,7 +140,8 @@
 
 /* select list */
 .combobox:focus-within .input-group {
-  border: 1px solid var(--blue-bold);
+  border: 1px solid var(--blue-bold) !important;
+  background-color: #fff !important;
 }
 .combobox.combobox--up .input-wrapper {
   flex-direction: column-reverse;

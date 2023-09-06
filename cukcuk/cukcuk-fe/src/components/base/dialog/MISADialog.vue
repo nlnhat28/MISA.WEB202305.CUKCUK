@@ -106,13 +106,6 @@ export default {
     mounted() {
         try {
             this.refDialog = this.$refs.refDialog;
-            this.limitPosition = {
-                minX: this.refDialog.offsetWidth / 2,
-                minY: this.refDialog.offsetHeight / 2,
-                maxX: window.innerWidth - this.refDialog.offsetWidth / 2,
-                maxY: window.innerHeight - this.refDialog.offsetHeight / 2,
-            }
-
         } catch (error) {
             console.error(error);
         }
@@ -158,13 +151,19 @@ export default {
          * @param {*} event Sự kiện ấn chuột
          */
         startMove(event) {
-            this.isMoving = true;
+            this.limitPosition = {
+                minX: this.refDialog.offsetWidth / 2,
+                minY: this.refDialog.offsetHeight / 2,
+                maxX: window.innerWidth - this.refDialog.offsetWidth / 2,
+                maxY: window.innerHeight - this.refDialog.offsetHeight / 2,
+            }
             this.offset = [
                 this.refDialog.offsetLeft - event.clientX,
                 this.refDialog.offsetTop - event.clientY
             ];
             window.addEventListener('mousemove', this.onMove);
             window.addEventListener('mouseup', this.endMove);
+            this.isMoving = true;
         },
         /**
          * Di chuyển dialog
@@ -191,6 +190,7 @@ export default {
                 }
             } catch (error) {
                 console.error(error);
+                this.isMoving = false;
             }
         },
         /**
@@ -199,12 +199,18 @@ export default {
          * Author: nlnhat (01/07/2023)
          */
         endMove() {
-            this.isMoving = false;
-            if (this.refDialog.style.left != '50%' && this.refDialog.style.top != '50%') {
-                this.tooltip = `${this.$resources['vn'].doubleClick} ${this.$resources['vn'].toResetPosition}`;
-            };
-            window.removeEventListener('mousemove', this.onMove);
-            window.removeEventListener('mouseup', this.endMove);
+            try {
+                if (this.refDialog.style.left != '50%' && this.refDialog.style.top != '50%') {
+                    this.tooltip = `${this.$resources['vn'].doubleClick} ${this.$resources['vn'].toResetPosition}`;
+                };
+                window.removeEventListener('mousemove', this.onMove);
+                window.removeEventListener('mouseup', this.endMove);
+            } catch (error) {
+                console.error(error);
+            }
+            finally {
+                this.isMoving = false;
+            }
         },
         /**
          * Đưa dialog về vị trí ban đầu (giữa màn hình)

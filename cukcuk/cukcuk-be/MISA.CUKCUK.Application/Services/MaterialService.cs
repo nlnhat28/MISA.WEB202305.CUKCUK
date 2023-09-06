@@ -87,6 +87,22 @@ namespace MISA.CUKCUK.Application
             return material;
         }
         /// <summary>
+        /// Map đơn vị chuyển đổi
+        /// </summary>
+        /// <param name="conversionUnitDtos">Danh sách dto đơn vị chuyển đổi</param>
+        /// <param name="materialId">Id nguyên vật liệu</param>
+        /// <returns>Danh sách đơn vị chuyển đổi tạo mới</returns>
+        /// Created by: nlnhat (17/08/2023)
+        public List<ConversionUnit> MapCreateConversionUnits(List<ConversionUnitDto>? conversionUnitDtos, Guid materialId)
+        {
+            var conversionUnits = _mapper.Map<List<ConversionUnit>>(conversionUnitDtos);
+            conversionUnits.ForEach(unit =>
+            {
+                unit.MaterialId = materialId;
+            });
+            return conversionUnits;
+        }
+        /// <summary>
         /// Validate tổng thể (input + nghiệp vụ) nguyên vật liệu
         /// </summary>
         /// <param name="material">Entity nguyên vật liệu</param>
@@ -108,15 +124,22 @@ namespace MISA.CUKCUK.Application
         /// <summary>
         /// Validate danh sách đơn vị chuyển đổi
         /// </summary>
-        /// <param name="conversionUnitDtos">Danh sách dto đơn vị chuyển đổi</param>
+        /// <param name="conversionUnits">Danh sách đơn vị chuyển đổi thêm và cập nhật</param>
         /// <param name="unitId">Id của đơn vị tính chính</param>
         /// <exception cref="ValidateException">Đơn vị chuyển đổi bị trùng nhau hoặc trùng đơn vị tính chính</exception>
-        public void ValidateConversionUnit(List<ConversionUnitDto> conversionUnitDtos, Guid unitId)
+        public async Task ValidateConversionUnitsAsync(List<ConversionUnit> conversionUnits, Guid unitId)
         {
             // Check các tên đơn vị chuyển đổi bị trùng nhau hoặc trùng đơn vị tính chính hay không
-            foreach (var unit in conversionUnitDtos)
+            foreach (var unit in conversionUnits)
             {
-                if (conversionUnitDtos.Any(otherUnit =>
+                if (unit.DestinationUnitId == unitId)
+                {
+                    throw new ValidateException(
+                        MISAErrorCode.ConversionUnitDuplicatedUnit,
+                        $"{_resource["ConversionUnit"]} <{unit.DestinationUnitName}> {_resource["Duplicated"]} {_resource["Unit"]}",
+                        new ExceptionData("DestinationUnit", unit.ConversionUnitId.ToString()));
+                }
+                else if (conversionUnits.Any(otherUnit =>
                     unit.DestinationUnitId == otherUnit.DestinationUnitId
                     && unit.ConversionUnitId != otherUnit.ConversionUnitId))
                 {
@@ -125,31 +148,22 @@ namespace MISA.CUKCUK.Application
                         $"{_resource["ConversionUnit"]} <{unit.DestinationUnitName}> {_resource["Duplicated"]}",
                         new ExceptionData("DestinationUnit", unit.ConversionUnitId.ToString()));
                 }
-                else if (unit.DestinationUnitId == unitId)
-                {
-                    throw new ValidateException(
-                        MISAErrorCode.ConversionUnitDuplicatedUnit,
-                        $"{_resource["ConversionUnit"]} <{unit.DestinationUnitName}> {_resource["Duplicated"]} {_resource["Unit"]}",
-                        new ExceptionData("DestinationUnit", unit.ConversionUnitId.ToString()));
-                }
             }
+
+            // Check tồn tại đơn vị muốn chuyển đổi hay không
+            var conversionUnitIds = conversionUnits.Select(conversionUnit => conversionUnit.DestinationUnitId).ToList();
+            await _domainService.CheckExistDestinationUnitsAsync(conversionUnitIds);
         }
         /// <summary>
-        /// Map đơn vị chuyển đổi
+        /// Validate danh sách đơn vị chuyển đổi cập nhật
         /// </summary>
-        /// <param name="conversionUnitDtos">Danh sách dto đơn vị chuyển đổi</param>
-        /// <param name="materialId">Id nguyên vật liệu</param>
-        /// <returns>Danh sách đơn vị chuyển đổi tạo mới</returns>
-        /// Created by: nlnhat (17/08/2023)
-        public List<ConversionUnit> MapCreateConversionUnits(List<ConversionUnitDto>? conversionUnitDtos, Guid materialId)
+        /// <param name="conversionUnits">Danh sách đơn vị chuyển đổi cập nhật</param>
+        /// <param name="materialId">Id của nguyên vật liệu</param>
+        public async Task ValidateUpdateConversionUnitsAsync(List<ConversionUnit> conversionUnits, Guid materialId)
         {
-            var conversionUnits = _mapper.Map<List<ConversionUnit>>(conversionUnitDtos);
-            conversionUnits.ForEach(unit =>
-            {
-                unit.ConversionUnitId = Guid.NewGuid();
-                unit.MaterialId = materialId;
-            });
-            return conversionUnits;
+            // Check tồn tại đơn vị chuyển đổi update hay không
+            var conversionUnitIds = conversionUnits.Select(conversionUnit => conversionUnit.ConversionUnitId).ToList();
+            await _domainService.CheckExistConversionUnitsAsync(conversionUnitIds, materialId);
         }
         /// <summary>
         /// Lấy nguyên vật liệu theo id
@@ -183,10 +197,11 @@ namespace MISA.CUKCUK.Application
             await ValidateAsync(material);
 
             var conversionUnitDtos = materialDto.ConversionUnits;
-            if (conversionUnitDtos != null)
-                ValidateConversionUnit(conversionUnitDtos, material.UnitId);
 
+            // Map và validate đơn vị chuyển đổi
             var conversionUnits = MapCreateConversionUnits(conversionUnitDtos, material.MaterialId);
+            if (conversionUnits != null)
+                await ValidateConversionUnitsAsync(conversionUnits, material.UnitId);
 
             try
             {
@@ -224,14 +239,12 @@ namespace MISA.CUKCUK.Application
                     _resource["MaterialNotFound"],
                     new ExceptionData(materialId.ToString()));
 
-            // Map và validate
+            // Map và validate nguyên vật liệu
             var material = MapUpdateDtoToEntity(materialDto);
             await ValidateAsync(material);
 
             // Phân loại edit mode 
             var conversionUnitDtos = materialDto.ConversionUnits;
-            if (conversionUnitDtos != null)
-                ValidateConversionUnit(conversionUnitDtos, material.UnitId);
 
             var createConversionUnits = new List<ConversionUnit>();
             var updateConversionUnits = new List<ConversionUnit>();
@@ -242,12 +255,12 @@ namespace MISA.CUKCUK.Application
                 foreach (var unitDto in conversionUnitDtos)
                 {
                     var unit = _mapper.Map<ConversionUnit>(unitDto);
-                    unit.MaterialId = material.MaterialId;
 
                     switch (unitDto.EditMode)
                     {
                         case EditMode.Create:
                             {
+                                unit.MaterialId = material.MaterialId;
                                 createConversionUnits.Add(unit);
                                 break;
                             }
@@ -265,6 +278,14 @@ namespace MISA.CUKCUK.Application
                     }
                 }
             }
+            // Validate đơn vị chuyển đổi
+            var conversionUnits = createConversionUnits.Concat(updateConversionUnits).ToList();
+            if (conversionUnits != null)
+                await ValidateConversionUnitsAsync(conversionUnits, material.UnitId);
+
+            if (updateConversionUnits != null)
+                await ValidateUpdateConversionUnitsAsync(updateConversionUnits, material.MaterialId);
+
             try
             {
                 await _unitOfWork.BeginTransactionAsync();

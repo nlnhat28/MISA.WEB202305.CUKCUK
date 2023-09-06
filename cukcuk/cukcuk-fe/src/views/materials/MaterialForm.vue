@@ -299,6 +299,7 @@ import { mapStores, mapState } from 'pinia';
 import ConversionUnitTab from './ConversionUnitTab.vue';
 import UnitForm from '@/views/units/UnitForm.vue';
 import WarehouseForm from '@/views/warehouses/WarehouseForm.vue';
+import { v4 as uuidv4 } from 'uuid';
 
 export default {
   name: "MaterialForm",
@@ -513,6 +514,9 @@ export default {
             this.refFocus = ref;
           }
         });
+        if (isValid) {
+          this.assisgnConversionUnitsEditMode();
+        }
         return isValid;
       } catch (error) {
         console.error(error);
@@ -654,7 +658,10 @@ export default {
 
           if (this.mode == this.$enums.formMode.duplicate) {
             if (this.material.ConversionUnits?.length > 0) {
-              this.material.ConversionUnits.map(unit => unit.EditMode = this.$enums.editMode.create);
+              this.material.ConversionUnits.map(unit => {
+                unit.ConversionUnitId = uuidv4();
+                unit.EditMode = this.$enums.editMode.create;
+              });
             }
           }
 
@@ -863,6 +870,16 @@ export default {
         }
       } catch (error) {
         console.error(error);
+      }
+    },
+    /**
+     * Gán edit mode cho các conversion units
+     * 
+     * Author: nlnhat (26/08/2023)
+     */
+    assisgnConversionUnitsEditMode() {
+      if (this.$refs.ConversionUnits) {
+        this.$refs.ConversionUnits.assignEditMode();
       }
     },
     /**

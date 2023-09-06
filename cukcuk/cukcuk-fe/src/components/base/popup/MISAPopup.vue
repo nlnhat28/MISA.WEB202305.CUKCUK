@@ -81,19 +81,6 @@ export default {
     mounted() {
         try {
             this.refPopup = this.$refs.refPopup;
-            this.limitPosition = {
-                minLeft: 0,
-                minTop: 0,
-                maxLeft: window.innerWidth - this.refPopup.offsetWidth,
-                maxTop: window.innerHeight - this.refPopup.offsetHeight,
-            };
-
-            this.centerPosition = {
-                left: (window.innerWidth - this.refPopup.offsetWidth) / 2,
-                top: (window.innerHeight - this.refPopup.offsetHeight) / 2
-            };
-
-            this.resetPosition();
         } catch (error) {
             console.error(error);
         }
@@ -114,7 +101,16 @@ export default {
          * @param {*} event Sự kiện ấn chuột
          */
         startMove(event) {
-            this.isMoving = true;
+            this.limitPosition = {
+                minLeft: 0,
+                minTop: 0,
+                maxLeft: window.innerWidth - this.refPopup.offsetWidth,
+                maxTop: window.innerHeight - this.refPopup.offsetHeight,
+            };
+            this.centerPosition = {
+                left: (window.innerWidth - this.refPopup.offsetWidth) / 2,
+                top: (window.innerHeight - this.refPopup.offsetHeight) / 2
+            };
             this.offset = [
                 this.refPopup.offsetLeft - event.clientX,
                 this.refPopup.offsetTop - event.clientY
@@ -122,6 +118,7 @@ export default {
             this.$emit('emitStartMove');
             window.addEventListener('mousemove', this.onMove);
             window.addEventListener('mouseup', this.endMove);
+            this.isMoving = true;
         },
         /**
          * Di chuyển popup
@@ -149,6 +146,7 @@ export default {
 
             } catch (error) {
                 console.error(error);
+                this.isMoving = false;
             }
         },
         /**
@@ -157,12 +155,19 @@ export default {
          * Author: nlnhat (01/07/2023)
          */
         endMove() {
-            this.isMoving = false;
-            if (this.refPopup.style.left != this.centerPosition.left && this.refPopup.style.top != this.centerPosition.top) {
-                this.tooltip = `${this.$resources['vn'].doubleClick} ${this.$resources['vn'].toResetPosition}`;
-            };
-            window.removeEventListener('mousemove', this.onMove);
-            window.removeEventListener('mouseup', this.endMove);
+            try {
+                if (this.refPopup.style.left != `${this.centerPosition.left}px`
+                    && this.refPopup.style.top != `${this.centerPosition.top}px`) {
+                    this.tooltip = `${this.$resources['vn'].doubleClick} ${this.$resources['vn'].toResetPosition}`;
+                };
+                window.removeEventListener('mousemove', this.onMove);
+                window.removeEventListener('mouseup', this.endMove);
+            } catch (error) {
+                console.error(error);
+            }
+            finally {
+                this.isMoving = false;
+            }
         },
         /**
          * Đưa popup về vị trí ban đầu (giữa màn hình)

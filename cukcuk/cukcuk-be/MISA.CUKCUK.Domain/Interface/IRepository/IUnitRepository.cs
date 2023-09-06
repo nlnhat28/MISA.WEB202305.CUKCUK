@@ -13,5 +13,10 @@
         /// <returns>Đơn vị tính có tên trùng với param</returns>
         /// Created by: nlnhat (16/08/2023)
         Task<Unit> GetByNameAsync(string unitName);
+        /// <summary>
+        /// Lấy tất cả id của đơn vị tính
+        /// </summary>
+        /// <returns>Danh sách tất cả id đơn vị tính</returns>
+        Task<IEnumerable<Guid>> GetAllIdAsync();
     }
 }

@@ -38,6 +38,20 @@ namespace MISA.CUKCUK.Infrastructure
 
             var result = await _unitOfWork.Connection.QueryFirstOrDefaultAsync<Unit>(
                 proc, param, _unitOfWork.Transaction, commandType: CommandType.StoredProcedure);
+
+            return result;
+        }
+        /// <summary>
+        /// Lấy tất cả id của đơn vị tính
+        /// </summary>
+        /// <returns>Danh sách tất cả id đơn vị tính</returns>
+        public async Task<IEnumerable<Guid>> GetAllIdAsync()
+        {
+            var proc = $"{Procedure}GetAllId";
+
+            var result = await _unitOfWork.Connection.QueryAsync<Guid>(
+                proc, _unitOfWork.Transaction, commandType: CommandType.StoredProcedure);
+
             return result;
         }
         #endregion
