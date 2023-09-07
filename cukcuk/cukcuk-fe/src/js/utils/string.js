@@ -9,7 +9,7 @@ import { removeSpace } from "./clean-format";
  */
 export const isNullOrWhiteSpace = (value) => {
   value = removeSpace(value);
-  return value == null || value == "";
+  return value == null || value === "";
 };
 /**
  * Check string is null or white space

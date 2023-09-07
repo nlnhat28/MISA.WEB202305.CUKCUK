@@ -183,6 +183,9 @@
   <data name="MaterialCode" xml:space="preserve">
     <value>Mã nguyên vật liệu</value>
   </data>
+  <data name="MaterialCodeLessThan" xml:space="preserve">
+    <value>Mã nguyên vật liệu phải nhỏ hơn</value>
+  </data>
   <data name="MaterialExportError" xml:space="preserve">
     <value>Có lỗi xảy ra trong quá trình xuất file Excel</value>
   </data>

@@ -531,6 +531,7 @@ export default {
      */
     reformatMaterial() {
       let material = this.copyObject(this.material);
+      material.MaterialCode = material.MaterialCode?.toString();
       material.MinimumInventory = this.reformatDecimal(material.MinimumInventory);
       material.ConversionUnits.forEach(unit => unit.Rate = this.reformatDecimal(unit.Rate));
       material.ExpiryTime = this.cleanFormatIntNumber(material.ExpiryTime)

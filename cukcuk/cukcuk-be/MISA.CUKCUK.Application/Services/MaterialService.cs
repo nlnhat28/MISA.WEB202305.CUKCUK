@@ -6,6 +6,7 @@ using OfficeOpenXml;
 using System.ComponentModel;
 using System.Drawing;
 using System.Reflection;
+using System.Text.RegularExpressions;
 
 namespace MISA.CUKCUK.Application
 {
@@ -64,12 +65,12 @@ namespace MISA.CUKCUK.Application
         /// Created by: nlnhat (17/08/2023)
         public override Material MapCreateDtoToEntity(MaterialDto materialDto)
         {
-
             materialDto.MaterialId = Guid.NewGuid();
             materialDto.IsUnfollow ??= false;
             materialDto.CreatedDate ??= DateTime.UtcNow;
 
             var material = _mapper.Map<Material>(materialDto);
+
             return material;
         }
         /// <summary>
@@ -80,10 +81,10 @@ namespace MISA.CUKCUK.Application
         /// Created by: nlnhat (17/08/2023)
         public override Material MapUpdateDtoToEntity(MaterialDto materialDto)
         {
-
             materialDto.ModifiedDate = DateTime.UtcNow;
 
             var material = _mapper.Map<Material>(materialDto);
+
             return material;
         }
         /// <summary>
@@ -119,6 +120,30 @@ namespace MISA.CUKCUK.Application
             if (material.WarehouseId != null)
             {
                 await _domainService.CheckExistWarehouseAsync((Guid)material.WarehouseId);
+            }
+
+            // Check khoảng code cho phép nếu code có dạng TNVL + Số
+            var materialCode = material.MaterialCode;
+            var materialName = material.MaterialName;
+            await ValidateRangeCodeAsync(materialCode, materialName);
+        }
+        /// <summary>
+        /// Check khoảng code nguyên vật liệu
+        /// </summary>
+        /// <param name="materialCode">Mã nguyên vật liệu</param>
+        /// <param name="materialName">Tên nguyên vật liệu</param>
+        /// Created by: nlnhat (17/08/2023)
+        private async Task ValidateRangeCodeAsync(string materialCode, string materialName)
+        {
+            var prefix = ApplicationHelper.GetPrefixCode(materialName);
+
+            var pattern = string.Format(@"^{0}(\d+)$", prefix);
+            var matchingCode = Regex.Match(materialCode.ToUpper(), pattern);
+
+            if (matchingCode.Success)
+            {
+                var number = Convert.ToInt32(matchingCode.Groups[1].Value);
+                await _domainService.CheckRangeCodeAsync(prefix, number);
             }
         }
         /// <summary>
@@ -323,15 +348,8 @@ namespace MISA.CUKCUK.Application
         /// Created by: nlnhat(17/08/2023)
         public async Task<string> GetNewCodeAsync(string materialName)
         {
-            if (string.IsNullOrEmpty(materialName))
-            {
-                throw new ValidateException(
-                    MISAErrorCode.MaterialNameNull,
-                    $"{_resource["FillNameBeforeGetCode"]}",
-                    new ExceptionData("MaterialName", null, ExceptionKey.FormItem, "FormItem"));
-            }
+            var prefix = ApplicationHelper.GetPrefixCode(materialName);
 
-            var prefix = ApplicationHelper.GetFirstCharEachWord(materialName).ToUpper();
             var maxCode = await _repository.GetMaxCodeAsync(prefix);
             var result = $"{prefix}{++maxCode}";
             return result;

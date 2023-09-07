@@ -46,8 +46,7 @@ namespace MISA.CUKCUK.Application
         public override Warehouse MapCreateDtoToEntity(WarehouseDto warehouseDto)
         {
             warehouseDto.WarehouseId = Guid.NewGuid();
-            if (warehouseDto.CreatedDate == null)
-                warehouseDto.CreatedDate = DateTime.UtcNow;
+            warehouseDto.CreatedDate ??= DateTime.UtcNow;
 
             var warehouse = _mapper.Map<Warehouse>(warehouseDto);
             return warehouse;

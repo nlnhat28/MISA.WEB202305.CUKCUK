@@ -7,6 +7,10 @@
     public static class MaterialConstant
     {
         /// <summary>
+        /// Chênh lệch cho phép giữa code mới và code lớn nhất hiện tại
+        /// </summary>
+        public const int OffsetCode = 1000;
+        /// <summary>
         /// Tên thực thể
         /// </summary>
         public const string EntityName = "Material";

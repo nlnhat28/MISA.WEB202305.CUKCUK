@@ -24,19 +24,19 @@ namespace MISA.CUKCUK.Infrastructure
 
         #region Methods
         /// <summary>
-        /// Lấy danh sách id đơn vị chuyển đổi theo nguyên vật liệu
+        /// Lấy danh sách đơn vị chuyển đổi theo nguyên vật liệu
         /// </summary>
         /// <param name="materialId">Id nguyên vật liệu</param>
-        /// <returns>Danh sách id đơn vi chuyển đổi</returns>
+        /// <returns>Danh sách đơn vi chuyển đổi</returns>
         /// Created by: nlnhat (30/08/2023)
-        public async Task<IEnumerable<Guid>> GetByMaterialId(Guid materialId)
+        public async Task<IEnumerable<ConversionUnit>> GetByMaterialId(Guid materialId)
         {
             var proc = $"{Procedure}GetByMaterialId";
 
             var param = new DynamicParameters();
             param.Add($"p_MaterialId", materialId);
 
-            var result = await _unitOfWork.Connection.QueryAsync<Guid>(
+            var result = await _unitOfWork.Connection.QueryAsync<ConversionUnit>(
                 proc, param, _unitOfWork.Transaction, commandType: CommandType.StoredProcedure);
 
             return result;

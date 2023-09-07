@@ -75,7 +75,7 @@ namespace MISA.CUKCUK.Infrastructure
             var idsJson = JsonConvert.SerializeObject(ids);
 
             var param = new DynamicParameters();
-            param.Add($"p_{TableId}", idsJson);
+            param.Add($"p_{TableId}s", idsJson);
 
             var result = await _unitOfWork.Connection.QueryAsync<TEntity>(
                 proc, param, transaction: _unitOfWork.Transaction, commandType: CommandType.StoredProcedure);

@@ -46,8 +46,7 @@ namespace MISA.CUKCUK.Application
         public override Unit MapCreateDtoToEntity(UnitDto unitDto)
         {
             unitDto.UnitId = Guid.NewGuid();
-            if (unitDto.CreatedDate == null)
-                unitDto.CreatedDate = DateTime.UtcNow;
+            unitDto.CreatedDate ??= DateTime.UtcNow;
 
             var unit = _mapper.Map<Unit>(unitDto);
             return unit;

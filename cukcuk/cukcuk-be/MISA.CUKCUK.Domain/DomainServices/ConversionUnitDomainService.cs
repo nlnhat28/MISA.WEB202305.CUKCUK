@@ -45,11 +45,14 @@ namespace MISA.CUKCUK.Domain
         /// Created by: nlnhat (30/08/2023)
         public async Task CheckExistConversionUnitsAsync(List<Guid> conversionUnitIds, Guid materialId)
         {
-            var ids = await _repository.GetByMaterialId(materialId);
+            var conversionUnits = await _repository.GetManyAsync(conversionUnitIds);
+
+            var existIds = conversionUnits.Where(conversionUnit => conversionUnit.MaterialId == materialId)
+                                          .Select(conversionUnit => conversionUnit.ConversionUnitId);
 
             foreach (var conversionUnitId in conversionUnitIds)
             {
-                if (!ids.Any(id => id == conversionUnitId))
+                if (!existIds.Any(id => id == conversionUnitId))
                 {
                     throw new NotFoundException(
                         MISAErrorCode.ConversionUnitNotFound,

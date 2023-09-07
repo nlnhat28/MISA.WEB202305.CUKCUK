@@ -16,6 +16,7 @@ namespace MISA.CUKCUK.Application
         /// Created by: nlnhat (13/07/2023)
         public MaterialProfile()
         {
+            // MaterialModel -> MaterialDto
             CreateMap<MaterialModel, MaterialDto>()
             .ForMember(dest => dest.TimeUnitName, opt =>
             {
@@ -37,6 +38,7 @@ namespace MISA.CUKCUK.Application
                     ApplicationHelper.ConvertDateUtcToLocal(src.ModifiedDate));
             });
 
+            // MaterialDto -> Material
             CreateMap<MaterialDto, Material>()
             .ForMember(dest => dest.CreatedDate, opt =>
             {
@@ -49,6 +51,7 @@ namespace MISA.CUKCUK.Application
                     ApplicationHelper.ConvertDateLocalToUtc(src.ModifiedDate));
             });
 
+            // MaterialModel -> MaterialExcelDto
             CreateMap<MaterialModel, MaterialExcelDto>()
            .ForMember(dest => dest.TimeUnitName, opt =>
            {

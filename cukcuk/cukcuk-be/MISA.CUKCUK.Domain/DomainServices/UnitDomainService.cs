@@ -70,11 +70,13 @@ namespace MISA.CUKCUK.Domain
         /// Created by: nlnhat (30/08/2023)
         public async Task CheckExistUnitsAsync(List<Guid> unitIds)
         {
-            var ids = await _repository.GetAllIdAsync();
+            var units = await _repository.GetManyAsync(unitIds);
+            
+            var existIds = units.Select(unit => unit.UnitId);
 
             foreach (var unitId in unitIds)
             {
-                if (!ids.Any(id => id == unitId))
+                if (!existIds.Any(id => id == unitId))
                 {
                     throw new NotFoundException(
                         MISAErrorCode.UnitNotFound,

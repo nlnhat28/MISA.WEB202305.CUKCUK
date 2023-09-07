@@ -7,11 +7,11 @@
     public interface IConversionUnitRepository : IBaseRepository<ConversionUnit>
     {
         /// <summary>
-        /// Lấy danh sách id đơn vị chuyển đổi theo nguyên vật liệu
+        /// Lấy danh sách đơn vị chuyển đổi theo nguyên vật liệu
         /// </summary>
         /// <param name="materialId">Id nguyên vật liệu</param>
-        /// <returns>Danh sách id đơn vi chuyển đổi</returns>
+        /// <returns>Danh sách đơn vi chuyển đổi</returns>
         /// Created by: nlnhat (30/08/2023)
-        Task<IEnumerable<Guid>> GetByMaterialId(Guid materialId);
+        Task<IEnumerable<ConversionUnit>> GetByMaterialId(Guid materialId);
     }
 }

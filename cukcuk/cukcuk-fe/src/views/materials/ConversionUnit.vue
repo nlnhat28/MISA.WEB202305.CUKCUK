@@ -206,6 +206,8 @@ export default {
             this.conversionUnit.Rate = this.formatDecimal(this.conversionUnit?.Rate);
         }
 
+        this.conversionUnit.RowIndex ??= this.index + 1;
+        
         this.originalModel = this.copyObject(this.conversionUnit);
     },
     mounted() {

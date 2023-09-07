@@ -67,6 +67,26 @@ namespace MISA.CUKCUK.Domain
                     new ExceptionData("MaterialCode", materialCode, ExceptionKey.FormItem, "FormItem"));
         }
         /// <summary>
+        /// Check mã nguyên vật liệu nằm trong khoảng cho phép
+        /// </summary>
+        /// <param name="prefixCode">TIền tố mã để lấy mã lớn nhât</param>
+        /// <param name="codeNumber">Số trong mã để check</param>
+        /// <exception cref="ValidateException">Exception mã không hợp lệ</exception>
+        /// Created by: nlnhat (17/07/2023)
+        public async Task CheckRangeCodeAsync(string prefixCode, int codeNumber)
+        {
+            var maxCode = await _repository.GetMaxCodeAsync(prefixCode);
+
+            // Code lớn nhất cho phép
+            var limitCode = maxCode + MaterialConstant.OffsetCode;
+
+            if (codeNumber > limitCode)
+                throw new ValidateException(
+                    MISAErrorCode.MaterialCodeOutOfRange,
+                    $"{_resource["MaterialCodeLessThan"]} {++limitCode}",
+                    new ExceptionData("MaterialCode", $"{prefixCode}{codeNumber}", ExceptionKey.FormItem, "FormItem"));
+        }
+        /// <summary>
         /// Check tồn tại đơn vị tính hay không
         /// </summary>
         /// <param name="unitId">Id đơn vị tính để check</param>

@@ -39,11 +39,11 @@ export const validateMaterialName = (label, value) => {
   try {
     if (isNullOrWhiteSpace(value))
       return `${label} ${resources["vn"].cannotEmpty}`;
-    else {
-      const words = value.trim().split(/\s+/);
-      if (!words.every((word) => /^[A-Za-z]/.test(word)))
-        return `${resources["vn"].wordsIn} ${label} ${resources["vn"].startByAlphabet}`;
-    }
+    // else {
+    //   const words = value.trim().split(/\s+/);
+    //   if (!words.every((word) => /^[^0-9]/.test(word)))
+    //     return `${resources["vn"].wordsIn} ${label} ${resources["vn"].startByAlphabet}`;
+    // }
   } catch (error) {
     console.error(error);
   }

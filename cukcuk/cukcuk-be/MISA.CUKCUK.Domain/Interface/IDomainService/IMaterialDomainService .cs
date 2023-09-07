@@ -14,6 +14,14 @@
         /// Created by: nlnhat (17/08/2023)
         Task CheckDuplicatedCodeAsync(Guid materialId, string materialCode);
         /// <summary>
+        /// Check mã nguyên vật liệu nằm trong khoảng cho phép
+        /// </summary>
+        /// <param name="prefixCode">TIền tố mã để lấy mã lớn nhât</param>
+        /// <param name="codeNumber">Số trong mã để check</param>
+        /// <exception cref="ValidateException">Exception mã không hợp lệ</exception>
+        /// Created by: nlnhat (17/07/2023)
+        Task CheckRangeCodeAsync(string prefixCode, int codeNumber);
+        /// <summary>
         /// Check tồn tại đơn vị tính hay không
         /// </summary>
         /// <param name="unitId">Id đơn vị tính để check</param>

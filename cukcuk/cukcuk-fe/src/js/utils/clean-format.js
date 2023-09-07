@@ -39,7 +39,7 @@ export const cleanNotDigitChar = (value) => {
  */
 export const removeSpace = (value) => {
   try {
-    if (value != null) return value.replace(/\s/g, "");
+    if (value != null) return value.toString().replace(/\s/g, "");
   } catch (error) {
     console.error(error);
   }

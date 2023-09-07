@@ -1,5 +1,6 @@
-﻿using AutoMapper;
-using MISA.CUKCUK.Domain;
+﻿using MISA.CUKCUK.Domain;
+using System.Globalization;
+using System.Text;
 using System.Text.RegularExpressions;
 
 namespace MISA.CUKCUK.Application
@@ -141,8 +142,51 @@ namespace MISA.CUKCUK.Application
         public static string GetFirstCharEachWord(string text)
         {
             var trimmedAndNormalized = Regex.Replace(text.Trim(), @"\s+", " ");
+
             var result = new string(trimmedAndNormalized.Split(' ').Select(word => word[0]).ToArray());
             return result;
+        }
+        /// <summary>
+        /// Chuyển Tiếng Việt có dấu sang không dấu
+        /// </summary>
+        /// <param name="input">Chuỗi đầu vào</param>
+        /// <returns>Chuỗi mới không dấu. Ví dụ: Tiếng Việt -> Tieng Viet</returns>
+        /// Created by: nlnhat (17/08/2023)
+        public static string ConvertDiacritics(string input)
+        {
+            var normalized = input.Normalize(NormalizationForm.FormD);
+
+            var chars = normalized.Where(
+                character => CharUnicodeInfo.GetUnicodeCategory(character) != UnicodeCategory.NonSpacingMark);
+
+            var result = new string (chars.ToArray());
+            return result;
+        }
+        /// <summary>
+        /// Loại bỏ kí tự không phải là chữ cái
+        /// </summary>
+        /// <param name="input">Chuỗi đầu vào</param>
+        /// <returns>Chuỗi mới chỉ bao gồm chữ cái. Ví dụ: new1@ string -> newstring</returns>
+        /// Created by: nlnhat (17/08/2023)
+        public static string RemoveNonLetters(string input)
+        {
+            var pattern = "[^a-zA-Z]";
+            var result = Regex.Replace(input, pattern, "");
+            return result;
+        }
+        /// <summary>
+        /// Tạo prefix code từ chữ cái đầu của tên
+        /// </summary>
+        /// <param name="name">Tên</param>
+        /// <returns>Chuỗi prefix code được lấy từ các chữ cái đầu của tên, loại bỏ dấu, ký tự đặc biệt và in hoa</returns>
+        /// Created by: nlnhat (17/08/2023)
+        public static string GetPrefixCode(string name)
+        {
+            var prefix = GetFirstCharEachWord(name);
+            prefix = ConvertDiacritics(prefix);
+            prefix = RemoveNonLetters(prefix);
+            prefix = prefix.ToUpper();
+            return prefix;
         }
         #endregion
     }
