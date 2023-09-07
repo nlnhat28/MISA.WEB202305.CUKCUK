@@ -1,5 +1,5 @@
 /**
- * Click outside to hide element
+ * Click outside event
  *
  * Author: nlnhat (27/07/2023)
  */

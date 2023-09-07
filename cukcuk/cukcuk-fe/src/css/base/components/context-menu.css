@@ -1,4 +1,43 @@
 /* context menu */
+/* wrapper */
+.context-menu {
+  width: fit-content;
+  min-width: 120px;
+  height: fit-content;
+  position: fixed;
+  border: 1px solid var(--border-color);
+  border-radius: 2px;
+  box-shadow: 0px 4px 16px rgba(23, 27, 42, 0.24);
+  background-color: #fff;
+  z-index: 2;
+}
+
+/* context menu item */
+.context-menu__item {
+  display: flex;
+  column-gap: 4px;
+  align-items: center;
+  cursor: pointer;
+  padding: 0 8px 0 4px;
+  height: 28px;
+  font-size: 13px;
+}
+.context-menu__item:hover {
+  background-color: var(--blue-50);
+}
+.context-menu__item:focus,
+.context-menu__item:active {
+  background-color: var(--blue-100);
+}
+
+/* separator */
+.context-menu__item.context-menu__item--separator {
+  pointer-events: none;
+  cursor: default;
+  height: 1px;
+  background-color: var(--grey-300);
+  margin: 4px 0px;
+}
 
 /* select-list in menu */
 .context-menu.select-list {

@@ -4,7 +4,7 @@
   display: block;
   position: absolute;
   top: 0;
-  background-color: #ffffff;
+  background-color: #fff;
   overflow: auto;
   border: 1px solid var(--border-color);
   border-radius: 2px;

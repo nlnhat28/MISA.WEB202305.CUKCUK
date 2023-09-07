@@ -184,11 +184,11 @@ export default {
     },
     mounted() {
         // Add shortkey event
-        window.addEventListener('keydown', this.handleShortKey);
+        document.addEventListener('keydown', this.handleShortKey);
     },
     beforeUnmount() {
         // Remove shortkey event
-        window.removeEventListener('keydown', this.handleShortKey);
+        document.removeEventListener('keydown', this.handleShortKey);
     },
     computed: {
         /**

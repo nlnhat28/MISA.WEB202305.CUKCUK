@@ -161,8 +161,8 @@ export default {
                 this.refDialog.offsetLeft - event.clientX,
                 this.refDialog.offsetTop - event.clientY
             ];
-            window.addEventListener('mousemove', this.onMove);
-            window.addEventListener('mouseup', this.endMove);
+            document.addEventListener('mousemove', this.onMove);
+            document.addEventListener('mouseup', this.endMove);
             this.isMoving = true;
         },
         /**
@@ -203,8 +203,8 @@ export default {
                 if (this.refDialog.style.left != '50%' && this.refDialog.style.top != '50%') {
                     this.tooltip = `${this.$resources['vn'].doubleClick} ${this.$resources['vn'].toResetPosition}`;
                 };
-                window.removeEventListener('mousemove', this.onMove);
-                window.removeEventListener('mouseup', this.endMove);
+                document.removeEventListener('mousemove', this.onMove);
+                document.removeEventListener('mouseup', this.endMove);
             } catch (error) {
                 console.error(error);
             }

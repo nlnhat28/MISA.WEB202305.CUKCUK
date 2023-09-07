@@ -17,6 +17,7 @@ import MISACheckboxAll from "@/components/base/checkbox/MISACheckboxAll.vue";
 import MISACheckboxItem from "@/components/base/checkbox/MISACheckboxItem.vue";
 import MISACombobox from "@/components/base/combobox/MISACombobox.vue";
 import MISACompareSelect from "@/components/base/filter/MISACompareSelect.vue";
+import MISAContextMenu from "@/components/base/context-menu/MISAContextMenu.vue";
 import MISADatePicker from "@/components/base/date-picker/MISADatePicker.vue";
 import MISADialog from "@/components/base/dialog/MISADialog.vue";
 import MISAFilter from "@/components/base/filter/MISAFilter.vue";
@@ -55,6 +56,7 @@ import MISAToastMessage from "@/components/base/toast-message/MISAToastMessage.v
 import MISATooltip from "@/components/base/tooltip/MISATooltip.vue";
 
 import clickOutside from "@/directives/click-outside";
+import contextmenuOutside from "@/directives/contextmenu-outside";
 import tooltip from "@/directives/tooltip";
 
 const pinia = createPinia();
@@ -73,6 +75,7 @@ app.component("m-checkbox-all", MISACheckboxAll);
 app.component("m-checkbox-item", MISACheckboxItem);
 app.component("m-combobox", MISACombobox);
 app.component("m-compare-select", MISACompareSelect);
+app.component("m-context-menu", MISAContextMenu);
 app.component("m-date-picker", MISADatePicker);
 app.component("m-dialog", MISADialog);
 app.component("m-filter", MISAFilter);
@@ -111,6 +114,7 @@ app.component("m-toast-message", MISAToastMessage);
 app.component("m-tooltip", MISATooltip);
 
 app.directive("click-outside", clickOutside);
+app.directive("contextmenu-outside", contextmenuOutside);
 app.directive("tooltip", tooltip);
 
 app.use(router);

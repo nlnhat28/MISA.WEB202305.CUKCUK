@@ -358,15 +358,7 @@ export default {
        */
       fields: fields,
       /**
-       * Units list show on combobox
-       */
-      // unitSelects: [],
-      /**
-       * Warehouses list show on combobox
-       */
-      // warehouseSelects: [],
-      /**
-       * Gender list show on combobox
+       * Time units show on combobox
        */
       timeUnitSelects: this.$common.selects.timeUnit,
       /**

@@ -22,6 +22,7 @@
         ref="table"
       >
         <template #toolbarLeft>
+          <!-- Thêm -->
           <m-button
             :type="this.$enums.buttonType.linkIcon"
             :click="showEmptyMaterialForm"
@@ -30,33 +31,7 @@
             tooltipContent="Ctrl + 1"
           >
           </m-button>
-          <m-button
-            :type="this.$enums.buttonType.linkIcon"
-            :click="duplicateMaterial"
-            :text="this.$resources['vn'].duplicate"
-            :isDisabled="focusedId == null"
-            iconLeft="cukcuk-duplicate"
-            tooltipContent="Ctrl + V"
-          >
-          </m-button>
-          <m-button
-            :type="this.$enums.buttonType.linkIcon"
-            :click="showMaterialForm"
-            :text="this.$resources['vn'].fix"
-            :isDisabled="focusedId == null"
-            iconLeft="cukcuk-edit"
-            tooltipContent="Ctrl + U"
-          >
-          </m-button>
-          <m-button
-            :type="this.$enums.buttonType.linkIcon"
-            :click="onClickDeleteMaterial"
-            :text="this.$resources['vn'].delete"
-            :isDisabled="focusedId == null"
-            iconLeft="cukcuk-delete"
-            tooltipContent="Ctrl + D"
-          >
-          </m-button>
+          <!-- Nạp -->
           <m-button
             :type="this.$enums.buttonType.linkIcon"
             :click="onReloadData"
@@ -66,6 +41,39 @@
             tooltipContent="Ctrl + Y"
           >
           </m-button>
+          <m-separator></m-separator>
+          <!-- Nhân bản -->
+          <m-button
+            :type="this.$enums.buttonType.linkIcon"
+            :click="duplicateMaterial"
+            :text="this.$resources['vn'].duplicate"
+            :isDisabled="focusedId == null"
+            iconLeft="cukcuk-duplicate"
+            tooltipContent="Ctrl + V"
+          >
+          </m-button>
+          <!-- Sửa -->
+          <m-button
+            :type="this.$enums.buttonType.linkIcon"
+            :click="showMaterialForm"
+            :text="this.$resources['vn'].fix"
+            :isDisabled="focusedId == null"
+            iconLeft="cukcuk-edit"
+            tooltipContent="Ctrl + U"
+          >
+          </m-button>
+          <!-- Xoá -->
+          <m-button
+            :type="this.$enums.buttonType.linkIcon"
+            :click="onClickDeleteMaterial"
+            :text="this.$resources['vn'].delete"
+            :isDisabled="focusedId == null"
+            iconLeft="cukcuk-delete"
+            tooltipContent="Ctrl + D"
+          >
+          </m-button>
+          <m-separator></m-separator>
+          <!-- Xuất khẩu -->
           <m-button
             :type="this.$enums.buttonType.linkIcon"
             :click="exportToExcel"
@@ -117,6 +125,9 @@
             @emitUpdate="showMaterialForm(material)"
             @emitDelete="handleDeleteOnRow(material.MaterialId)"
             @emitDuplicate="duplicateMaterial(material)"
+            @emitCreate="showEmptyMaterialForm"
+            @emitReload="onReloadData"
+            @emitExport="exportToExcel"
             @emitFocusNext="focusNextRow"
             @emitFocusPrevious="focusPreviousRow"
           >
@@ -912,7 +923,7 @@ export default {
      * Author: nlnhat (26/06/2023)
      */
     showEmptyMaterialForm() {
-      this.focusedId = null;
+      // this.focusedId = null;
       this.formMode = this.$enums.formMode.create;
       this.isShowedMaterialForm = true;
     },

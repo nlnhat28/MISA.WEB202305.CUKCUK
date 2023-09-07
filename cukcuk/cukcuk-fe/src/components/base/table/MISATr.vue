@@ -5,10 +5,20 @@
         @keydown="onKeyDown"
         @dblclick="onUpdate"
         @focus="this.$emit('update:focusedId', this.id);"
+        @contextmenu="onContextMenu"
         ref="tr"
+        v-contextmenu-outside="hideContextMenu"
     >
         <slot name="content"></slot>
     </tr>
+    <m-context-menu
+        v-click-outside="hideContextMenu"
+        v-if="isShowContextMenu"
+        :actions="contextMenuActions"
+        :position="positionContextMenu"
+        @emitClickItem="hideContextMenu"
+    >
+    </m-context-menu>
 </template>
 <script>
 export default {
@@ -61,12 +71,87 @@ export default {
              * Focused state
              */
             isFocused: false,
+            /**
+             * Action for context menu
+             */
+            contextMenuActions: [
+                // Thêm
+                {
+                    id: 0,
+                    icon: 'cukcuk-add',
+                    title: this.$resources['vn'].create,
+                    method: this.create,
+                },
+                // Nạp
+                {
+                    id: 4,
+                    icon: 'cukcuk-reload',
+                    title: this.$resources['vn'].reload,
+                    method: this.reload,
+                },
+                {
+                    isSeparator: true
+                },
+                // Nhân bản
+                {
+                    icon: 'cukcuk-duplicate',
+                    title: this.$resources['vn'].duplicate,
+                    method: this.onDuplicate,
+                },
+                // Sửa
+                {
+                    icon: 'cukcuk-edit',
+                    title: this.$resources['vn'].fix,
+                    method: this.onUpdate,
+                },
+                // Xoá
+                {
+                    icon: 'cukcuk-delete',
+                    title: this.$resources['vn'].delete,
+                    method: this.onDelete,
+                },
+                // Xuất khẩu
+                // {
+                //     id: 5,
+                //     icon: 'cukcuk-excel',
+                //     title: this.$resources['vn'].export,
+                //     method: this.export,
+                // }
+            ],
+            /**
+             * Show or hide context menu
+             */
+            isShowContextMenu: false,
+            /**
+             * Style of context menu
+             */
+            positionContextMenu: {
+                top: null,
+                left: null,
+            }
         }
     },
     mounted() {
         this.focusById();
     },
-    expose: ['focus', 'index', 'id', 'vanish', 'setFocus', 'clearFocus'],
+    emits: [
+        'emitUpdate',
+        'emitDelete',
+        'emitDuplicate',
+        'emitCreate',
+        'emitExport',
+        'emitReload',
+        'emitFocusNext',
+        'emitFocusPrevious',
+        'update:focusedId'
+    ],
+    expose: [
+        'focus',
+        'index',
+        'id',
+        'vanish',
+        'setFocus',
+        'clearFocus'],
     watch: {
         // focusedId() {
         //     this.focusById();
@@ -175,6 +260,30 @@ export default {
             }
         },
         /**
+         * Tạo mới
+         * 
+         * Author: nlnhat (29/07/2023)
+         */
+        create() {
+            this.$emit('emitCreate')
+        },
+        /**
+         * Reload data
+         * 
+         * Author: nlnhat (29/07/2023)
+         */
+        reload() {
+            this.$emit('emitReload')
+        },
+        /**
+         * Export to excel
+         * 
+         * Author: nlnhat (29/07/2023)
+         */
+        export() {
+            this.$emit('emitExport')
+        },
+        /**
          * Make vanish effect when delete 
          * 
          * Author: nlnhat (09/08/2023)
@@ -201,6 +310,33 @@ export default {
          */
         clearFocus() {
             this.isFocused = false;
+        },
+        /**
+         * Handle when right click on tr
+         *
+         * Author: nlnhat (09/08/2023)
+         */
+        onContextMenu(event) {
+            event.preventDefault();
+            this.positionContextMenu.left = event.clientX;
+            this.positionContextMenu.top = event.clientY;
+            this.showContextMenu();
+        },
+        /**
+         * Show context menu
+         *
+         * Author: nlnhat (09/08/2023)
+         */
+        showContextMenu() {
+            this.isShowContextMenu = true;
+        },
+        /**
+         * Hide context menu
+         *
+         * Author: nlnhat (09/08/2023)
+         */
+        hideContextMenu() {
+            this.isShowContextMenu = false;
         }
     }
 

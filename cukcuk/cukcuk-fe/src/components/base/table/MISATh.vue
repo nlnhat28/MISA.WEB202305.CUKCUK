@@ -236,8 +236,8 @@ export default {
         startResize(event) {
             this.isResizing = true;
             this.startX = event.clientX;
-            window.addEventListener('mousemove', this.resize);
-            window.addEventListener('mouseup', this.endResize);
+            document.addEventListener('mousemove', this.resize);
+            document.addEventListener('mouseup', this.endResize);
         },
         /**
          * Resize when mouse move
@@ -260,8 +260,8 @@ export default {
          */
         endResize() {
             this.isResizing = false;
-            window.removeEventListener('mousemove', this.resize);
-            window.removeEventListener('mouseup', this.endResize);
+            document.removeEventListener('mousemove', this.resize);
+            document.removeEventListener('mouseup', this.endResize);
         },
         /**
          * Return width of th 

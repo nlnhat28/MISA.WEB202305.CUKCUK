@@ -9,7 +9,7 @@
         <slot></slot>
         <span
             class="tooltip-wrapper"
-            v-show="isShowTooltip && content"
+            v-if="isShowTooltip && content"
             :style="`width: ${widthTooltip}px`"
         >
             <span
