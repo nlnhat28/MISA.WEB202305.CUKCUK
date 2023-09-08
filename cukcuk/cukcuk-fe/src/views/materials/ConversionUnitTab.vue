@@ -27,6 +27,8 @@
                         :index="index"
                         :conversionUnitModel="conversionUnit"
                         :material="material"
+                        @emitCreate="addRow"
+                        @emitDelete="deleteRow"
                         ref="ConversionUnit"
                     >
                     </ConversionUnit>
@@ -38,15 +40,17 @@
                 <m-button
                     :type="this.$enums.buttonType.primary"
                     :text="this.$resources['vn'].addRow"
-                    :click="onClickAddRow"
+                    :click="addRow"
+                    title="Ctrl + Insert"
                     iconLeft="cukcuk-new"
                     ref="buttonFocus"
                 ></m-button>
                 <m-button
                     :type="this.$enums.buttonType.primary"
                     :text="this.$resources['vn'].deleteRow"
-                    :click="onClickDeleteRow"
+                    :click="deleteRow"
                     :isDisabled="focusedId == null"
+                    title="Ctrl + Delete"
                     iconLeft="cukcuk-delete"
                     ref="buttonFocus"
                 ></m-button>
@@ -134,6 +138,8 @@ export default {
         'focus',
         'resetComboboxes',
         'assignEditMode',
+        'addRow',
+        'deleteRow'
     ],
     watch: {
         material: {
@@ -188,7 +194,7 @@ export default {
          * 
          * Author: nlnhat (22/08/2023)
          */
-        onClickAddRow() {
+        addRow() {
             const newId = uuidv4();
             this.conversionUnits.push({
                 EditMode: this.$enums.editMode.create,
@@ -203,7 +209,7 @@ export default {
          * 
          * Author: nlnhat (22/08/2023)
          */
-        onClickDeleteRow() {
+        deleteRow() {
             const conversionUnit = this.conversionUnits.find(unit => unit.ConversionUnitId == this.focusedId);
             const oldIndex = this.conversionUnitsComputed.indexOf(conversionUnit);
 

@@ -17,7 +17,7 @@
         </m-button>
         <m-button
             :type="this.$enums.buttonType.danger"
-            :tooltipContent="`${this.$resources['vn'].delete} ${selectLength} ${recordName} ${this.$resources['vn'].selected}`"
+            :title="`${this.$resources['vn'].delete} ${selectLength} ${recordName} ${this.$resources['vn'].selected}`"
             :click="onClickDelete"
             :text="this.$resources['vn'].delete"
             iconLeft="trash--light"

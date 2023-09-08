@@ -14,6 +14,7 @@
                         icon="cukcuk-double-left"
                         :isBtn="true"
                         @click="onFirst()"
+                        v-tooltip="this.$resources['vn'].firstPage"
                     >
                     </m-icon-container>
                 </div>
@@ -26,6 +27,7 @@
                         icon="cukcuk-angle-left"
                         :isBtn="true"
                         @click="onPrevious()"
+                        v-tooltip="this.$resources['vn'].previousPage"
                     >
                     </m-icon-container>
                 </div>
@@ -55,6 +57,7 @@
                         icon="cukcuk-angle-right"
                         :isBtn="true"
                         @click="onNext()"
+                        v-tooltip="this.$resources['vn'].nextPage"
                     >
                     </m-icon-container>
                 </div>
@@ -67,6 +70,7 @@
                         icon="cukcuk-double-right"
                         :isBtn="true"
                         @click="onLast()"
+                        v-tooltip="this.$resources['vn'].lastPage"
                     >
                     </m-icon-container>
                 </div>
@@ -80,6 +84,7 @@
                 :isBtn="true"
                 @click="this.$emit('emitReload')"
                 v-if="true"
+                v-tooltip="this.$resources['vn'].reloadData"
             >
             </m-icon-container>
         </div>

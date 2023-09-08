@@ -3,6 +3,8 @@
         :class="{ 'conversion-unit': true, 'tr--focused': focusedId == conversionUnit.ConversionUnitId }"
         tabindex="0"
         @click="updateFocusedId"
+        @contextmenu="onContextMenu"
+        v-contextmenu-outside="hideContextMenu"
         ref="tr"
     >
         <td
@@ -78,6 +80,14 @@
             {{ descriptionComputed }}
         </td>
     </tr>
+    <m-context-menu
+        v-click-outside="hideContextMenu"
+        v-if="isShowContextMenu"
+        :actions="contextMenuActions"
+        :position="positionContextMenu"
+        @emitClickItem="hideContextMenu"
+    >
+    </m-context-menu>
     <Teleport to=".main-content">
         <UnitForm
             v-if="isShowedUnitForm"
@@ -197,6 +207,34 @@ export default {
              * Show unit form or not 
              */
             isShowedUnitForm: false,
+            /**
+             * Action for context menu
+             */
+            contextMenuActions: [
+                // Thêm
+                {
+                    icon: 'cukcuk-new',
+                    title: this.$resources['vn'].addRow,
+                    method: this.create,
+                },
+                // Xoá
+                {
+                    icon: 'cukcuk-delete',
+                    title: this.$resources['vn'].deleteRow,
+                    method: this.delete,
+                }
+            ],
+            /**
+             * Show or hide context menu
+             */
+            isShowContextMenu: false,
+            /**
+             * Style of context menu
+             */
+            positionContextMenu: {
+                top: null,
+                left: null,
+            }
         }
     },
     created() {
@@ -207,7 +245,7 @@ export default {
         }
 
         this.conversionUnit.RowIndex ??= this.index + 1;
-        
+
         this.originalModel = this.copyObject(this.conversionUnit);
     },
     mounted() {
@@ -228,7 +266,10 @@ export default {
         'focus',
         'focusOnFirst',
         'resetComboboxes',
-        'errorMessage'],
+        'errorMessage',
+        'emitCreate',
+        'emitDelete'
+    ],
     watch: {
         /**
          * Gán edit mode khi conversion unit thay đổi
@@ -566,6 +607,49 @@ export default {
          */
         updateUnit(id) {
             this.conversionUnit.DestinationUnitId = id;
+        },
+        /**
+         * Handle when right click on tr
+         *
+         * Author: nlnhat (09/08/2023)
+         */
+        onContextMenu(event) {
+            event.preventDefault();
+            this.positionContextMenu.left = event.clientX;
+            this.positionContextMenu.top = event.clientY;
+            this.showContextMenu();
+        },
+        /**
+         * Show context menu
+         *
+         * Author: nlnhat (09/08/2023)
+         */
+        showContextMenu() {
+            this.isShowContextMenu = true;
+        },
+        /**
+         * Hide context menu
+         *
+         * Author: nlnhat (09/08/2023)
+         */
+        hideContextMenu() {
+            this.isShowContextMenu = false;
+        },
+        /**
+         * Tạo mới
+         * 
+         * Author: nlnhat (29/07/2023)
+         */
+        create() {
+            this.$emit('emitCreate')
+        },
+        /**
+         * Xoá 
+         * 
+         * Author: nlnhat (29/07/2023)
+         */
+        delete() {
+            this.$emit('emitDelete')
         },
         /**
          * Imported methods

@@ -257,7 +257,7 @@
 td.td--readonly {
   /* pointer-events: none; */
   background-color: var(--grey-100) !important;
-  /* caret-color: transparent; */
+  caret-color: transparent;
 }
 td.td--nopadding {
   padding: 0;

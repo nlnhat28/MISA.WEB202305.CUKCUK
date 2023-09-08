@@ -179,21 +179,21 @@
           :text="this.$resources['vn'].save"
           :click="onClickSave"
           iconLeft="cukcuk-save"
-          tooltipContent="Ctrl + S"
+          title="Ctrl + S"
         ></m-button>
         <m-button
           :type="this.$enums.buttonType.primary"
           :text="this.$resources['vn'].saveAdd"
           :click="onClickSaveAdd"
           iconLeft="cukcuk-save-add"
-          tooltipContent="Ctrl + Shift + S"
+          title="Ctrl + Shift + S"
         ></m-button>
         <m-button
           :type="this.$enums.buttonType.primary"
           :text="this.$resources['vn'].cancel"
           :click="onClickCloseForm"
           iconLeft="cukcuk-cancel"
-          tooltipContent="Esc"
+          title="Esc"
         ></m-button>
       </div>
       <div class="button-container">
@@ -202,7 +202,7 @@
           :text="this.$resources['vn'].help"
           :click="onClickHelp"
           iconLeft="cukcuk-help"
-          tooltipContent="F1"
+          title="F1"
           @keydown="handleShortKeyLastButton"
         ></m-button>
       </div>
@@ -967,6 +967,18 @@ export default {
         event.preventDefault();
         event.stopPropagation();
         this.onClickHelp();
+      }
+      // Ctrl + Insert: Thêm dòng converison unit
+      else if (event.ctrlKey && event.keyCode == code.insert) {
+        event.preventDefault();
+        event.stopPropagation();
+        this.$refs.ConversionUnits.addRow();
+      }
+      // Ctrl + Delete: Xoá dòng converison unit
+      else if (event.ctrlKey && event.keyCode == code.delete) {
+        event.preventDefault();
+        event.stopPropagation();
+        this.$refs.ConversionUnits.deleteRow();
       }
     },
     /**

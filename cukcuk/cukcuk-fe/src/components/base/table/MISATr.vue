@@ -6,8 +6,8 @@
         @dblclick="onUpdate"
         @focus="this.$emit('update:focusedId', this.id);"
         @contextmenu="onContextMenu"
-        ref="tr"
         v-contextmenu-outside="hideContextMenu"
+        ref="tr"
     >
         <slot name="content"></slot>
     </tr>
@@ -77,14 +77,12 @@ export default {
             contextMenuActions: [
                 // Thêm
                 {
-                    id: 0,
                     icon: 'cukcuk-add',
                     title: this.$resources['vn'].create,
                     method: this.create,
                 },
                 // Nạp
                 {
-                    id: 4,
                     icon: 'cukcuk-reload',
                     title: this.$resources['vn'].reload,
                     method: this.reload,

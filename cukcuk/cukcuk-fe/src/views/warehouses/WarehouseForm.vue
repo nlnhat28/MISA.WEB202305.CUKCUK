@@ -66,14 +66,14 @@
                     :text="this.$resources['vn'].save"
                     :click="onClickSave"
                     iconLeft="cukcuk-save"
-                    tooltipContent="Ctrl + S"
+                    title="Ctrl + S"
                 ></m-button>
                 <m-button
                     :type="this.$enums.buttonType.primary"
                     :text="this.$resources['vn'].cancel"
                     :click="onClickCloseForm"
                     iconLeft="cukcuk-cancel"
-                    tooltipContent="Esc"
+                    title="Esc"
                 ></m-button>
             </div>
             <div class="button-container">
@@ -82,7 +82,7 @@
                     :text="this.$resources['vn'].help"
                     :click="onClickHelp"
                     iconLeft="cukcuk-help"
-                    tooltipContent="F1"
+                    title="F1"
                     @keydown="handleShortKeyLastButton"
                 ></m-button>
             </div>

@@ -28,7 +28,7 @@
             :click="showEmptyMaterialForm"
             :text="this.$resources['vn'].create"
             iconLeft="cukcuk-add"
-            tooltipContent="Ctrl + 1"
+            title="Ctrl + 1"
           >
           </m-button>
           <!-- Nạp -->
@@ -38,7 +38,7 @@
             :text="this.$resources['vn'].reload"
             :hasLoading="true"
             iconLeft="cukcuk-reload"
-            tooltipContent="Ctrl + Y"
+            title="Ctrl + Y"
           >
           </m-button>
           <m-separator></m-separator>
@@ -49,7 +49,7 @@
             :text="this.$resources['vn'].duplicate"
             :isDisabled="focusedId == null"
             iconLeft="cukcuk-duplicate"
-            tooltipContent="Ctrl + V"
+            title="Ctrl + V"
           >
           </m-button>
           <!-- Sửa -->
@@ -59,7 +59,7 @@
             :text="this.$resources['vn'].fix"
             :isDisabled="focusedId == null"
             iconLeft="cukcuk-edit"
-            tooltipContent="Ctrl + U"
+            title="Ctrl + U"
           >
           </m-button>
           <!-- Xoá -->
@@ -69,7 +69,7 @@
             :text="this.$resources['vn'].delete"
             :isDisabled="focusedId == null"
             iconLeft="cukcuk-delete"
-            tooltipContent="Ctrl + D"
+            title="Ctrl + D"
           >
           </m-button>
           <m-separator></m-separator>
@@ -81,7 +81,7 @@
             :isDisabled="totalRecord <= 0"
             :hasLoading="true"
             iconLeft="cukcuk-excel"
-            tooltipContent="Ctrl + E"
+            title="Ctrl + E"
           >
           </m-button>
         </template>
