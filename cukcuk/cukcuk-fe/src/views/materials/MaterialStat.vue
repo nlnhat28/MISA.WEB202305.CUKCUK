@@ -107,6 +107,9 @@ Chart.defaults.set('plugins.datalabels', {
         title: null
     }
 });
+Chart.defaults.font.family = 'tahoma';
+Chart.defaults.color = '#000';
+
 
 export default {
     name: "MaterialStat",
@@ -142,71 +145,6 @@ export default {
              * Loading effect
              */
             isLoading: false,
-            /**
-             * Option count by warehouse chart
-             */
-            optionsCountByWarehouse: {
-                responsive: true,
-                maintainAspectRatio: false,
-                indexAxis: 'y',
-                plugins: {
-                    legend: {
-                        display: false
-                    }
-                }
-            },
-            /**
-             * Option count by follow chart
-             */
-            optionsCountByFollow: {
-                responsive: true,
-                cutout: '60%',
-                plugins: {
-                    datalabels: {
-                        formatter: (value, ctx) => this.percentageFormatter(value, ctx),
-                        labels: {
-                            title: {
-                                font: {
-                                    size: 14,
-                                },
-                                color: [
-                                    '#fff',
-                                    '#555'
-                                ],
-                            },
-                        }
-                    }
-                }
-            },
-            /**
-             * Option count by year chart
-             */
-            optionsCountByYear: {
-                responsive: true,
-                maintainAspectRatio: false,
-            },
-            /**
-             * Option filter rate chart
-             */
-            optionsFilterRate: {
-                responsive: true,
-                plugins: {
-                    datalabels: {
-                        formatter: (value, ctx) => this.percentageFormatter(value, ctx),
-                        labels: {
-                            title: {
-                                font: {
-                                    size: 14,
-                                },
-                                color: [
-                                    '#fff',
-                                    '#555'
-                                ],
-                            },
-                        },
-                    }
-                }
-            },
             /**
              * Data count by warehouse chart
              */
@@ -256,8 +194,7 @@ export default {
                     datasets: [
                         {
                             label: this.$resources['vn'].amount,
-                            // backgroundColor: this.$enums.color.primary,
-                            backgroundColor: this.generateColorsByNumbers(209, 100, 20, counts),
+                            backgroundColor: this.generateColorsByNumbers(this.$enums.color.primary.hue, 90, 20, counts),
                             data: [
                                 ...counts
                             ]
@@ -283,8 +220,8 @@ export default {
                         {
                             label: this.$resources['vn'].amount,
                             backgroundColor: [
-                                this.$enums.color.primary,
-                                this.$enums.color.secondary,
+                                this.$enums.color.primary.hex,
+                                this.$enums.color.secondary.hex,
                                 '#ccc',
                             ],
                             hoverOffset: 4,
@@ -307,7 +244,8 @@ export default {
             if (this.dataCountByYear) {
 
                 const years = this.dataCountByYear.map(item => item.Year);
-                const counts = this.dataCountByYear.map(item => item.Count);
+                const createCounts = this.dataCountByYear.map(item => item.CreateCount);
+                const deleteCounts = this.dataCountByYear.map(item => item.DeleteCount);
                 const data = {
                     labels: [
                         ...years,
@@ -315,26 +253,51 @@ export default {
                     datasets: [
                         {
                             label: this.$resources['vn'].createNew,
-                            borderColor: this.$enums.color.primary,
-                            pointBackgroundColor: this.$enums.color.primary,
+                            borderColor: this.$enums.color.primary.hex,
+                            pointBackgroundColor: this.$enums.color.primary.hex,
                             lineTension: 0.4,
                             borderWidth: 1,
                             data: [
-                                ...counts
+                                ...createCounts
                             ],
                             fill: true,
                             backgroundColor: (context) => this.gradientBackground(context, [
                                 {
                                     offset: 1,
-                                    color: "rgba(69, 165, 255, 0.9)",
+                                    color: "rgba(1, 153, 251, 0.9)",
                                 },
                                 {
                                     offset: 0.5,
-                                    color: "rgba(69, 165, 255, 0.4)",
+                                    color: "rgba(1, 153, 251, 0.4)",
                                 },
                                 {
                                     offset: 0,
-                                    color: "rgba(69, 165, 255, 0)",
+                                    color: "rgba(1, 153, 251, 0)",
+                                },
+                            ]),
+                        },
+                        {
+                            label: this.$resources['vn'].deleted,
+                            borderColor: this.$enums.color.danger.hex,
+                            pointBackgroundColor: this.$enums.color.danger.hex,
+                            lineTension: 0.4,
+                            borderWidth: 1,
+                            data: [
+                                ...deleteCounts
+                            ],
+                            fill: true,
+                            backgroundColor: (context) => this.gradientBackground(context, [
+                                {
+                                    offset: 1,
+                                    color: "rgba(255, 0, 0, 0.9)",
+                                },
+                                {
+                                    offset: 0.5,
+                                    color: "rgba(255, 0, 0, 0.4)",
+                                },
+                                {
+                                    offset: 0,
+                                    color: "rgba(255, 0, 0, 0)",
                                 },
                             ]),
                         },
@@ -359,8 +322,8 @@ export default {
                         {
                             label: this.$resources['vn'].amount,
                             backgroundColor: [
-                                this.$enums.color.primary,
-                                this.$enums.color.secondary,
+                                this.$enums.color.primary.hex,
+                                this.$enums.color.secondary.hex,
                             ],
                             hoverOffset: 4,
                             data: [
@@ -372,7 +335,107 @@ export default {
                 };
                 return data;
             };
-        }
+        },
+        /**
+         * Option count by warehouse chart
+         */
+        optionsCountByWarehouse() {
+            return {
+                responsive: true,
+                maintainAspectRatio: false,
+                indexAxis: 'y',
+                plugins: {
+                    legend: {
+                        labels: {
+                            generateLabels(chart) {
+                                const data = chart.data;
+                                if (data.datasets) {
+                                    let numbers = data.datasets[0].data;
+                                    let colors = data.datasets[0].backgroundColor;
+
+                                    numbers = Array.from(new Set(numbers));
+                                    colors = Array.from(new Set(colors));
+
+                                    let newData = numbers.map((number, index) => ({
+                                        number,
+                                        color: colors[index]
+                                    }));
+                                    newData = newData.filter(item => item.number > 0)
+
+                                    let labels = [];
+                                    labels = newData.map(item => ({
+                                        text: item.number,
+                                        fillStyle: item.color,
+                                        lineWidth: 0
+                                    }));
+
+                                    return labels
+                                }
+                                return [];
+                            },
+                        },
+                    }
+                }
+            }
+        },
+        /**
+         * Option count by follow chart
+         */
+        optionsCountByFollow() {
+            return {
+                responsive: true,
+                cutout: '60%',
+                plugins: {
+                    datalabels: {
+                        formatter: (value, ctx) => this.percentageFormatter(value, ctx),
+                        labels: {
+                            title: {
+                                font: {
+                                    size: 14,
+                                },
+                                color: [
+                                    '#fff',
+                                    '#444'
+                                ],
+                            },
+                        }
+                    },
+                }
+            }
+        },
+        /**
+         * Option count by year chart
+         */
+        optionsCountByYear() {
+            return {
+                responsive: true,
+                maintainAspectRatio: false,
+            }
+        },
+        /**
+         * Option filter rate chart
+         */
+        optionsFilterRate() {
+            return {
+                responsive: true,
+                plugins: {
+                    datalabels: {
+                        formatter: (value, ctx) => this.percentageFormatter(value, ctx),
+                        labels: {
+                            title: {
+                                font: {
+                                    size: 14,
+                                },
+                                color: [
+                                    '#fff',
+                                    '#444'
+                                ],
+                            },
+                        },
+                    },
+                }
+            }
+        },
     },
     methods: {
         /**

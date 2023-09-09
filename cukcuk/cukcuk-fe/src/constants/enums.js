@@ -206,9 +206,18 @@ const enums = {
    *
    */
   color: {
-    primary: "#45a5ff",
-    danger: "#ff0000",
-    secondary: "#ccc",
+    primary: {
+      hex: "#0199fb",
+      hue: 204,
+    },
+    danger: {
+      hex: "#ff0000",
+      hue: 0,
+    },
+    secondary: {
+      hex: "#ccc",
+      hue: 0,
+    },
   },
 };
 

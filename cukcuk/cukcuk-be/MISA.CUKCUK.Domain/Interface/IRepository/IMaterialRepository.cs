@@ -41,12 +41,6 @@
         /// Created by: nlnhat (16/08/2023)
         Task<IEnumerable<MaterialModel>> ExportAsync(string? keySearch, List<SortModel>? sortModels, List<FilterModel>? filterModels);
         /// <summary>
-        /// Đếm số lượng theo các năm
-        /// </summary>
-        /// <returns>Danh sách số lượng theo năm</returns>
-        /// Created by: nlnhat (08/09/2023)
-        Task<IEnumerable<CountByYearModel>> CountByYear();
-        /// <summary>
         /// Đếm số lượng theo các kho
         /// </summary>
         /// <returns>Danh sách số lượng theo kho</returns>

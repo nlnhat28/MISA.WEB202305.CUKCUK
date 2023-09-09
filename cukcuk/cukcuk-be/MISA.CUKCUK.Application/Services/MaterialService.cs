@@ -24,6 +24,11 @@ namespace MISA.CUKCUK.Application
         /// Created by: nlnhat (18/08/2023)
         private new readonly IMaterialRepository _repository;
         /// <summary>
+        /// Repository nhật ký nguyên vật liệu
+        /// </summary>
+        /// Created by: nlnhat (18/08/2023)
+        private readonly IMaterialAuditRepository _materialAuditRepository;
+        /// <summary>
         /// Repository đơn vị chuyển đổi
         /// </summary>
         /// Created by: nlnhat (18/08/2023)
@@ -46,12 +51,14 @@ namespace MISA.CUKCUK.Application
         /// <param name="unitOfWork">Unit of work</param>
         /// Created by: nlnhat (17/08/2023)
         public MaterialService(IMaterialRepository repository,
+                               IMaterialAuditRepository materialAuditRepository,
                                IConversionUnitRepository conversionUnitrepository,
                                IMaterialDomainService domainService,
                                IStringLocalizer<Resource> resource, IMapper mapper, IUnitOfWork unitOfWork)
                              : base(repository, resource, mapper, unitOfWork)
         {
             _repository = repository;
+            _materialAuditRepository = materialAuditRepository;
             _conversionUnitRepository = conversionUnitrepository;
             _domainService = domainService;
         }
@@ -235,6 +242,9 @@ namespace MISA.CUKCUK.Application
 
                 var result = await _repository.InsertAsync(material);
 
+                var materialAudit = new MaterialAudit(Guid.NewGuid(), result, EditMode.Create, DateTime.UtcNow);
+                await _materialAuditRepository.InsertAsync(materialAudit);
+
                 if (conversionUnits?.Count > 0)
                 {
                     await _conversionUnitRepository.InsertManyAsync(conversionUnits);
@@ -330,6 +340,32 @@ namespace MISA.CUKCUK.Application
                 {
                     await _conversionUnitRepository.DeleteManyAsync(deleteConversionUnits);
                 }
+
+                await _unitOfWork.CommitAsync();
+
+                return result;
+            }
+            catch
+            {
+                await _unitOfWork.RollbackAsync();
+                throw;
+            }
+        }
+        /// <summary>
+        /// Xoá nguyên vật liệu
+        /// </summary>
+        /// <param name="materialId">Id nguyên vật liệu</param>
+        /// <returns>Số lượng bản ghi thay đổi</returns>
+        public override async Task<int> DeleteAsync(Guid materialId)
+        {
+            try
+            {
+                await _unitOfWork.BeginTransactionAsync();
+
+                var result = await _repository.DeleteAsync(materialId);
+
+                var materialAudit = new MaterialAudit(Guid.NewGuid(), materialId, EditMode.Delete, DateTime.UtcNow);
+                await _materialAuditRepository.InsertAsync(materialAudit);
 
                 await _unitOfWork.CommitAsync();
 
@@ -564,7 +600,7 @@ namespace MISA.CUKCUK.Application
         /// Created by: nlnhat (08/09/2023)
         public async Task<IEnumerable<CountByYearModel>> CountByYear()
         {
-            var result = await _repository.CountByYear();
+            var result = await _materialAuditRepository.CountByYear();
             return result;
         }
         /// <summary>

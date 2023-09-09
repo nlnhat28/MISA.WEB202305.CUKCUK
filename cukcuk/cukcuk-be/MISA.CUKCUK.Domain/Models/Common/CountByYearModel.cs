@@ -1,18 +1,22 @@
 ﻿namespace MISA.CUKCUK.Domain
 {
     /// <summary>
-    /// Đếm số lượng theo kho
+    /// Đếm số lượng theo năm
     /// </summary>
     /// Created by: nlnhat (08/09/2023)
-    public class CountByWarehouseModel
+    public class CountByYearModel
     {
         /// <summary>
-        /// Tên kho
+        /// Năm
         /// </summary>
-        public string WarehouseName { get; set; }
+        public int Year { get; set; }
         /// <summary>
-        /// Số lượng
+        /// Số lượng thêm mới
         /// </summary>
-        public int Count { get; set; }
+        public int CreateCount { get; set; }
+        /// <summary>
+        /// Số lượng xoá
+        /// </summary>
+        public int DeleteCount { get; set; }
     }
 }

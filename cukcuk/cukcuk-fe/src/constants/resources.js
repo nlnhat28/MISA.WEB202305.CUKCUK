@@ -183,7 +183,7 @@ const vn = {
   stat: "Thống kê",
   amount: "Số lượng",
   chart: "Biểu đồ",
-  countByYear: "Số lượng thêm mới theo năm",
+  countByYear: "Số lượng theo năm",
   countByWarehouse: "Số lượng theo kho",
   filterRate: "Tỷ lệ lọc",
   followRate: "Tỷ lệ theo dõi",

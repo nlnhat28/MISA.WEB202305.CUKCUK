@@ -40,7 +40,7 @@ export const generateColorsByNumbers = (hue, start, end, numbers) => {
 
     for (let i = 0; i < count; i++) {
       if (i > 0) {
-          light = numbers[i] == numbers[i - 1] ? light : light + step;
+        light = numbers[i] == numbers[i - 1] ? light : light + step;
       }
       colors.push(`hsl(${hue}, 100%, ${light}%)`);
     }

@@ -1,8 +1,7 @@
 <template>
     <m-popup
-        :title="title"
         id="material-stat"
-        class="popup--md"
+        :title="title"
         @emitClose="onClickCloseForm()"
         tabindex="0"
     >
@@ -16,8 +15,9 @@
                     id="chart--conversion-units-rate"
                 >
                     <Bar
-                        :data="data"
-                        :options="options"
+                        :style="`width: ${widthChart}px`"
+                        :data="dataComputed"
+                        :options="optionsComputed"
                     />
                 </m-chart-section>
             </div>
@@ -40,6 +40,8 @@
 
 <script>
 import { openUrl } from "@/js/utils/window.js";
+import resources from '@/constants/resources.js'
+
 import {
     Chart as ChartJS,
     Title,
@@ -51,6 +53,8 @@ import {
 } from 'chart.js'
 import { Bar } from 'vue-chartjs'
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend)
+const unitColor = '#fa8100';
+const conversionColor = '#0199fb';
 
 export default {
     name: "MaterialStat",
@@ -75,6 +79,12 @@ export default {
          */
         dataModel: {
             type: Object
+        },
+        /**
+         * Tên đơn vị tính
+         */
+        unitName: {
+            type: String,
         }
     },
     data() {
@@ -90,15 +100,13 @@ export default {
                 ...this.dataModel,
             },
             /**
-             * Option bar char
+             * width of chart
              */
-            options: {
-                responsive: true
-            }
+            widthChart: 380,
         }
     },
     created() {
-
+        this.widthChart = Math.max(380, Math.min((this.dataComputed.labels.length + 1) * 90, 880))
     },
     mounted() {
         this.focus();
@@ -111,6 +119,74 @@ export default {
     },
     computed: {
 
+        /**
+         * Data các đơn vị chuyển đổi để hiện lên biểu đồ
+         * 
+         * Author: nlnhat (26/08/2023)
+         */
+        dataComputed() {
+            const data = {
+                labels: [
+                    `${this.unitName}`,
+                    ...this.dataModel.map(unit => unit.name)
+                ],
+                datasets: [
+                    {
+                        label: this.$resources['vn'].rate,
+                        backgroundColor: [
+                            unitColor,
+                            ...Array(this.dataModel.length).fill(conversionColor)
+                        ],
+                        data: [
+                            1,
+                            ...this.dataModel.map(unit => unit.rate),
+                        ],
+                    },
+                ]
+            };
+            return data;
+        },
+        /**
+         * Option bar char
+         */
+        optionsComputed() {
+            return {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        labels: {
+                            generateLabels(chart) {
+                                const data = chart.data;
+                                const unitLegend = {
+                                    text: resources['vn'].unit,
+                                    fillStyle: unitColor,
+                                    lineWidth: 0,
+                                };
+                                const conversionUnitLegend = {
+                                    text: resources['vn'].conversionUnit,
+                                    fillStyle: conversionColor,
+                                    lineWidth: 0,
+                                };
+                                if (data.labels.length > 1) {
+                                    return [
+                                        unitLegend,
+                                        conversionUnitLegend
+                                    ]
+                                }
+                                if (data.labels.length > 0) {
+                                    return [
+                                        unitLegend,
+                                    ]
+                                }
+                                return [];
+                            },
+                        },
+
+                    }
+                }
+            }
+        }
     },
     methods: {
         /**
@@ -180,12 +256,10 @@ export default {
 </script>
 <style>
 #material-stat .popup__body {
-    height: 360px;
+    height: 480px;
     padding: 20px 36px;
 }
-#material-stat .popup {
-    width: 680px;
-}
+
 #chart--conversion-units-rate {
     width: 100%;
 }

@@ -4,6 +4,7 @@
   align-items: center;
   flex-direction: column;
   row-gap: 32px;
+  height: 100%;
 }
 .chart-container--row {
   width: 100%;

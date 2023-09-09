@@ -56,7 +56,7 @@
                     :type="this.$enums.buttonType.primary"
                     :text="this.$resources['vn'].detail"
                     :click="showConversionUnitDetail"
-                    :isDisabled="conversionUnitsComputed.length <= 0"
+                    :isDisabled="conversionUnitsComputed.length <= 0 || !material.UnitId"
                     :title=null
                     iconLeft="cukcuk-detail"
                 ></m-button>
@@ -67,7 +67,8 @@
                 v-if="isShowConversionUnitDetail"
                 :closeThis="closeConversionUnitDetail"
                 :title="this.$resources['vn'].detail"
-                :dataModel="dataComputed"
+                :dataModel="sortedConversionUnits"
+                :unitName="this.material.UnitName"
             >
             </ConversionUnitDetail>
         </Teleport>
@@ -211,52 +212,27 @@ export default {
             }
         },
         /**
-         * Data các đơn vị chuyển đổi để hiện lên biểu đồ
+         * Sorted convertion units
          * 
          * Author: nlnhat (26/08/2023)
          */
-        dataComputed() {
-            const data = {
-                labels: [
-                    `${this.material.UnitName} (${this.$resources['vn'].unit})`,
-                    ...this.destinationUnitNames
-                ],
-                datasets: [
-                    {
-                        label: this.$resources['vn'].rate,
-                        backgroundColor: '#45a5ff',
-                        data: [
-                            1,
-                            ...this.conversionUnitRates
-                        ],
-                    },
-                ]
-            };
-            return data;
-        },
-        /**
-         * Name of DestinationUnits
-         * 
-         * Author: nlnhat (26/08/2023)
-         */
-        destinationUnitNames() {
-            return this.conversionUnitsComputed.map(unit => unit.DestinationUnitName);
-        },
-        /**
-         * Name of DestinationUnits
-         * 
-         * Author: nlnhat (26/08/2023)
-         */
-        conversionUnitRates() {
-            return this.conversionUnitsComputed.map(unit => {
-                let rate = this.reformatDecimal(unit.Rate);
-                if (unit.Operator == this.$enums.operator.divide) {
-                    rate = 1 / rate;
-                };
-                rate = this.formatDecimalLocale(rate, "en-US")
-                return rate;
-            });
-        },
+        sortedConversionUnits() {
+            const dataUnits = this.conversionUnitsComputed
+                .filter(unit => unit.DestinationUnitId)
+                .map(unit => ({
+                    name: unit.DestinationUnitName,
+                    rate: (() => {
+                        let rate = this.reformatDecimal(unit.Rate);
+                        if (unit.Operator === this.$enums.operator.divide) {
+                            rate = 1 / rate;
+                        }
+                        rate = this.formatDecimalLocale(rate, "en-US");
+                        return rate;
+                    })()
+                }));
+            const sortedUnits = dataUnits.sort((a, b) => a.rate - b.rate);
+            return sortedUnits;
+        }
     },
     methods: {
         /**
