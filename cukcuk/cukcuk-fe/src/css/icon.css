@@ -463,6 +463,19 @@
   height: 20px;
   scale: calc(16 / 20);
 }
+.icon--cukcuk-detail {
+  background: var(--cukcuk-sprite) no-repeat 0 -1504px;
+	width: 16px;
+	height: 16px;
+  scale: calc(15 / 17);
+  filter: contrast(0.8);
+}
+.icon--cukcuk-stat {
+  background: var(--cukcuk-sprite) no-repeat -1px -129px;
+	width: 14px;
+	height: 14px;
+  filter: contrast(0.7);
+}
 /* icon effect */
 .icon-btn {
   cursor: pointer;

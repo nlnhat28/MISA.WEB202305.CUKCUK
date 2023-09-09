@@ -7,6 +7,7 @@ using System.ComponentModel;
 using System.Drawing;
 using System.Reflection;
 using System.Text.RegularExpressions;
+using System.Data;
 
 namespace MISA.CUKCUK.Application
 {
@@ -555,6 +556,36 @@ namespace MISA.CUKCUK.Application
             {
                 throw new IncompleteException(MISAErrorCode.MaterialExportError, _resource["MaterialExportError"], exception.Message);
             }
+        }
+        /// <summary>
+        /// Đếm số lượng theo các năm
+        /// </summary>
+        /// <returns>Danh sách số lượng theo năm</returns>
+        /// Created by: nlnhat (08/09/2023)
+        public async Task<IEnumerable<CountByYearModel>> CountByYear()
+        {
+            var result = await _repository.CountByYear();
+            return result;
+        }
+        /// <summary>
+        /// Đếm số lượng theo các kho
+        /// </summary>
+        /// <returns>Danh sách số lượng theo kho</returns>
+        /// Created by: nlnhat (08/09/2023)
+        public async Task<IEnumerable<CountByWarehouseModel>> CountByWarehouse()
+        {
+            var result = await _repository.CountByWarehouse();
+            return result;
+        }
+        /// <summary>
+        /// Đếm số lượng theo trạng thái theo dõi
+        /// </summary>
+        /// <returns>Số lượng theo trạng thái</returns>
+        /// Created by: nlnhat (08/09/2023)
+        public async Task<CountByFollowModel> CountByFollow()
+        {
+            var result = await _repository.CountByFollow();
+            return result;
         }
         #endregion
     }

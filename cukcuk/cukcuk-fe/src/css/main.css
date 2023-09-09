@@ -2,6 +2,7 @@
 
 @import "./base/components/button.css";
 @import "./base/components/box-dropdown.css";
+@import "./base/components/chart-section.css";
 @import "./base/components/checkbox";
 @import "./base/components/combobox.css";
 @import "./base/components/conversion-unit.css";

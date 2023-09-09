@@ -260,6 +260,11 @@ export default {
             this.$refs.DestinationUnit,
         ];
     },
+    emits: [
+        'update:focusedId',
+        'emitCreate',
+        'emitDelete',
+    ],
     expose: [
         'checkValidate',
         'assignEditMode',

@@ -202,6 +202,48 @@ namespace MISA.CUKCUK.Infrastructure
             return result;
         }
         /// <summary>
+        /// Đếm số lượng theo các năm
+        /// </summary>
+        /// <returns>Danh sách số lượng theo năm</returns>
+        /// Created by: nlnhat (08/09/2023)
+        public async Task<IEnumerable<CountByYearModel>> CountByYear()
+        {
+            var proc = $"{Procedure}CountByYear";
+
+            var result = await _unitOfWork.Connection.QueryAsync<CountByYearModel>(
+                proc, _unitOfWork.Transaction, commandType: CommandType.StoredProcedure);
+
+            return result;
+        }
+        /// <summary>
+        /// Đếm số lượng theo các kho
+        /// </summary>
+        /// <returns>Danh sách số lượng theo kho</returns>
+        /// Created by: nlnhat (08/09/2023)
+        public async Task<IEnumerable<CountByWarehouseModel>> CountByWarehouse()
+        {
+            var proc = $"{Procedure}CountByWarehouse";
+
+            var result = await _unitOfWork.Connection.QueryAsync<CountByWarehouseModel>(
+                proc, _unitOfWork.Transaction, commandType: CommandType.StoredProcedure);
+
+            return result;
+        }
+        /// <summary>
+        /// Đếm số lượng theo trạng thái theo dõi
+        /// </summary>
+        /// <returns>Số lượng theo trạng thái</returns>
+        /// Created by: nlnhat (08/09/2023)
+        public async Task<CountByFollowModel> CountByFollow()
+        {
+            var proc = $"{Procedure}CountByFollow";
+
+            var result = await _unitOfWork.Connection.QueryFirstOrDefaultAsync<CountByFollowModel>(
+                proc, _unitOfWork.Transaction, commandType: CommandType.StoredProcedure);
+
+            return result;
+        }
+        /// <summary>
         /// Tạo các câu truy vấn Orderby 
         /// </summary>
         /// <param name="sortModels">Danh sách các models sắp xếp</param>

@@ -43,7 +43,6 @@
                     :click="addRow"
                     title="Ctrl + Insert"
                     iconLeft="cukcuk-new"
-                    ref="buttonFocus"
                 ></m-button>
                 <m-button
                     :type="this.$enums.buttonType.primary"
@@ -52,21 +51,41 @@
                     :isDisabled="focusedId == null"
                     title="Ctrl + Delete"
                     iconLeft="cukcuk-delete"
-                    ref="buttonFocus"
+                ></m-button>
+                <m-button
+                    :type="this.$enums.buttonType.primary"
+                    :text="this.$resources['vn'].detail"
+                    :click="showConversionUnitDetail"
+                    :isDisabled="conversionUnitsComputed.length <= 0"
+                    :title=null
+                    iconLeft="cukcuk-detail"
                 ></m-button>
             </div>
         </div>
+        <Teleport to=".main-content">
+            <ConversionUnitDetail
+                v-if="isShowConversionUnitDetail"
+                :closeThis="closeConversionUnitDetail"
+                :title="this.$resources['vn'].detail"
+                :dataModel="dataComputed"
+            >
+            </ConversionUnitDetail>
+        </Teleport>
     </div>
 </template>
 <script>
 import ConversionUnit from './ConversionUnit.vue';
+import ConversionUnitDetail from './ConversionUnitDetail.vue';
 import { v4 as uuidv4 } from 'uuid';
 import { reserveArray } from '@/js/utils/array.js';
+import { reformatDecimal } from "@/js/utils/clean-format.js";
+import { formatDecimalLocale } from "@/js/utils/format.js";
 
 export default {
     name: 'ConversionUnitTab',
     components: {
         ConversionUnit,
+        ConversionUnitDetail,
     },
     props: {
         /**
@@ -128,6 +147,10 @@ export default {
              * Error message
              */
             errorMessage: null,
+            /**
+             * Show or hide conversion unit detail
+             */
+            isShowConversionUnitDetail: false,
         }
     },
     created() {
@@ -142,7 +165,7 @@ export default {
         'deleteRow'
     ],
     watch: {
-        material: {
+        "material.ConversionUnits": {
             handler() {
                 this.updateConversionUnits();
             },
@@ -150,7 +173,7 @@ export default {
         },
         conversionUnits: {
             handler() {
-                this.focusedId = this.conversionUnits.length > 0 ? this.focusedId : null;
+                this.focusedId = this.conversionUnitsComputed.length > 0 ? this.focusedId : null;
             },
             deep: true,
         },
@@ -186,7 +209,54 @@ export default {
                 console.error(error);
                 return null
             }
-        }
+        },
+        /**
+         * Data các đơn vị chuyển đổi để hiện lên biểu đồ
+         * 
+         * Author: nlnhat (26/08/2023)
+         */
+        dataComputed() {
+            const data = {
+                labels: [
+                    `${this.material.UnitName} (${this.$resources['vn'].unit})`,
+                    ...this.destinationUnitNames
+                ],
+                datasets: [
+                    {
+                        label: this.$resources['vn'].rate,
+                        backgroundColor: '#45a5ff',
+                        data: [
+                            1,
+                            ...this.conversionUnitRates
+                        ],
+                    },
+                ]
+            };
+            return data;
+        },
+        /**
+         * Name of DestinationUnits
+         * 
+         * Author: nlnhat (26/08/2023)
+         */
+        destinationUnitNames() {
+            return this.conversionUnitsComputed.map(unit => unit.DestinationUnitName);
+        },
+        /**
+         * Name of DestinationUnits
+         * 
+         * Author: nlnhat (26/08/2023)
+         */
+        conversionUnitRates() {
+            return this.conversionUnitsComputed.map(unit => {
+                let rate = this.reformatDecimal(unit.Rate);
+                if (unit.Operator == this.$enums.operator.divide) {
+                    rate = 1 / rate;
+                };
+                rate = this.formatDecimalLocale(rate, "en-US")
+                return rate;
+            });
+        },
     },
     methods: {
         /**
@@ -210,21 +280,23 @@ export default {
          * Author: nlnhat (22/08/2023)
          */
         deleteRow() {
-            const conversionUnit = this.conversionUnits.find(unit => unit.ConversionUnitId == this.focusedId);
-            const oldIndex = this.conversionUnitsComputed.indexOf(conversionUnit);
+            if (this.conversionUnitsComputed.length > 0) {
+                const conversionUnit = this.conversionUnits.find(unit => unit.ConversionUnitId == this.focusedId);
+                const oldIndex = this.conversionUnitsComputed.indexOf(conversionUnit);
 
-            if (conversionUnit.EditMode == this.$enums.editMode.create) {
-                this.conversionUnits.pop(conversionUnit);
-            }
-            else {
-                conversionUnit.EditMode = this.$enums.editMode.delete;
-            }
-            const length = this.conversionUnitsComputed.length;
-            if (length > 0) {
-                const indexFocus = oldIndex < length ? oldIndex : length - 1;
-                this.$nextTick(() => {
-                    this.$refs.ConversionUnit[indexFocus].focusOnFirst();
-                })
+                if (conversionUnit.EditMode == this.$enums.editMode.create) {
+                    this.conversionUnits.pop(conversionUnit);
+                }
+                else {
+                    conversionUnit.EditMode = this.$enums.editMode.delete;
+                }
+                const length = this.conversionUnitsComputed.length;
+                if (length > 0) {
+                    const indexFocus = oldIndex < length ? oldIndex : length - 1;
+                    this.$nextTick(() => {
+                        this.$refs.ConversionUnit[indexFocus].focusOnFirst();
+                    })
+                }
             }
         },
         /**
@@ -293,9 +365,27 @@ export default {
             };
         },
         /**
+         * Show ConversionUnitDetail
+         *
+         * Author: nlnhat (08/09/2023)
+         */
+        showConversionUnitDetail() {
+            this.isShowConversionUnitDetail = true;
+        },
+        /**
+         * Close ConversionUnitDetail
+         *
+         * Author: nlnhat (08/09/2023)
+         */
+        closeConversionUnitDetail() {
+            this.isShowConversionUnitDetail = false;
+        },
+        /**
          * Imported methods
          */
         reserveArray,
+        reformatDecimal,
+        formatDecimalLocale,
     }
 }
 </script>
