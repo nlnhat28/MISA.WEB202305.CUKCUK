@@ -78,7 +78,7 @@
             :text="this.$resources['vn'].stat"
             :click="showMaterialStat"
             title="Ctrl + R"
-            iconLeft="cukcuk-stat"
+            iconLeft="cukcuk-double-arrow"
           ></m-button>
           <!-- Xuất khẩu -->
           <m-button

@@ -1,4 +1,5 @@
 import { formatDecimal } from "@/js/utils/format.js";
+import { getGradient } from "@/js/utils/color.js";
 /**
  * Format % cho đồ thị tròn
  *
@@ -21,4 +22,17 @@ export const percentageFormatter = (value, ctx) => {
     console.error(error);
     return null;
   }
+};
+/**
+ * Tạo màu gradient cho biểu đồ
+ * 
+ * Author: nlnhat (09/09/2023)
+ * @param {*} context Context 
+ * @param {*} colors Array colors(offset, color)
+ */
+export const gradientBackground = (context, colors) => {
+  const chart = context.chart;
+  const { ctx, chartArea } = chart;
+  if (!chartArea) return;
+  return getGradient(ctx, chartArea, colors);
 };

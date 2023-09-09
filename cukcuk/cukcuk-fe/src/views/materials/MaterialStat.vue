@@ -15,7 +15,7 @@
                 <div class="chart-container--row">
                     <!-- Số lượng theo kho -->
                     <m-chart-section
-                        v-if="dataCountByWarehouseComputed"
+                        v-if="dataCountByWarehouseComputed && !isLoading"
                         :title="this.$resources['vn'].countByWarehouse"
                         id="chart--count-by-warehouse"
                     >
@@ -26,7 +26,7 @@
                     </m-chart-section>
                     <!-- Tỷ lệ theo dõi -->
                     <m-chart-section
-                        v-if="dataCountByFollowComputed"
+                        v-if="dataCountByFollowComputed && !isLoading"
                         :title="this.$resources['vn'].followRate"
                         id="chart--count-by-follow"
                     >
@@ -39,7 +39,7 @@
                 <div class="chart-container--row">
                     <!-- Số lượng theo năm -->
                     <m-chart-section
-                        v-if="dataCountByYearComputed"
+                        v-if="dataCountByYearComputed && !isLoading"
                         :title="this.$resources['vn'].countByYear"
                         id="chart--count-by-year"
                     >
@@ -50,7 +50,7 @@
                     </m-chart-section>
                     <!-- Tỷ lệ lọc -->
                     <m-chart-section
-                        v-if="dataFilterRateComputed"
+                        v-if="dataFilterRateComputed && !isLoading"
                         :title="this.$resources['vn'].filterRate"
                         id="chart--filter-rate"
                     >
@@ -80,9 +80,9 @@
 
 <script>
 import { openUrl } from "@/js/utils/window.js";
-import { percentageFormatter } from "@/js/utils/chart.js";
+import { percentageFormatter, gradientBackground } from "@/js/utils/chart.js";
 import { materialService } from '@/services/services.js';
-import { generateColors } from '@/js/utils/color.js';
+import { generateColorsByNumbers } from '@/js/utils/color.js';
 import {
     Chart,
     Title,
@@ -101,7 +101,7 @@ import { Bar, Line, Doughnut, Pie } from 'vue-chartjs'
 
 Chart.register(CategoryScale, LinearScale, LineElement, BarElement, PointElement, ArcElement,
     ChartDataLabels, Filler, Title, Tooltip, Legend)
-    
+
 Chart.defaults.set('plugins.datalabels', {
     labels: {
         title: null
@@ -149,6 +149,11 @@ export default {
                 responsive: true,
                 maintainAspectRatio: false,
                 indexAxis: 'y',
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                }
             },
             /**
              * Option count by follow chart
@@ -164,7 +169,10 @@ export default {
                                 font: {
                                     size: 14,
                                 },
-                                color: '#fff',
+                                color: [
+                                    '#fff',
+                                    '#555'
+                                ],
                             },
                         }
                     }
@@ -190,9 +198,12 @@ export default {
                                 font: {
                                     size: 14,
                                 },
-                                color: '#fff',
+                                color: [
+                                    '#fff',
+                                    '#555'
+                                ],
                             },
-                        }
+                        },
                     }
                 }
             },
@@ -215,13 +226,9 @@ export default {
         }
     },
     async created() {
-        await Promise.all([
-            this.getCountByYear(),
-            this.getCountByWarehouse(),
-            this.getCountByFollow(),
-        ]);
-        this.dataFilterCount = this.filterCount;
-        this.isLoading = false;
+        await this.makeLoadingEffect(async () => {
+            await this.getData();
+        });
     },
     mounted() {
         this.focus();
@@ -249,7 +256,8 @@ export default {
                     datasets: [
                         {
                             label: this.$resources['vn'].amount,
-                            backgroundColor: this.$enums.color.primary,
+                            // backgroundColor: this.$enums.color.primary,
+                            backgroundColor: this.generateColorsByNumbers(209, 100, 20, counts),
                             data: [
                                 ...counts
                             ]
@@ -297,6 +305,7 @@ export default {
          */
         dataCountByYearComputed() {
             if (this.dataCountByYear) {
+
                 const years = this.dataCountByYear.map(item => item.Year);
                 const counts = this.dataCountByYear.map(item => item.Count);
                 const data = {
@@ -305,14 +314,29 @@ export default {
                     ],
                     datasets: [
                         {
-                            label: this.$resources['vn'].amount,
+                            label: this.$resources['vn'].createNew,
                             borderColor: this.$enums.color.primary,
                             pointBackgroundColor: this.$enums.color.primary,
                             lineTension: 0.4,
                             borderWidth: 1,
                             data: [
                                 ...counts
-                            ]
+                            ],
+                            fill: true,
+                            backgroundColor: (context) => this.gradientBackground(context, [
+                                {
+                                    offset: 1,
+                                    color: "rgba(69, 165, 255, 0.9)",
+                                },
+                                {
+                                    offset: 0.5,
+                                    color: "rgba(69, 165, 255, 0.4)",
+                                },
+                                {
+                                    offset: 0,
+                                    color: "rgba(69, 165, 255, 0)",
+                                },
+                            ]),
                         },
                     ]
                 };
@@ -366,6 +390,19 @@ export default {
             } finally {
                 this.isLoading = false;
             }
+        },
+        /**
+         * Lấy toàn bộ dữ liệu thống kê
+         * 
+         * Author: nlnhat (09/09/2023)
+         */
+        async getData() {
+            await Promise.all([
+                this.getCountByYear(),
+                this.getCountByWarehouse(),
+                this.getCountByFollow(),
+            ]);
+            this.dataFilterCount = this.filterCount;
         },
         /**
          * Lấy số lượng thêm mới theo năm
@@ -446,8 +483,9 @@ export default {
          * Utils
          */
         openUrl,
-        generateColors,
+        generateColorsByNumbers,
         percentageFormatter,
+        gradientBackground,
     },
 };
 </script>
