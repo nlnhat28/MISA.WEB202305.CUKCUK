@@ -109,7 +109,7 @@ namespace MISA.CUKCUK.Application
         /// <returns>Số bản ghi bị ảnh hưởng</returns>
         /// <exception cref="NotFoundException">Không tìm thấy bản ghi</exception>
         /// Created by: nlnhat (18/07/2023)
-        public async Task<int> DeleteAsync(Guid id)
+        public virtual async Task<int> DeleteAsync(Guid id)
         {
             var result = await _repository.DeleteAsync(id);
             return result;

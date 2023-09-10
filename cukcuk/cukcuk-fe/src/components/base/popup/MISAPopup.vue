@@ -101,24 +101,28 @@ export default {
          * @param {*} event Sự kiện ấn chuột
          */
         startMove(event) {
-            this.limitPosition = {
-                minLeft: 0,
-                minTop: 0,
-                maxLeft: window.innerWidth - this.refPopup.offsetWidth,
-                maxTop: window.innerHeight - this.refPopup.offsetHeight,
-            };
-            this.centerPosition = {
-                left: (window.innerWidth - this.refPopup.offsetWidth) / 2,
-                top: (window.innerHeight - this.refPopup.offsetHeight) / 2
-            };
-            this.offset = [
-                this.refPopup.offsetLeft - event.clientX,
-                this.refPopup.offsetTop - event.clientY
-            ];
-            this.$emit('emitStartMove');
-            document.addEventListener('mousemove', this.onMove);
-            document.addEventListener('mouseup', this.endMove);
-            this.isMoving = true;
+            try {
+                this.limitPosition = {
+                    minLeft: 0,
+                    minTop: 0,
+                    maxLeft: window.innerWidth - this.refPopup.offsetWidth,
+                    maxTop: window.innerHeight - this.refPopup.offsetHeight,
+                };
+                this.centerPosition = {
+                    left: (window.innerWidth - this.refPopup.offsetWidth) / 2,
+                    top: (window.innerHeight - this.refPopup.offsetHeight) / 2
+                };
+                this.offset = [
+                    this.refPopup.offsetLeft - event.clientX,
+                    this.refPopup.offsetTop - event.clientY
+                ];
+                this.$emit('emitStartMove');
+                document.addEventListener('mousemove', this.onMove);
+                document.addEventListener('mouseup', this.endMove);
+                this.isMoving = true;
+            } catch (error) {
+                console.error(error);
+            }
         },
         /**
          * Di chuyển popup

@@ -73,6 +73,13 @@
           >
           </m-button>
           <m-separator></m-separator>
+          <m-button
+            :type="this.$enums.buttonType.linkIcon"
+            :text="this.$resources['vn'].stat"
+            :click="showMaterialStat"
+            title="Ctrl + R"
+            iconLeft="cukcuk-double-arrow"
+          ></m-button>
           <!-- Xuất khẩu -->
           <m-button
             :type="this.$enums.buttonType.linkIcon"
@@ -200,6 +207,14 @@
     @emitUpdateFocusedId="updateFocusedId"
   >
   </MaterialForm>
+  <!-- Stat material -->
+  <MaterialStat
+    v-if="isShowMaterialStat"
+    :closeThis="closeMaterialStat"
+    :title="`${this.$resources['vn'].stat} ${this.$resources['vn'].material}`"
+    :filterCount="filterCountComputed"
+  >
+  </MaterialStat>
   <!-- Dialog delete confirm -->
   <m-dialog
     :type="this.deleteConfirmDialog.type"
@@ -229,6 +244,7 @@
 </template>
 <script>
 import MaterialForm from './MaterialForm.vue';
+import MaterialStat from './MaterialStat.vue';
 import {
   formatDate,
   formatStringByDot,
@@ -246,6 +262,7 @@ export default {
   name: "MaterialsList",
   components: {
     MaterialForm,
+    MaterialStat
   },
   data() {
     return {
@@ -324,14 +341,6 @@ export default {
        * Hàng đợi sort (Sắp xếp sort model theo thứ tự chọn)
        */
       queueSortModels: [],
-      /**
-       * Warehouses list show on combobox
-       */
-      // warehouseSelects: [],
-      /**
-       * Units list show on combobox
-       */
-      // unitSelects: [],
       /**
        * Table data
        */
@@ -430,7 +439,14 @@ export default {
       /**
        * Date format
        */
-      dateFormat: 'dd/MM/yyyy'
+      dateFormat: 'dd/MM/yyyy',
+      /**
+       * Show or hide conversion unit detail
+       */
+      isShowMaterialStat: false,
+      /**
+       * Count by year
+       */
     };
   },
   async created() {
@@ -438,7 +454,8 @@ export default {
     await Promise.all([
       this.filterMaterialsOnCreated(),
       this.getWarehouses(),
-      this.getUnits()])
+      this.getUnits()
+    ])
     this.isLoading = false
   },
   async mounted() {
@@ -597,6 +614,15 @@ export default {
       return filterModelsDto;
     },
     /**
+     * Filter count object
+     */
+    filterCountComputed() {
+      return {
+        totalRecord: this.totalRecord,
+        allRecord: this.allRecord,
+      }
+    },
+    /**
      * Scroll position
      * 
      * Author: nlnhat (06/07/2023)
@@ -725,8 +751,7 @@ export default {
         const response = await materialService.getAll();
         if (response?.status == this.$enums.status.ok)
           this.materials = response.data;
-      }
-      )
+      })
     },
     /**
      * Get filtered materials
@@ -764,7 +789,8 @@ export default {
         await Promise.all([
           this.filterMaterials(),
           this.getWarehouses(),
-          this.getUnits()]);
+          this.getUnits()
+        ]);
       })
     },
     /**
@@ -1070,10 +1096,16 @@ export default {
         }
         // Ctrl + D || Delete: Delete
         else if (((event.ctrlKey && event.keyCode == code.d) || event.keyCode == code.delete)
-          && this.materialsSelect.length > 0) {
+          && this.focusedId != null) {
           event.preventDefault();
           event.stopPropagation();
-          this.onClickDeleteMaterials();
+          this.onClickDeleteMaterial();
+        }
+        // Ctrl + R || Thống kệ
+        else if (event.ctrlKey && event.keyCode == code.r) {
+          event.preventDefault();
+          event.stopPropagation();
+          this.showMaterialStat();
         }
         // Ctrl + A: Chọn tất
         // else if (event.ctrlKey && event.keyCode == code.a) {
@@ -1231,6 +1263,22 @@ export default {
     async updatePage(page) {
       this.page = page;
       await this.reloadMaterials();
+    },
+    /**
+     * Show MaterialStat
+     *
+     * Author: nlnhat (08/09/2023)
+     */
+    showMaterialStat() {
+      this.isShowMaterialStat = true;
+    },
+    /**
+     * Close MaterialStat
+     *
+     * Author: nlnhat (08/09/2023)
+     */
+    closeMaterialStat() {
+      this.isShowMaterialStat = false;
     },
     /**
      * Imported methods

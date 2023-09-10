@@ -155,6 +155,7 @@ namespace MISA.CUKCUK.Application
         public static string ConvertDiacritics(string input)
         {
             var normalized = input.Normalize(NormalizationForm.FormD);
+            normalized = normalized.Replace("Đ", "D").Replace("đ", "d");
 
             var chars = normalized.Where(
                 character => CharUnicodeInfo.GetUnicodeCategory(character) != UnicodeCategory.NonSpacingMark);

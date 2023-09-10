@@ -54,6 +54,40 @@ class MaterialService extends BaseService {
     );
     return response;
   }
+  /**
+   * Get count by year
+   *
+   * Author: nlnhat (17/08/2023)
+   * @return Response
+   */
+  async countByYear() {
+    const response = await this.baseRequest.get(this.baseUrl + "/CountByYear");
+    return response;
+  }
+  /**
+   * Get count by warehouse
+   *
+   * Author: nlnhat (17/08/2023)
+   * @return Response
+   */
+  async countByWarehouse() {
+    const response = await this.baseRequest.get(
+      this.baseUrl + "/CountByWarehouse"
+    );
+    return response;
+  }
+  /**
+   * Get count by follow state
+   *
+   * Author: nlnhat (17/08/2023)
+   * @return Response
+   */
+  async countByFollow() {
+    const response = await this.baseRequest.get(
+      this.baseUrl + "/CountByFollow"
+    );
+    return response;
+  }
 }
 
 const materialService = new MaterialService();

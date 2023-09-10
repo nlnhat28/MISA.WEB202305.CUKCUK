@@ -41,6 +41,7 @@ namespace MISA.CUKCUK.Api
 
             // Add repositories
             builder.Services.AddScoped<IMaterialRepository, MaterialRepository>();
+            builder.Services.AddScoped<IMaterialAuditRepository, MaterialAuditRepository>();
             builder.Services.AddScoped<IUnitRepository, UnitRepository>();
             builder.Services.AddScoped<IWarehouseRepository, WarehouseRepository>();
             builder.Services.AddScoped<IConversionUnitRepository, ConversionUnitRepository>();

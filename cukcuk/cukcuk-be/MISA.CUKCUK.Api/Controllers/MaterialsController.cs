@@ -69,6 +69,39 @@ namespace MISA.CUKCUK.Api
             string fileName = "materials-export.xlsx";
             return File(data, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", fileName);
         }
+        /// <summary>
+        /// Đếm số lượng theo các năm
+        /// </summary>
+        /// <returns>Danh sách số lượng theo năm</returns>
+        /// Created by: nlnhat (08/09/2023)
+        [HttpGet("CountByYear")]
+        public async Task<IActionResult> CountByYear()
+        {
+            var result = await _service.CountByYear();
+            return StatusCode(StatusCodes.Status200OK, result);
+        }
+        /// <summary>
+        /// Đếm số lượng theo các năm
+        /// </summary>
+        /// <returns>Danh sách số lượng theo năm</returns>
+        /// Created by: nlnhat (08/09/2023)
+        [HttpGet("CountByWarehouse")]
+        public async Task<IActionResult> CountByWarehouse()
+        {
+            var result = await _service.CountByWarehouse();
+            return StatusCode(StatusCodes.Status200OK, result);
+        }
+        /// <summary>
+        /// Đếm số lượng theo trạng thái theo dõi
+        /// </summary>
+        /// <returns>Số lượng theo trạng thái</returns>
+        /// Created by: nlnhat (08/09/2023)
+        [HttpGet("CountByFollow")]
+        public async Task<IActionResult> CountByFollow()
+        {
+            var result = await _service.CountByFollow();
+            return StatusCode(StatusCodes.Status200OK, result);
+        }
         #endregion
     }
 }

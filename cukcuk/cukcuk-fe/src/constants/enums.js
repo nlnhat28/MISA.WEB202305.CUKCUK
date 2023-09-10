@@ -202,5 +202,23 @@ const enums = {
     update: 2,
     delete: 3,
   },
+  /**
+   *
+   */
+  color: {
+    primary: {
+      hex: "#0199fb",
+      hue: 204,
+    },
+    danger: {
+      hex: "#ff0000",
+      hue: 0,
+    },
+    secondary: {
+      hex: "#ccc",
+      hue: 0,
+    },
+  },
 };
+
 export default enums;

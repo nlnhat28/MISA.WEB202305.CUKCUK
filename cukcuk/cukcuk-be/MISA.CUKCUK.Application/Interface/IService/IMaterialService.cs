@@ -36,6 +36,24 @@ namespace MISA.CUKCUK.Application
         /// Created by: nlnhat (16/08/2023)
         Task<MemoryStream> ExportToExcelAsync(string? keySearch, List<SortModel>? sortModels, List<FilterModel>? filterModels);
         /// <summary>
+        /// Đếm số lượng theo các năm
+        /// </summary>
+        /// <returns>Danh sách số lượng theo năm</returns>
+        /// Created by: nlnhat (08/09/2023)
+        Task<IEnumerable<CountByYearModel>> CountByYear();
+        /// <summary>
+        /// Đếm số lượng theo các kho
+        /// </summary>
+        /// <returns>Danh sách số lượng theo kho</returns>
+        /// Created by: nlnhat (08/09/2023)
+        Task<IEnumerable<CountByWarehouseModel>> CountByWarehouse();
+        /// <summary>
+        /// Đếm số lượng theo trạng thái theo dõi
+        /// </summary>
+        /// <returns>Số lượng theo trạng thái</returns>
+        /// Created by: nlnhat (08/09/2023)
+        Task<CountByFollowModel> CountByFollow();
+        /// <summary>
         /// Map đơn vị chuyển đổi
         /// </summary>
         /// <param name="conversionUnitDtos">Danh sách dto đơn vị chuyển đổi</param>

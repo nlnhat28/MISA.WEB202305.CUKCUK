@@ -190,7 +190,25 @@ export const formatStringBySpace = (value) => {
 export const formatStringByDot = (value) => {
   return formatStringBySeparator(value, 3, ".");
 };
-
+/**
+ * Format decimal
+ *
+ * Author: nlnhat (02/07/2023)
+ * @param {string} value String to format
+ * @param {string} locale Locale
+ * @returns {string} String format: 15.2 => 15,2
+ */
+export const formatDecimalLocale = (value, locale) => {
+  if (isNaN(value) || value == null) {
+    return value;
+  }
+  const formattedNumber = value.toLocaleString(locale, {
+    style: "decimal",
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  });
+  return formattedNumber;
+};
 /**
  * Format decimal
  *

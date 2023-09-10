@@ -11,6 +11,7 @@
 .button-wrapper.disabled .btn {
   opacity: 0.56;
   pointer-events: none;
+  user-select: none;
 }
 
 /* button */

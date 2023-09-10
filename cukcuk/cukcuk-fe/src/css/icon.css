@@ -24,6 +24,13 @@
   width: 18px;
   height: 20px;
 }
+.icon--chart-pie--dark {
+  background: var(--misa-sprite) no-repeat -33px -1587px;
+  width: 18px;
+  height: 20px;
+  filter: brightness(1) invert(1);
+  scale: calc(17 / 20);
+}
 .icon--money-pocket {
   background: var(--misa-sprite) no-repeat -78px -1588px;
   width: 14px;
@@ -462,6 +469,25 @@
   width: 16px;
   height: 20px;
   scale: calc(16 / 20);
+}
+.icon--cukcuk-detail {
+  background: var(--cukcuk-sprite) no-repeat 0 -1504px;
+  width: 16px;
+  height: 16px;
+  scale: calc(15 / 17);
+  filter: contrast(0.8) brightness(1.2);
+}
+.icon--cukcuk-stat {
+  background: var(--cukcuk-sprite) no-repeat -1px -129px;
+  width: 14px;
+  height: 14px;
+  filter: contrast(0.7);
+}
+.icon--cukcuk-double-arrow {
+  background: var(--cukcuk-sprite) no-repeat -1px -17px;
+	width: 13px;
+	height: 14px;
+  /* scale: calc(15/14); */
 }
 /* icon effect */
 .icon-btn {

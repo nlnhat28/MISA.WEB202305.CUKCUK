@@ -151,19 +151,23 @@ export default {
          * @param {*} event Sự kiện ấn chuột
          */
         startMove(event) {
-            this.limitPosition = {
-                minX: this.refDialog.offsetWidth / 2,
-                minY: this.refDialog.offsetHeight / 2,
-                maxX: window.innerWidth - this.refDialog.offsetWidth / 2,
-                maxY: window.innerHeight - this.refDialog.offsetHeight / 2,
+            try {
+                this.limitPosition = {
+                    minX: this.refDialog.offsetWidth / 2,
+                    minY: this.refDialog.offsetHeight / 2,
+                    maxX: window.innerWidth - this.refDialog.offsetWidth / 2,
+                    maxY: window.innerHeight - this.refDialog.offsetHeight / 2,
+                }
+                this.offset = [
+                    this.refDialog.offsetLeft - event.clientX,
+                    this.refDialog.offsetTop - event.clientY
+                ];
+                document.addEventListener('mousemove', this.onMove);
+                document.addEventListener('mouseup', this.endMove);
+                this.isMoving = true;
+            } catch (error) {
+                console.error(error);
             }
-            this.offset = [
-                this.refDialog.offsetLeft - event.clientX,
-                this.refDialog.offsetTop - event.clientY
-            ];
-            document.addEventListener('mousemove', this.onMove);
-            document.addEventListener('mouseup', this.endMove);
-            this.isMoving = true;
         },
         /**
          * Di chuyển dialog

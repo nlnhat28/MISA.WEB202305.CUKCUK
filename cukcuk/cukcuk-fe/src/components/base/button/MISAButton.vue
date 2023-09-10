@@ -1,5 +1,5 @@
 <template>
-    <div :class="{ 'button-wrapper': true, 'disabled': isDisabled }">
+    <div :class="{ 'button-wrapper': true, 'disabled': isDisabled }" :title="isDisabled ? null : title">
         <button
             :class="[
                 'btn',
@@ -133,6 +133,13 @@ export default {
         isDisabled: {
             type: Boolean,
             default: false,
+        },
+        /**
+         * Title for button
+         */
+        title: {
+            type: String,
+            default: null
         }
     },
     data() {
