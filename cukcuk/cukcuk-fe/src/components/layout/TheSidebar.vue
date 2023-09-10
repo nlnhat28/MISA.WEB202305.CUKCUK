@@ -53,54 +53,54 @@ export default {
                     icon: 'buy',
                     title: 'Nguyên vật liệu'
                 },
-                {
-                    icon: 'money-pocket',
-                    title: 'Tiền mặt'
-                },
-                {
-                    icon: 'bank',
-                    title: 'Tiền gửi'
-                },
-                {
-                    icon: 'bill',
-                    title: 'Quản lý hoá đơn'
-                },
-                {
-                    icon: 'warehouse',
-                    title: 'Kho'
-                },
-                {
-                    icon: 'tools',
-                    title: 'Công cụ dụng cụ'
-                },
-                {
-                    icon: 'property',
-                    title: 'Tài sản cố định'
-                },
-                {
-                    icon: 'tax',
-                    title: 'Thuế'
-                },
-                {
-                    icon: 'price',
-                    title: 'Giá thành'
-                },
-                {
-                    icon: 'summary',
-                    title: 'Tổng hợp'
-                },
-                {
-                    icon: 'budget',
-                    title: 'Ngân sách'
-                },
-                {
-                    icon: 'report',
-                    title: 'Báo cáo'
-                },
-                {
-                    icon: 'analysis',
-                    title: 'Phân tích tài chính'
-                },
+                // {
+                //     icon: 'money-pocket',
+                //     title: 'Tiền mặt'
+                // },
+                // {
+                //     icon: 'bank',
+                //     title: 'Tiền gửi'
+                // },
+                // {
+                //     icon: 'bill',
+                //     title: 'Quản lý hoá đơn'
+                // },
+                // {
+                //     icon: 'warehouse',
+                //     title: 'Kho'
+                // },
+                // {
+                //     icon: 'tools',
+                //     title: 'Công cụ dụng cụ'
+                // },
+                // {
+                //     icon: 'property',
+                //     title: 'Tài sản cố định'
+                // },
+                // {
+                //     icon: 'tax',
+                //     title: 'Thuế'
+                // },
+                // {
+                //     icon: 'price',
+                //     title: 'Giá thành'
+                // },
+                // {
+                //     icon: 'summary',
+                //     title: 'Tổng hợp'
+                // },
+                // {
+                //     icon: 'budget',
+                //     title: 'Ngân sách'
+                // },
+                // {
+                //     icon: 'report',
+                //     title: 'Báo cáo'
+                // },
+                // {
+                //     icon: 'analysis',
+                //     title: 'Phân tích tài chính'
+                // },
             ]
         }
     },

@@ -252,7 +252,7 @@ export default {
                     ],
                     datasets: [
                         {
-                            label: this.$resources['vn'].createNew,
+                            label: this.$resources['vn'].created,
                             borderColor: this.$enums.color.primary.hex,
                             pointBackgroundColor: this.$enums.color.primary.hex,
                             lineTension: 0.4,
