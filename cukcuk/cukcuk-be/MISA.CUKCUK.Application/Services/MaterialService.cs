@@ -9,9 +9,6 @@ using System.Reflection;
 using System.Text.RegularExpressions;
 using System.Data;
 using Microsoft.AspNetCore.Http;
-using System.Threading;
-using Newtonsoft.Json.Linq;
-using OfficeOpenXml.Table.PivotTable;
 
 namespace MISA.CUKCUK.Application
 {
