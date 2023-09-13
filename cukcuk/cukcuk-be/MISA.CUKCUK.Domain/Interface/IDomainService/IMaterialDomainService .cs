@@ -14,6 +14,12 @@
         /// Created by: nlnhat (17/08/2023)
         Task CheckDuplicatedCodeAsync(Guid materialId, string materialCode);
         /// <summary>
+        /// Check trùng nhiều mã nguyên vật liệu
+        /// </summary>
+        /// <param name="materialCodes">Danh sách mã nguyên vật kiệu để check</param>
+        /// Created by: nlnhat (17/08/2023)
+        //Task CheckDuplicatedCodeManyAsync(List<string> materialCodes);
+        /// <summary>
         /// Check mã nguyên vật liệu nằm trong khoảng cho phép
         /// </summary>
         /// <param name="prefixCode">TIền tố mã để lấy mã lớn nhât</param>

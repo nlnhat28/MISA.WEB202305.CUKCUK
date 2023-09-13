@@ -1,4 +1,5 @@
-﻿using MISA.CUKCUK.Domain;
+﻿using Microsoft.AspNetCore.Http;
+using MISA.CUKCUK.Domain;
 
 namespace MISA.CUKCUK.Application
 {
@@ -27,7 +28,7 @@ namespace MISA.CUKCUK.Application
         Task<FilterResultModel<Material>> FilterAsync(string? keySearch, PagingModel? pagingModel,
             List<SortModel>? sortModels, List<FilterModel>? filterModels);
         /// <summary>
-        /// Export to excel
+        /// Xuất ra file excel
         /// </summary>
         /// <param name="keySearch">Từ khoá tìm kiếm</param>
         /// <param name="sortModels">Các điều kiện sắp xếp</param>
@@ -35,6 +36,13 @@ namespace MISA.CUKCUK.Application
         /// <returns>Kết quả nguyên vật liệu thoả mãn điều kiện lọc</returns>
         /// Created by: nlnhat (16/08/2023)
         Task<MemoryStream> ExportToExcelAsync(string? keySearch, List<SortModel>? sortModels, List<FilterModel>? filterModels);
+        /// <summary>
+        /// Nhập nguyên vật liệu từ excel
+        /// </summary>
+        /// <param name="materialDtos">Danh sách dto tạo mới nguyên vật liệu</param>
+        /// <returns>Danh sách id tạo mới</returns>
+        /// Created by: nlnhat (13/09/2023)
+        Task<IEnumerable<Guid>> ImportFromExcelAsync(IEnumerable<MaterialDto> materialDtos);
         /// <summary>
         /// Đếm số lượng theo các năm
         /// </summary>
@@ -61,6 +69,20 @@ namespace MISA.CUKCUK.Application
         /// <returns>Danh sách đơn vị chuyển đổi tạo mới</returns>
         /// Created by: nlnhat (17/08/2023)
         List<ConversionUnit> MapCreateConversionUnits(List<ConversionUnitDto>? conversionUnitDtos, Guid materialId);
+        /// <summary>
+        /// Map dữ liệu từ file nhập khẩu
+        /// </summary>
+        /// <param name="file">File excel</param>
+        /// <returns></returns>
+        /// Created by: nlnhat (16/08/2023)
+        Task<IEnumerable<MaterialDto>> MapImportFileAsync(IFormFile file);
+        /// <summary>
+        /// Validate dữ liệu import sang dto hiển thị cho người dùng kết quả check dữ liệu import
+        /// </summary>
+        /// <param name="materialDtos">Danh sách dto import nguyên vật liệu</param>
+        /// <returns>Danh sách dto import nguyên vật liệu kèm dữ liệu hợp lệ hay không</returns>
+        /// Created by: nlnhat (12/09/2023)
+        Task<List<MaterialDto>> ValidateImportMaterialsAsync(List<MaterialDto> materialDtos);
         /// <summary>
         /// Validate danh sách đơn vị chuyển đổi
         /// </summary>

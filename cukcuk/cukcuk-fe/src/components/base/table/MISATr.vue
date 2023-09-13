@@ -1,10 +1,11 @@
 <template>
     <tr
         tabindex="0"
-        :class="{ 'tr--selected': isSelected, 'tr--dark': index % 2 != 0 && applyDark, 'tr--focused': focusedId == id }"
+        :class="{ 'tr--selected': isSelected, 'tr--dark': index % 2 != 0 && applyDark, 'tr--focused': isFocusedComputed }"
         @keydown="onKeyDown"
         @dblclick="onUpdate"
-        @focus="this.$emit('update:focusedId', this.id);"
+        @click="onClick"
+        @focus="onFocus"
         @contextmenu="onContextMenu"
         v-contextmenu-outside="hideContextMenu"
         ref="tr"
@@ -63,7 +64,14 @@ export default {
         applyFocus: {
             type: Boolean,
             default: true,
-        }
+        },
+        /**
+         * Focused ids
+         */
+        focusedIds: {
+            type: Array,
+            default: []
+        },
     },
     data() {
         return {
@@ -126,7 +134,11 @@ export default {
             positionContextMenu: {
                 top: null,
                 left: null,
-            }
+            },
+            /**
+             * Old focused id
+             */
+            oldFocusedId: this.focusedId,
         }
     },
     mounted() {
@@ -141,7 +153,10 @@ export default {
         'emitReload',
         'emitFocusNext',
         'emitFocusPrevious',
-        'update:focusedId'
+        'emitFocusById',
+        'emitSelectMany',
+        'update:focusedId',
+        'update:focusedIds',
     ],
     expose: [
         'focus',
@@ -154,6 +169,24 @@ export default {
         // focusedId() {
         //     this.focusById();
         // }
+    },
+    computed: {
+        /**
+         * Focus hay không
+         * 
+         * Author: nlnhat (29/08/2023)
+         */
+        isFocusedComputed() {
+            return (this.id == this.focusedId || this.isIncluded)
+        },
+        /**
+         * Focused ids đang chứa id này chưa
+         * 
+         * @return True if includes
+         */
+        isIncluded() {
+            return this.focusedIds.includes(this.id);
+        }
     },
     methods: {
         /**
@@ -335,8 +368,59 @@ export default {
          */
         hideContextMenu() {
             this.isShowContextMenu = false;
+        },
+        /**
+         * Handle when focus
+         *
+         * Author: nlnhat (28/08/2023)
+         */
+        onFocus() {
+            this.oldFocusedId = this.focusedId;
+            this.$emit('update:focusedId', this.id);
+        },
+        /**
+         * Xử lý khi click
+         *
+         * Author: nlnhat (28/08/2023)
+         */
+        onClick(event) {
+            document.getSelection().removeAllRanges();
+            if (event.ctrlKey) {
+                this.onCtrlClick();
+            }
+            else if (event.shiftKey) {
+                this.onShiftClick();
+            }
+            else {
+                this.$emit('update:focusedIds', [this.id]);
+            };
+        },
+        /**
+         * Xử lý click khi giữ ctrl
+         *
+         * Author: nlnhat (28/08/2023)
+         */
+        onCtrlClick() {
+            // Nếu có trong danh sách thì bỏ
+            if (this.isIncluded) {
+                this.$emit('update:focusedIds', this.focusedIds.filter(id => id != this.id));
+                if (this.focusedIds.length > 0) {
+                    this.$emit('emitFocusById', this.focusedIds[0]);
+                }
+            }
+            // Nếu không có trong danh sách thì thêm vào
+            else {
+                this.$emit('update:focusedIds', [...this.focusedIds, this.id]);
+            }
+        },
+        /**
+         * Xử lý click khi giữ shift
+         *
+         * Author: nlnhat (28/08/2023)
+         */
+        onShiftClick() {
+            this.$emit('emitSelectMany', this.oldFocusedId, this.id)
         }
     }
-
 }
 </script>

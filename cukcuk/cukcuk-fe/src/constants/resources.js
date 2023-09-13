@@ -1,9 +1,11 @@
 const vn = {
   error: "Lỗi",
   success: "Thành công",
+  fail: "Thất bại",
   warning: "Cảnh báo",
   info: "Thông tin",
   notice: "Thông báo",
+  finish: "Kết thúc",
   selectValue: "Chọn giá trị",
   typeFilterValue: "Nhập giá trị lọc",
   valueNotInSelects: "Giá trị không có trong danh sách",
@@ -191,6 +193,23 @@ const vn = {
   all: "Tổng",
   filtered: "Được lọc",
   remain: "Còn lại",
+  import: "Nhập khẩu",
+  step: "Bước",
+  chooseSourceFile: "Chọn tệp nguồn",
+  chooseFile: "Chọn tệp",
+  checkData: "Kiểm tra dữ liệu",
+  importResult: "Kết quả nhập khẩu",
+  chooseImportData:
+    "Chọn dữ liệu Nguyên vật liệu đã chuẩn bị để nhập khẩu vào phần mềm",
+  downloadTemplateFileTitle:
+    "Chưa có tệp mẫu để chuẩn bị dữ liệu? Tải tệp excel mẫu mà phần mềm cung cấp để chuẩn bị dữ liệu nhập khẩu",
+  here: "Tại đây",
+  continue: "Tiếp tục",
+  back: "Quay lại",
+  isValid: "Hợp lệ",
+  validateDescription: "Mô tả",
+  notValid: "Không hợp lệ",
+  allowImportValidRecords: (number) => `Cho phép nhập ${number} bản ghi hợp lệ`,
 };
 
 const resources = {

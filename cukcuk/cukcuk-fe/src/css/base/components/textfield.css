@@ -57,8 +57,8 @@
 
 /* input readonly */
 .textfield:has(input:read-only) {
-  cursor: not-allowed;
-  opacity: 0.6;
+  /* cursor: not-allowed; */
+  /* opacity: 0.6; */
 }
 .textfield .input-group:has(input:read-only) {
   pointer-events: none;
@@ -67,7 +67,13 @@ input:read-only {
   background-color: var(--grey-200);
   caret-color: transparent;
 }
-
+.textfield.disabled {
+  opacity: 0.6;
+  caret-color: transparent;
+}
+.textfield.disabled .input-group {
+  pointer-events: none;
+}
 /* input error */
 .input--error {
   border: 1px solid var(--red-500) !important;

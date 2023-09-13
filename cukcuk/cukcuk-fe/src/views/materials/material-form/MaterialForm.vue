@@ -296,7 +296,7 @@ import { materialService } from '@/services/services.js';
 import { useUnitStore, useWarehouseStore } from "@/stores/stores.js";
 import { mapStores, mapState } from 'pinia';
 
-import ConversionUnitTab from './ConversionUnitTab.vue';
+import ConversionUnitTab from './conversion-unit/ConversionUnitTab.vue';
 import UnitForm from '@/views/units/UnitForm.vue';
 import WarehouseForm from '@/views/warehouses/WarehouseForm.vue';
 import { v4 as uuidv4 } from 'uuid';
@@ -588,7 +588,7 @@ export default {
      */
     ...mapStores(useWarehouseStore),
     ...mapState(useWarehouseStore, {
-      warehousesComputed: 'warehouseSelects'
+      warehousesComputed: 'warehouseNameSelects'
     }),
   },
   methods: {

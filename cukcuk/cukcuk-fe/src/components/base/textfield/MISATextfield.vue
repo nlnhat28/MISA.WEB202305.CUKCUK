@@ -1,5 +1,5 @@
 <template>
-    <div class="textfield">
+    <div :class="{'textfield': true, 'disabled': isDisabled}">
         <div
             :class="{ 'input-group': true, 'input-group--right': action }"
             @click="focus()"
@@ -80,6 +80,13 @@ export default {
          * Readonly or not
          */
         isReadOnly: {
+            type: Boolean,
+            default: false,
+        },
+        /**
+         * Disabled or not
+         */
+        isDisabled: {
             type: Boolean,
             default: false,
         },
@@ -317,10 +324,12 @@ export default {
                 }
                 else this.inputValue = this.formatComputed;
 
-                if (this.hasDebounce)
-                    this.debounceUpdate();
-                else 
-                    this.$emit('update:modelValue', this.inputValue);
+                if (!this.isReadOnly) {
+                    if (this.hasDebounce)
+                        this.debounceUpdate();
+                    else
+                        this.$emit('update:modelValue', this.inputValue);
+                }
             
                 this.checkValidate();
             } catch (error) {

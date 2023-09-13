@@ -39,7 +39,7 @@
                 <m-textfield
                     v-model="page.pageNumber"
                     :format="formatInput"
-                    :isReadOnly="pageLength == 0"
+                    :isDisabled="pageLength == 0"
                     @emitInput="inputChange()"
                     ref="input"
                 ></m-textfield>
@@ -153,6 +153,13 @@ export default {
             type: Boolean,
             default: true,
         },
+        /**
+         * Show or hide paging
+         */
+        isShowPaging: {
+            type: Boolean,
+            default: true,
+        }
     },
     data() {
         return {
@@ -202,7 +209,7 @@ export default {
          * Author: nlnhat (22/06/2023)
          */
         pageLength() {
-            const length = Math.ceil(this.totalRecord / this.page.pageSize)
+            const length = Math.ceil(this.totalRecord / this.page.pageSize);
             return length
         },
         /**
@@ -376,11 +383,10 @@ export default {
          * @param {*} value 
          */
         formatInput(value) {
-            if (this.pageLength == 0)
-                return 0;
-            let newValue = Math.max(1, Math.min(
+            const minValue = this.pageLength == 0 ? 0 : 1;
+            let newValue = Math.max(minValue, Math.min(
                 this.pageLength, parseInt(
-                    value.toString().replace(/\D/g, ""))) || 1);
+                    value.toString().replace(/\D/g, ""))) || 0);
             return newValue;
         },
         /**

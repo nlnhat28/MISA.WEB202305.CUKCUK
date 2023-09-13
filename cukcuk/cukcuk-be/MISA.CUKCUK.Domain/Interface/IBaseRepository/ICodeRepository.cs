@@ -14,5 +14,12 @@
         /// <returns>Đối tượng được tìm thấy</returns>
         /// Created by: nlnhat (15/08/2023)
         Task<TEntity> GetByCodeAsync(string code);
+        /// <summary>
+        /// Lấy nhiều đối tượng theo mã
+        /// </summary>
+        /// <param name="codes">Danh sách mã của đối tượng</param>
+        /// <returns>Danh sách đối tượng được tìm thấy</returns>
+        /// Created by: nlnhat (15/08/2023)
+        Task<IEnumerable<TEntity>> GetManyByCodeAsync(List<string>? codes);
     }
 }

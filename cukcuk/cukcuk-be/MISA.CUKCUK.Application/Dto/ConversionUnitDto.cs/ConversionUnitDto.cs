@@ -9,6 +9,7 @@ namespace MISA.CUKCUK.Application
     /// Created by: nlnhat (15/08/2023)
     public class ConversionUnitDto
     {
+        #region Properties
         /// <summary>
         /// Khoá chính
         /// </summary>
@@ -51,5 +52,6 @@ namespace MISA.CUKCUK.Application
         /// Thứ tự trong bảng trên giao diện
         /// </summary>
         public int RowIndex { get; set; }
+        #endregion
     }
 }
