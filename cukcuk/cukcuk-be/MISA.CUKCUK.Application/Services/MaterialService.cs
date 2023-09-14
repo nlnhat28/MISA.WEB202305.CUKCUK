@@ -830,8 +830,26 @@ namespace MISA.CUKCUK.Application
                 materialDto.IsValid = true;
                 materialDto.ValidateDescription = _resource["Valid"];
 
+                // Check trống code
+                if (string.IsNullOrEmpty(materialDto.MaterialCode))
+                {
+                    materialDto.IsValid = false;
+                    materialDto.ValidateDescription = $"{_resource["MaterialCode"]} {_resource["CannotEmpty"]}";
+                }
+                // Check trống tên
+                else if (string.IsNullOrEmpty(materialDto.MaterialName))
+                {
+                    materialDto.IsValid = false;
+                    materialDto.ValidateDescription = $"{_resource["MaterialName"]} {_resource["CannotEmpty"]}";
+                }
+                // Check trống đơn vị tính
+                else if (string.IsNullOrEmpty(materialDto.UnitName))
+                {
+                    materialDto.IsValid = false;
+                    materialDto.ValidateDescription = $"{_resource["Unit"]} {_resource["CannotEmpty"]}";
+                }
                 // Trùng code với bản ghi trong db
-                if (material != null)
+                else if (material != null)
                 {
                     materialDto.IsValid = false;
                     materialDto.ValidateDescription = $"{_resource["MaterialCode"]} <{materialCode}> {_resource["Used"]}";
@@ -857,47 +875,51 @@ namespace MISA.CUKCUK.Application
                     materialDto.WarehouseId = warehouse.WarehouseId;
                 }
 
-                var conversionUnitDtos = materialDto.ConversionUnits;
-                if (conversionUnitDtos?.Count > 0)
+                // Check đơn vị chuyển đổi
+                if (materialDto.IsValid == true)
                 {
-                    foreach (var conversionUnit in conversionUnitDtos)
+                    var conversionUnitDtos = materialDto.ConversionUnits;
+                    if (conversionUnitDtos?.Count > 0)
                     {
-                        var destinationUnitName = conversionUnit.DestinationUnitName;
-
-                        var destinationUnit = destinationUnits.Where(unit => unit.UnitName == destinationUnitName).FirstOrDefault();
-                        var destinationUnitId = destinationUnit?.UnitId;
-
-                        if (destinationUnit != null)
+                        foreach (var conversionUnit in conversionUnitDtos)
                         {
-                            conversionUnit.DestinationUnitId = destinationUnit.UnitId;
-                        }
+                            var destinationUnitName = conversionUnit.DestinationUnitName;
 
-                        // Check tồn tại đơn vị muốn chuyển đổi không
-                        if (destinationUnit == null)
-                        {
-                            materialDto.IsValid = false;
-                            materialDto.ValidateDescription
-                                = $"{_resource["ConversionUnit"]} <{destinationUnitName}> {_resource["NotExist"]}";
-                        }
+                            var destinationUnit = destinationUnits.Where(unit => unit.UnitName == destinationUnitName).FirstOrDefault();
+                            var destinationUnitId = destinationUnit?.UnitId;
 
-                        // Check đơn vị chuyển đổi bị trùng đơn vị tính
-                        else if (destinationUnitId == materialDto.UnitId)
-                        {
-                            materialDto.IsValid = false;
-                            materialDto.ValidateDescription
-                                = $"{_resource["ConversionUnit"]} <{destinationUnitName}> {_resource["Duplicated"]} {_resource["Unit"]}";
-                        }
+                            if (destinationUnit != null)
+                            {
+                                conversionUnit.DestinationUnitId = destinationUnit.UnitId;
+                            }
 
-                        // Check đơn vị chuyển đổi bị trùng nhau
-                        else if (conversionUnitDtos.Any(otherUnit =>
-                            conversionUnit.DestinationUnitId == otherUnit.DestinationUnitId && conversionUnit != otherUnit))
-                        {
-                            materialDto.IsValid = false;
-                            materialDto.ValidateDescription =
-                                $"{_resource["ConversionUnit"]} <{destinationUnitName}> {_resource["Duplicated"]}";
+                            // Check tồn tại đơn vị muốn chuyển đổi không
+                            if (destinationUnit == null)
+                            {
+                                materialDto.IsValid = false;
+                                materialDto.ValidateDescription
+                                    = $"{_resource["ConversionUnit"]} <{destinationUnitName}> {_resource["NotExist"]}";
+                            }
+
+                            // Check đơn vị chuyển đổi bị trùng đơn vị tính
+                            else if (destinationUnitId == materialDto.UnitId)
+                            {
+                                materialDto.IsValid = false;
+                                materialDto.ValidateDescription
+                                    = $"{_resource["ConversionUnit"]} <{destinationUnitName}> {_resource["Duplicated"]} {_resource["Unit"]}";
+                            }
+
+                            // Check đơn vị chuyển đổi bị trùng nhau
+                            else if (conversionUnitDtos.Any(otherUnit =>
+                                conversionUnit.DestinationUnitId == otherUnit.DestinationUnitId && conversionUnit != otherUnit))
+                            {
+                                materialDto.IsValid = false;
+                                materialDto.ValidateDescription =
+                                    $"{_resource["ConversionUnit"]} <{destinationUnitName}> {_resource["Duplicated"]}";
+                            }
                         }
                     }
-                }
+                } 
             }
 
             // Check xung đột lẫn nhau giữa các bản ghi hợp lệ

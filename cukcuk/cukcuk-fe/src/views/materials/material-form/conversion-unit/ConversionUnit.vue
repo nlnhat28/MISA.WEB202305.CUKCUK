@@ -2,7 +2,7 @@
     <tr
         :class="{ 'conversion-unit': true, 'tr--focused': focusedId == conversionUnit.ConversionUnitId }"
         tabindex="0"
-        @click="updateFocusedId"
+        @focus="updateFocusedId"
         @contextmenu="onContextMenu"
         v-contextmenu-outside="hideContextMenu"
         ref="tr"
@@ -46,6 +46,7 @@
                 v-model="conversionUnit.Rate"
                 :format="formatRateInput"
                 :canSetSelection="true"
+                :label="this.$resources['vn'].conversionRate"
                 textAlign="right"
                 ref="Rate"
             >
@@ -257,6 +258,7 @@ export default {
         }
 
         this.refs = [
+            // this.$refs.Rate,
             this.$refs.DestinationUnit,
         ];
     },
@@ -336,7 +338,7 @@ export default {
             const operator = this.conversionUnit.OperatorName;
             const unitName = this.material.UnitName;
 
-            if (unitName != null && destinationUnit != null && rate != null && operator != null) {
+            if (unitName != null && destinationUnit != null && !this.isNullOrEmpty(rate) && operator != null) {
                 switch (this.conversionUnit.Operator) {
                     // Phép nhân
                     case this.$enums.operator.multiple: {
@@ -378,6 +380,29 @@ export default {
                         ref.focus();
                     };
                 });
+                return errorMessage;
+            } catch (error) {
+                console.error(error);
+                return null
+            }
+        },
+        /**
+         * Validate destination unit
+         * 
+         * Author: nlnhat (26/08/2023)
+         */
+        validateDestinationComputed() {
+            try {
+                let errorMessage = null;
+                const ref = this.$refs.DestinationUnit;
+                if (ref) {
+                    const message = ref.checkValidate();
+                    if (message) {
+                        errorMessage = message;
+                        this.refFocus = ref;
+                        ref.focus();
+                    };
+                }
                 return errorMessage;
             } catch (error) {
                 console.error(error);
@@ -505,6 +530,21 @@ export default {
             return rate;
         },
         /**
+         * Format rate input
+         * 
+         * Author: nlnhat (22/08/2023)
+         */
+        validateRateInput(label, value) {
+            if (this.isNullOrEmpty(value))
+                return `${label} ${this.$resources['vn'].cannotEmpty}`
+            let rate = this.formatDecimalInput(value);
+            const numericValue = parseFloat(rate?.replace(',', '.'));
+            if (numericValue == 0) {
+                return `${label} ${this.$resources['vn'].mustMoreZero}`
+            }
+            return null;
+        },
+        /**
          * Focus on error
          */
         focus() {
@@ -564,6 +604,20 @@ export default {
         checkValidate() {
             try {
                 return this.errorMessage = this.validateComputed;
+            } catch (error) {
+                console.error(error);
+                return null;
+            }
+        },
+        /**
+         * Check validate destination unit
+         * 
+         * Author: nlnhat (21/08/2023)
+         * @param {*} value Value to validate 
+         */
+        checkDestinationValidate() {
+            try {
+                return this.errorMessage = this.validateDestinationComputed;
             } catch (error) {
                 console.error(error);
                 return null;

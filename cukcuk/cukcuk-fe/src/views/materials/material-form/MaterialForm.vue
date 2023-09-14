@@ -478,6 +478,7 @@ export default {
     "emitReloadData",
     "emitReRenderForm",
     "emitUpdateFocusedId",
+    "emitUpdateFocusedIds",
   ],
   watch: {
     /**
@@ -832,6 +833,7 @@ export default {
           await this.onSave();
           if (this.isSuccessResponseFlag == true) {
             this.$emit("emitUpdateFocusedId", this.material.MaterialId);
+            this.$emit("emitUpdateFocusedIds", [this.material.MaterialId]);
             this.$emit("emitReloadData");
             this.showToastSuccess();
             this.hideForm();

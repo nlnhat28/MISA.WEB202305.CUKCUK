@@ -209,6 +209,7 @@ const vn = {
   isValid: "Hợp lệ",
   validateDescription: "Mô tả",
   notValid: "Không hợp lệ",
+  mustMoreZero: "phải lớn hơn 0",
   allowImportValidRecords: (number) => `Cho phép nhập ${number} bản ghi hợp lệ`,
 };
 

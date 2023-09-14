@@ -224,6 +224,7 @@
     @emitReloadData="filterMaterials"
     @emitReRenderForm="reRenderForm()"
     @emitUpdateFocusedId="updateFocusedId"
+    @emitUpdateFocusedIds="updateFocusedIds"
   >
   </MaterialForm>
   <!-- Thống kê nguyên vật liệu -->
@@ -514,8 +515,9 @@ export default {
      * 
      * Author: nlnhat (05/08/2023)
      */
-    keySearch() {
-      this.reloadMaterials();
+    async keySearch() {
+      await this.reloadMaterials();
+      this.focusFirstMaterial();
     },
     /**
      * Theo dõi thay đổi của mỗi sort item
@@ -565,6 +567,7 @@ export default {
     filterModelsClean: {
       async handler() {
         await this.reloadMaterials();
+        this.focusFirstMaterial();
       },
       deep: true
     },
@@ -1364,6 +1367,20 @@ export default {
     async updatePage(page) {
       this.page = page;
       await this.reloadMaterials();
+      this.focusFirstMaterial();
+    },
+    /**
+     * Focus vào nguyên vật liệu đầu tiên khi sang trang khác hoặc tìm kiếm
+     *
+     * Author: nlnhat (14/09/2023)
+     */
+    focusFirstMaterial() {
+      if (this.materials?.length > 0 && this.focusedIds?.length <= 1) {
+        const id = this.materials[0].MaterialId;
+        this.focusedId = id;
+        this.focusedIds = [id];
+
+      }
     },
     /**
      * Show MaterialStat
