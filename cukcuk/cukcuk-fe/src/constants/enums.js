@@ -107,6 +107,12 @@ const enums = {
     d: 68,
     e: 69,
     f: 70,
+    g: 71,
+    h: 72,
+    i: 73,
+    j: 74,
+    k: 75,
+    l: 76,
     m: 77,
     n: 78,
     r: 82,
@@ -203,7 +209,7 @@ const enums = {
     delete: 3,
   },
   /**
-   *
+   * Color code
    */
   color: {
     primary: {
@@ -219,6 +225,14 @@ const enums = {
       hue: 0,
     },
   },
+  /**
+   * Show state
+   */
+  showState: {
+    showAll: 1,
+    showValid: 2,
+    showInvalid: 3
+  }
 };
 
 export default enums;

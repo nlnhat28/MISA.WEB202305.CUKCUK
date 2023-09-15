@@ -26,7 +26,6 @@ namespace MISA.CUKCUK.Application
             {
                 opt.MapFrom(src => EditMode.NoEdit);
             });
-            CreateMap<ConversionUnitDto, ConversionUnit>();
             CreateMap<ConversionUnit, ConversionUnitExcelDto>()
             .ForMember(dest => dest.OperatorName, opt =>
             {
@@ -38,6 +37,9 @@ namespace MISA.CUKCUK.Application
                 opt.MapFrom(src =>
                     ApplicationHelper.GetConversionUnitDescription(src.UnitName, src.DestinationUnitName, src.Operator, src.Rate));
             });
+
+            CreateMap<ConversionUnitDto, ConversionUnit>();
+            CreateMap<ConversionUnitImportDto, ConversionUnitDto>();
         }
         #endregion
     } 

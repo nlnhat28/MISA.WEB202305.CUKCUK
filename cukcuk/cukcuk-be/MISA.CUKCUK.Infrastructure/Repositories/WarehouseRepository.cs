@@ -1,5 +1,6 @@
 using Dapper;
 using MISA.CUKCUK.Domain;
+using Newtonsoft.Json;
 using System.Data;
 using static Dapper.SqlMapper;
 
@@ -38,6 +39,27 @@ namespace MISA.CUKCUK.Infrastructure
             var result = await _unitOfWork.Connection.QueryFirstOrDefaultAsync<Warehouse>(
                 proc, param, _unitOfWork.Transaction, commandType: CommandType.StoredProcedure);
             return result;
+        }
+        /// <summary>
+        /// Lấy kho theo danh sách mã
+        /// </summary>
+        /// <param name="codes">Danh sách mã kho</param>
+        /// <returns>Danh sách kho có mã tương ứng</returns>
+        public async Task<IEnumerable<Warehouse>> GetManyByCodeAsync(List<string>? codes)
+        {
+            if (codes?.Count > 0)
+            {
+                var proc = $"{Procedure}GetManyByCode";
+
+                var param = new DynamicParameters();
+                var codesJson = JsonConvert.SerializeObject(codes);
+                param.Add($"p_{Table}Codes", codesJson);
+
+                var result = await _unitOfWork.Connection.QueryAsync<Warehouse>(
+                    proc, param, _unitOfWork.Transaction, commandType: CommandType.StoredProcedure);
+                return result;
+            }
+            return new List<Warehouse>();
         }
         #endregion
     }

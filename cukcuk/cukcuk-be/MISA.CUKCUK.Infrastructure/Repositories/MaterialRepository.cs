@@ -1,6 +1,8 @@
 ﻿using Dapper;
 using MISA.CUKCUK.Domain;
+using Newtonsoft.Json;
 using System.Data;
+using System.Reflection.Emit;
 using static Dapper.SqlMapper;
 
 namespace MISA.CUKCUK.Infrastructure
@@ -75,6 +77,27 @@ namespace MISA.CUKCUK.Infrastructure
             var result = await _unitOfWork.Connection.QueryFirstOrDefaultAsync<Material>(
                 proc, param, _unitOfWork.Transaction, commandType: CommandType.StoredProcedure);
             return result;
+        }
+        /// <summary>
+        /// Lấy nguyên vật liệu theo danh sách mã
+        /// </summary>
+        /// <param name="codes">Danh sách mã nguyên vật liệu</param>
+        /// <returns>Danh sách guyên vật liệu có mã tương ứng</returns>
+        public async Task<IEnumerable<Material>> GetManyByCodeAsync(List<string>? codes)
+        {
+            if (codes?.Count > 0)
+            {
+                var proc = $"{Procedure}GetManyByCode";
+
+                var param = new DynamicParameters();
+                var codesJson = JsonConvert.SerializeObject(codes);
+                param.Add($"p_{Table}Codes", codesJson);
+
+                var result = await _unitOfWork.Connection.QueryAsync<Material>(
+                    proc, param, _unitOfWork.Transaction, commandType: CommandType.StoredProcedure);
+                return result;
+            }
+            return new List<Material>();
         }
         /// <summary>
         /// Lấy mã nguyên vật liệu lớn nhất hiện tại

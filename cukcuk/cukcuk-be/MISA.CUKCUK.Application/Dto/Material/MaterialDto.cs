@@ -9,6 +9,7 @@ namespace MISA.CUKCUK.Application
     /// Created by: nlnhat (16/08/2023)
     public class MaterialDto : BaseDto
     {
+        #region Properties
         /// <summary>
         /// Khoá chính
         /// </summary>
@@ -77,5 +78,16 @@ namespace MISA.CUKCUK.Application
         /// Danh sách đơn vị chuyển đổi
         /// </summary>
         public List<ConversionUnitDto>? ConversionUnits { get; set; }
+        /// <summary>
+        /// Đối tượng hợp lệ hay không
+        /// </summary>
+        public bool IsValid { get; set; } = true;
+        /// <summary>
+        /// Mô tả lỗi nếu không hợp lệ
+        /// </summary>
+        public string? ValidateDescription { get; set; }
+        
+
+        #endregion
     }
 }

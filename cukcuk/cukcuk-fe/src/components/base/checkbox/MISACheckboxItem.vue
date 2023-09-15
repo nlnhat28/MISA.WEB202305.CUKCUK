@@ -74,7 +74,20 @@ export default {
             return this.model.includes(this.id);
         }
     },
+    expose: [
+        'focus'
+    ],
     methods: {
+        /**
+         * Focus
+         * 
+         * Author: nlnhat (05/07/2023)
+         */
+        focus() {
+            if (this.$refs.input) {
+                this.$refs.input.focus();
+            }
+        },
         /**
          * Handle click checkbox item
          * 
@@ -82,8 +95,7 @@ export default {
          */
         onClickItem() {
             this.isChecked = !this.isChecked;
-            if (this.$refs.input)
-                this.$refs.input.focus();
+            this.focus();
         },
         /**
          * Handle click checkbox wrapper
@@ -118,9 +130,11 @@ export default {
     }
 };
 </script>
-<style scoped>.checkbox-wrapper {
+<style scoped>
+.checkbox-wrapper {
     height: fit-content;
     width: fit-content;
     margin: 12px;
     display: flex;
-}</style>
+}
+</style>

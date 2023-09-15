@@ -8,6 +8,7 @@ using System.Drawing;
 using System.Reflection;
 using System.Text.RegularExpressions;
 using System.Data;
+using Microsoft.AspNetCore.Http;
 
 namespace MISA.CUKCUK.Application
 {
@@ -34,6 +35,16 @@ namespace MISA.CUKCUK.Application
         /// Created by: nlnhat (18/08/2023)
         private readonly IConversionUnitRepository _conversionUnitRepository;
         /// <summary>
+        /// Repository đơn vị tính
+        /// </summary>
+        /// Created by: nlnhat (18/08/2023)
+        private readonly IUnitRepository _unitRepository;
+        /// <summary>
+        /// Repository kho
+        /// </summary>
+        /// Created by: nlnhat (18/08/2023)
+        private readonly IWarehouseRepository _warehouseRepository;
+        /// <summary>
         /// Domain service nguyên vật liệu, validate nghiệp vụ
         /// </summary>
         /// Created by: nlnhat (17/08/2023)
@@ -52,6 +63,8 @@ namespace MISA.CUKCUK.Application
         /// Created by: nlnhat (17/08/2023)
         public MaterialService(IMaterialRepository repository,
                                IMaterialAuditRepository materialAuditRepository,
+                               IUnitRepository unitRepository,
+                               IWarehouseRepository warehouseRepository,
                                IConversionUnitRepository conversionUnitrepository,
                                IMaterialDomainService domainService,
                                IStringLocalizer<Resource> resource, IMapper mapper, IUnitOfWork unitOfWork)
@@ -59,6 +72,8 @@ namespace MISA.CUKCUK.Application
         {
             _repository = repository;
             _materialAuditRepository = materialAuditRepository;
+            _unitRepository = unitRepository;
+            _warehouseRepository = warehouseRepository;
             _conversionUnitRepository = conversionUnitrepository;
             _domainService = domainService;
         }
@@ -107,6 +122,7 @@ namespace MISA.CUKCUK.Application
             var conversionUnits = _mapper.Map<List<ConversionUnit>>(conversionUnitDtos);
             conversionUnits.ForEach(unit =>
             {
+                unit.ConversionUnitId = Guid.NewGuid();
                 unit.MaterialId = materialId;
             });
             return conversionUnits;
@@ -162,9 +178,9 @@ namespace MISA.CUKCUK.Application
         /// <exception cref="ValidateException">Đơn vị chuyển đổi bị trùng nhau hoặc trùng đơn vị tính chính</exception>
         public async Task ValidateConversionUnitsAsync(List<ConversionUnit> conversionUnits, Guid unitId)
         {
-            // Check các tên đơn vị chuyển đổi bị trùng nhau hoặc trùng đơn vị tính chính hay không
             foreach (var unit in conversionUnits)
             {
+                // Check trùng đơn vị tính chính
                 if (unit.DestinationUnitId == unitId)
                 {
                     throw new ValidateException(
@@ -172,9 +188,9 @@ namespace MISA.CUKCUK.Application
                         $"{_resource["ConversionUnit"]} <{unit.DestinationUnitName}> {_resource["Duplicated"]} {_resource["Unit"]}",
                         new ExceptionData("DestinationUnit", unit.ConversionUnitId.ToString()));
                 }
+                // Check các tên đơn vị chuyển đổi bị trùng nhau
                 else if (conversionUnits.Any(otherUnit =>
-                    unit.DestinationUnitId == otherUnit.DestinationUnitId
-                    && unit.ConversionUnitId != otherUnit.ConversionUnitId))
+                    unit.DestinationUnitId == otherUnit.DestinationUnitId && unit != otherUnit))
                 {
                     throw new ValidateException(
                         MISAErrorCode.ConversionUnitDuplicated,
@@ -229,6 +245,8 @@ namespace MISA.CUKCUK.Application
             var material = MapCreateDtoToEntity(materialDto);
             await ValidateAsync(material);
 
+            var materialAudit = new MaterialAudit(Guid.NewGuid(), material.MaterialId, EditMode.Create, DateTime.UtcNow);
+
             var conversionUnitDtos = materialDto.ConversionUnits;
 
             // Map và validate đơn vị chuyển đổi
@@ -236,21 +254,19 @@ namespace MISA.CUKCUK.Application
             if (conversionUnits != null)
                 await ValidateConversionUnitsAsync(conversionUnits, material.UnitId);
 
+            // Bắt đầu transaction
             try
             {
                 await _unitOfWork.BeginTransactionAsync();
 
                 var result = await _repository.InsertAsync(material);
 
-                var materialAudit = new MaterialAudit(Guid.NewGuid(), result, EditMode.Create, DateTime.UtcNow);
                 await _materialAuditRepository.InsertAsync(materialAudit);
 
-                if (conversionUnits?.Count > 0)
-                {
-                    await _conversionUnitRepository.InsertManyAsync(conversionUnits);
-                }
+                await _conversionUnitRepository.InsertManyAsync(conversionUnits);
 
                 await _unitOfWork.CommitAsync();
+
                 return result;
             }
             catch
@@ -322,24 +338,18 @@ namespace MISA.CUKCUK.Application
             if (updateConversionUnits != null)
                 await ValidateUpdateConversionUnitsAsync(updateConversionUnits, material.MaterialId);
 
+            // Bắt đầu transaction
             try
             {
                 await _unitOfWork.BeginTransactionAsync();
 
                 var result = await _repository.UpdateAsync(material);
 
-                if (createConversionUnits?.Count > 0)
-                {
-                    await _conversionUnitRepository.InsertManyAsync(createConversionUnits);
-                }
-                if (updateConversionUnits?.Count > 0)
-                {
-                    await _conversionUnitRepository.UpdateManyAsync(updateConversionUnits);
-                }
-                if (deleteConversionUnits?.Count > 0)
-                {
-                    await _conversionUnitRepository.DeleteManyAsync(deleteConversionUnits);
-                }
+                await _conversionUnitRepository.InsertManyAsync(createConversionUnits);
+
+                await _conversionUnitRepository.UpdateManyAsync(updateConversionUnits);
+
+                await _conversionUnitRepository.DeleteManyAsync(deleteConversionUnits);
 
                 await _unitOfWork.CommitAsync();
 
@@ -352,20 +362,100 @@ namespace MISA.CUKCUK.Application
             }
         }
         /// <summary>
+        /// Nhập nguyên vật liệu từ excel
+        /// </summary>
+        /// <param name="materialDtos">Danh sách dto tạo mới nguyên vật liệu</param>
+        /// <returns>Danh sách id tạo mới</returns>
+        /// Created by: nlnhat (13/09/2023)
+        public async Task<IEnumerable<Guid>> ImportFromExcelAsync(IEnumerable<MaterialDto> materialDtos)
+        {
+            var materials = new List<Material>();
+            var conversionUnits = new List<ConversionUnit>();
+            var ids = new List<Guid>();
+
+            // Map dtos sang entities
+            foreach (var materialDto in materialDtos)
+            {
+                var material = MapCreateDtoToEntity(materialDto);
+                materials.Add(material);
+                ids.Add(material.MaterialId);
+
+                var conversionUnitDtos = materialDto.ConversionUnits;
+                var _conversionUnits = MapCreateConversionUnits(conversionUnitDtos, material.MaterialId);
+                conversionUnits?.AddRange(_conversionUnits);
+            }
+
+            // Tạo nhật ký
+            var materialAudits = materials.Select(material
+                => new MaterialAudit(Guid.NewGuid(), material.MaterialId, EditMode.Create, DateTime.UtcNow));
+
+            // Bắt đầu transaction
+            try
+            {
+                await _unitOfWork.BeginTransactionAsync();
+
+                await _repository.InsertManyAsync(materials);
+
+                await _materialAuditRepository.InsertManyAsync(materialAudits);
+
+                await _conversionUnitRepository.InsertManyAsync(conversionUnits);
+
+                await _unitOfWork.CommitAsync();
+
+                return ids;
+            }
+            catch
+            {
+                await _unitOfWork.RollbackAsync();
+                return new List<Guid>();
+            }
+        }
+        /// <summary>
         /// Xoá nguyên vật liệu
         /// </summary>
         /// <param name="materialId">Id nguyên vật liệu</param>
         /// <returns>Số lượng bản ghi thay đổi</returns>
         public override async Task<int> DeleteAsync(Guid materialId)
         {
+            var materialAudit = new MaterialAudit(Guid.NewGuid(), materialId, EditMode.Delete, DateTime.UtcNow);
+
             try
             {
                 await _unitOfWork.BeginTransactionAsync();
 
                 var result = await _repository.DeleteAsync(materialId);
 
-                var materialAudit = new MaterialAudit(Guid.NewGuid(), materialId, EditMode.Delete, DateTime.UtcNow);
                 await _materialAuditRepository.InsertAsync(materialAudit);
+
+                await _unitOfWork.CommitAsync();
+
+                return result;
+            }
+            catch
+            {
+                await _unitOfWork.RollbackAsync();
+                throw;
+            }
+        }
+        /// <summary>
+        /// Xoá nhiều nguyên vật liệu
+        /// </summary>
+        /// <param name="materialIds">Danh sách id muốn xoá</param>
+        /// <returns>Số bản ghi bị ảnh hưởng</returns>
+        /// Created by: nlnhat (18/07/2023)
+        public override async Task<int> DeleteManyAsync(IEnumerable<Guid> materialIds)
+        {
+            // Tạo nhật ký
+            var materialAudits = materialIds.Select(materialId
+                => new MaterialAudit(Guid.NewGuid(), materialId, EditMode.Delete, DateTime.UtcNow));
+
+            try
+            {
+                await _unitOfWork.BeginTransactionAsync();
+
+                var result = await _repository.DeleteManyAsync(materialIds);
+
+                await _materialAuditRepository.InsertManyAsync(materialAudits);
 
                 await _unitOfWork.CommitAsync();
 
@@ -592,6 +682,261 @@ namespace MISA.CUKCUK.Application
             {
                 throw new IncompleteException(MISAErrorCode.MaterialExportError, _resource["MaterialExportError"], exception.Message);
             }
+        }
+        /// <summary>
+        ///  Map dữ liệu từ file nhập khẩu
+        /// </summary>
+        /// <param name="file">File excel</param>
+        /// <returns></returns>
+        /// Created by: nlnhat (16/08/2023)
+        public async Task<IEnumerable<MaterialDto>> MapImportFileAsync(IFormFile file)
+        {
+            using var stream = new MemoryStream();
+            await file.CopyToAsync(stream);
+            ExcelPackage.LicenseContext = OfficeOpenXml.LicenseContext.NonCommercial;
+            using var package = new ExcelPackage(stream);
+            var sheet = package.Workbook.Worksheets.FirstOrDefault();
+
+            var invalidFileException = new ValidateException(
+                MISAErrorCode.MaterialNotValidImportFile,
+                _resource["MaterialNotValidImportFile"],
+                new ExceptionData("DownloadLink", null, ExceptionKey.FormItem, "FormItem"));
+
+            if (sheet != null)
+            {
+                var validHeaders = new List<string>() { "Mã (*)", "Tên (*)", "SL tồn tối thiểu", "Đơn vị tính (*)",
+                    "Kho ngầm định", "Hạn sử dụng", "Đơn vị thời gian", "Ghi chú", "Đơn vị chuyển đổi", "Tỷ lệ chuyển đổi", "Phép tính"};
+
+                for (var columnIndex = 1; columnIndex <= validHeaders.Count; columnIndex++)
+                {
+                    if (sheet.Cells[2, columnIndex].Text != validHeaders[columnIndex - 1])
+                    {
+                        throw invalidFileException;
+                    }
+                }
+
+                var rowIndex = 3;
+                var materialImportDtos = new List<MaterialImportDto>();
+
+                while (true)
+                {
+                    var rowData = new List<string>();
+
+                    for (var columnIndex = 1; columnIndex <= validHeaders.Count; columnIndex++)
+                    {
+                        rowData.Add(sheet.Cells[rowIndex, columnIndex].Text);
+                    }
+
+                    if (rowData.All(data => string.IsNullOrEmpty(data)))
+                    {
+                        break;
+                    }
+
+                    // Extract thông tin từ file excel
+                    var conversionUnitImportDto = new ConversionUnitImportDto
+                    (
+                        destinationUnitName: sheet.Cells[$"I{rowIndex}"].Text,
+                        rate: sheet.Cells[$"J{rowIndex}"].Text,
+                        operatorName: sheet.Cells[$"K{rowIndex}"].Text
+                    );
+
+                    var materialImportDto = new MaterialImportDto
+                    (
+                        materialCode: sheet.Cells[$"A{rowIndex}"].Text,
+                        materialName: sheet.Cells[$"B{rowIndex}"].Text,
+                        minimumInventory: sheet.Cells[$"C{rowIndex}"].Text,
+                        unitName: sheet.Cells[$"D{rowIndex}"].Text,
+                        warehouseCode: sheet.Cells[$"E{rowIndex}"].Text,
+                        expiryTime: sheet.Cells[$"F{rowIndex}"].Text,
+                        timeUnit: sheet.Cells[$"G{rowIndex}"].Text,
+                        note: sheet.Cells[$"H{rowIndex}"].Text,
+                        conversionUnitImportDto: conversionUnitImportDto
+                    );
+
+                    rowIndex++;
+                    materialImportDtos.Add(materialImportDto);
+                };
+
+                // Nhóm các nguyên vật liệu có cùng đơn vị chuyển đổi
+                var materialDtos = materialImportDtos
+                .GroupBy(m => new
+                {
+                    m.MaterialCode,
+                    m.MaterialName,
+                    m.UnitName,
+                    m.WarehouseCode,
+                    m.ExpiryTime,
+                    m.TimeUnit,
+                    m.MinimumInventory,
+                    m.Note,
+                })
+                .Select(group => new MaterialDto()
+                {
+                    MaterialCode = group.Key.MaterialCode,
+                    MaterialName = group.Key.MaterialName,
+                    UnitName = group.Key.UnitName,
+                    WarehouseCode = group.Key.WarehouseCode,
+                    ExpiryTime = group.Key.ExpiryTime,
+                    TimeUnit = group.Key.TimeUnit,
+                    MinimumInventory = group.Key.MinimumInventory,
+                    Note = group.Key.Note,
+                    ConversionUnits = group.Select(m => _mapper.Map<ConversionUnitDto>(m.ConversionUnit))
+                                           .Where(unit => unit != null).ToList()
+                })
+                .ToList();
+
+                var result = await ValidateImportMaterialsAsync(materialDtos);
+                return materialDtos;
+            }
+            else
+            {
+                throw invalidFileException;
+            }
+        }
+        /// <summary>
+        /// Map dữ liệu import sang dto hiển thị cho người dùng kết quả check dữ liệu import
+        /// </summary>
+        /// <param name="materialDtos">Danh sách dto import nguyên vật liệu</param>
+        /// <returns>Danh sách dto import nguyên vật liệu kèm dữ liệu hợp lệ hay không</returns>
+        /// Created by: nlnhat (12/09/2023)
+        public async Task<List<MaterialDto>> ValidateImportMaterialsAsync(List<MaterialDto> materialDtos)
+        {
+            // Dữ liệu import
+            var materialDtoCodes = materialDtos.Select(m => m.MaterialCode).ToList();
+            var warehouseCodes = materialDtos.Select(m => m.WarehouseCode ?? string.Empty).ToList();
+            var unitNames = materialDtos.Select(m => m.UnitName ?? string.Empty).ToList();
+            var destinationUnitNames = materialDtos.SelectMany(materialDto => materialDto.ConversionUnits ?? new List<ConversionUnitDto>())
+               .Select(conversionUnit => conversionUnit.DestinationUnitName ?? string.Empty).ToList();
+
+            // Lấy dữ liệu import trong db
+            var materials = await _repository.GetManyByCodeAsync(materialDtoCodes);
+            var warehouses = await _warehouseRepository.GetManyByCodeAsync(warehouseCodes);
+            var units = await _unitRepository.GetManyByNameAsync(unitNames);
+            var destinationUnits = await _unitRepository.GetManyByNameAsync(destinationUnitNames);
+
+            // Check xung đột với bản ghi trong db
+            foreach (var materialDto in materialDtos)
+            {
+                var materialCode = materialDto.MaterialCode;
+                var warehouseCode = materialDto.WarehouseCode;
+                var unitName = materialDto.UnitName;
+
+                // Những đối tượng tồn tại trong db
+                var material = materials.Where(material => material.MaterialCode == materialCode).FirstOrDefault();
+                var warehouse = warehouses.Where(warehouse => warehouse.WarehouseCode == warehouseCode).FirstOrDefault();
+                var unit = units.Where(unit => unit.UnitName == unitName).FirstOrDefault();
+
+                materialDto.MaterialId = Guid.NewGuid();
+                materialDto.IsValid = true;
+                materialDto.ValidateDescription = _resource["Valid"];
+
+                // Check trống code
+                if (string.IsNullOrEmpty(materialDto.MaterialCode))
+                {
+                    materialDto.IsValid = false;
+                    materialDto.ValidateDescription = $"{_resource["MaterialCode"]} {_resource["CannotEmpty"]}";
+                }
+                // Check trống tên
+                else if (string.IsNullOrEmpty(materialDto.MaterialName))
+                {
+                    materialDto.IsValid = false;
+                    materialDto.ValidateDescription = $"{_resource["MaterialName"]} {_resource["CannotEmpty"]}";
+                }
+                // Check trống đơn vị tính
+                else if (string.IsNullOrEmpty(materialDto.UnitName))
+                {
+                    materialDto.IsValid = false;
+                    materialDto.ValidateDescription = $"{_resource["Unit"]} {_resource["CannotEmpty"]}";
+                }
+                // Trùng code với bản ghi trong db
+                else if (material != null)
+                {
+                    materialDto.IsValid = false;
+                    materialDto.ValidateDescription = $"{_resource["MaterialCode"]} <{materialCode}> {_resource["Used"]}";
+                }
+
+                // Check tồn tại kho
+                else if (warehouse == null)
+                {
+                    materialDto.IsValid = false;
+                    materialDto.ValidateDescription = $"{_resource["WarehouseCode"]} <{warehouseCode}> {_resource["NotExist"]}";
+                }
+
+                // Check tồn tại đơn vị tính
+                else if (unit == null)
+                {
+                    materialDto.IsValid = false;
+                    materialDto.ValidateDescription = $"{_resource["Unit"]} <{unitName}> {_resource["NotExist"]}";
+                }
+
+                else
+                {
+                    materialDto.UnitId = unit.UnitId;
+                    materialDto.WarehouseId = warehouse.WarehouseId;
+                }
+
+                // Check đơn vị chuyển đổi
+                if (materialDto.IsValid == true)
+                {
+                    var conversionUnitDtos = materialDto.ConversionUnits;
+                    if (conversionUnitDtos?.Count > 0)
+                    {
+                        foreach (var conversionUnit in conversionUnitDtos)
+                        {
+                            var destinationUnitName = conversionUnit.DestinationUnitName;
+
+                            var destinationUnit = destinationUnits.Where(unit => unit.UnitName == destinationUnitName).FirstOrDefault();
+                            var destinationUnitId = destinationUnit?.UnitId;
+
+                            if (destinationUnit != null)
+                            {
+                                conversionUnit.DestinationUnitId = destinationUnit.UnitId;
+                            }
+
+                            // Check tồn tại đơn vị muốn chuyển đổi không
+                            if (destinationUnit == null)
+                            {
+                                materialDto.IsValid = false;
+                                materialDto.ValidateDescription
+                                    = $"{_resource["ConversionUnit"]} <{destinationUnitName}> {_resource["NotExist"]}";
+                            }
+
+                            // Check đơn vị chuyển đổi bị trùng đơn vị tính
+                            else if (destinationUnitId == materialDto.UnitId)
+                            {
+                                materialDto.IsValid = false;
+                                materialDto.ValidateDescription
+                                    = $"{_resource["ConversionUnit"]} <{destinationUnitName}> {_resource["Duplicated"]} {_resource["Unit"]}";
+                            }
+
+                            // Check đơn vị chuyển đổi bị trùng nhau
+                            else if (conversionUnitDtos.Any(otherUnit =>
+                                conversionUnit.DestinationUnitId == otherUnit.DestinationUnitId && conversionUnit != otherUnit))
+                            {
+                                materialDto.IsValid = false;
+                                materialDto.ValidateDescription =
+                                    $"{_resource["ConversionUnit"]} <{destinationUnitName}> {_resource["Duplicated"]}";
+                            }
+                        }
+                    }
+                } 
+            }
+
+            // Check xung đột lẫn nhau giữa các bản ghi hợp lệ
+            var validMaterialDtos = materialDtos.Where(materialDto => materialDto.IsValid == true).Reverse();
+
+            foreach (var materialDto in validMaterialDtos)
+            {
+                // Trùng code nhau
+                var materialCode = materialDto.MaterialCode;
+
+                if (validMaterialDtos.Any(other => other.MaterialCode == materialCode && other != materialDto))
+                {
+                    materialDto.IsValid = false;
+                    materialDto.ValidateDescription = $"{_resource["MaterialCode"]} <{materialCode}> {_resource["Duplicated"]}";
+                }
+            }
+            return materialDtos;
         }
         /// <summary>
         /// Đếm số lượng theo các năm

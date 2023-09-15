@@ -120,7 +120,7 @@ namespace MISA.CUKCUK.Application
         /// <param name="ids">List id muốn xoá</param>
         /// <returns>Số bản ghi bị ảnh hưởng</returns>
         /// Created by: nlnhat (18/07/2023)
-        public async Task<int> DeleteManyAsync(IEnumerable<Guid> ids)
+        public virtual async Task<int> DeleteManyAsync(IEnumerable<Guid> ids)
         {
             var result = await _repository.DeleteManyAsync(ids);
             return result;

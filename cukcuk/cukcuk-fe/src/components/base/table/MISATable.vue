@@ -2,7 +2,7 @@
     <div class="table-container">
         <div class="table-container__top d-flex--column flex-1">
             <!-- table toolbar -->
-            <div class="table-toolbar">
+            <div class="table-toolbar" v-if="this.$slots.toolbarLeft || this.$slots.toolbarRight">
                 <div class="table-toolbar__left">
                     <slot name="toolbarLeft"></slot>
                 </div>

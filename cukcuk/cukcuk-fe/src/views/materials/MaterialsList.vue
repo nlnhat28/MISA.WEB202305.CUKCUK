@@ -47,7 +47,7 @@
             :type="this.$enums.buttonType.linkIcon"
             :click="duplicateMaterial"
             :text="this.$resources['vn'].duplicate"
-            :isDisabled="focusedId == null"
+            :isDisabled="focusedId == null || focusedIds.length > 1"
             iconLeft="cukcuk-duplicate"
             title="Ctrl + V"
           >
@@ -57,7 +57,7 @@
             :type="this.$enums.buttonType.linkIcon"
             :click="showMaterialForm"
             :text="this.$resources['vn'].fix"
-            :isDisabled="focusedId == null"
+            :isDisabled="focusedId == null || focusedIds.length > 1"
             iconLeft="cukcuk-edit"
             title="Ctrl + U"
           >
@@ -65,7 +65,7 @@
           <!-- Xoá -->
           <m-button
             :type="this.$enums.buttonType.linkIcon"
-            :click="onClickDeleteMaterial"
+            :click="onClickDelete"
             :text="this.$resources['vn'].delete"
             :isDisabled="focusedId == null"
             iconLeft="cukcuk-delete"
@@ -73,13 +73,24 @@
           >
           </m-button>
           <m-separator></m-separator>
+          <!-- Thống kê -->
           <m-button
             :type="this.$enums.buttonType.linkIcon"
             :text="this.$resources['vn'].stat"
             :click="showMaterialStat"
-            title="Ctrl + R"
+            title="Ctrl + S"
             iconLeft="cukcuk-double-arrow"
           ></m-button>
+          <m-separator></m-separator>
+          <!-- Nhập khẩu -->
+          <m-button
+            :type="this.$enums.buttonType.linkIcon"
+            :click="showMaterialImport"
+            :text="this.$resources['vn'].import"
+            iconLeft="cukcuk-import"
+            title="Ctrl + I"
+          >
+          </m-button>
           <!-- Xuất khẩu -->
           <m-button
             :type="this.$enums.buttonType.linkIcon"
@@ -129,6 +140,7 @@
             :isSelected="isSelected(material.MaterialId)"
             ref="tr"
             v-model:focusedId="focusedId"
+            v-model:focusedIds="focusedIds"
             @emitUpdate="showMaterialForm(material)"
             @emitDelete="handleDeleteOnRow(material.MaterialId)"
             @emitDuplicate="duplicateMaterial(material)"
@@ -137,6 +149,8 @@
             @emitExport="exportToExcel"
             @emitFocusNext="focusNextRow"
             @emitFocusPrevious="focusPreviousRow"
+            @emitFocusById="focusById"
+            @emitSelectMany="selectMany"
           >
             <template #content>
               <!-- Mã nguyên vật liệu -->
@@ -160,7 +174,12 @@
                 textAlign="left"
                 :content="material.UnitName"
               ></m-td>
-              <!-- Kho ngầm định -->
+              <!-- Mã kho ngầm định -->
+              <m-td
+                textAlign="left"
+                :content="material.WarehouseCode"
+              ></m-td>
+              <!-- Tên kho -->
               <m-td
                 textAlign="left"
                 :content="material.WarehouseName"
@@ -195,7 +214,7 @@
       </m-table>
     </template>
   </m-page>
-  <!-- Form material -->
+  <!-- Form nguyên vật liệu -->
   <MaterialForm
     v-if="isShowedMaterialForm"
     :hideForm="hideMaterialForm"
@@ -205,16 +224,28 @@
     @emitReloadData="filterMaterials"
     @emitReRenderForm="reRenderForm()"
     @emitUpdateFocusedId="updateFocusedId"
+    @emitUpdateFocusedIds="updateFocusedIds"
   >
   </MaterialForm>
-  <!-- Stat material -->
+  <!-- Thống kê nguyên vật liệu -->
   <MaterialStat
     v-if="isShowMaterialStat"
     :closeThis="closeMaterialStat"
+    :focusedId="focusedId"
     :title="`${this.$resources['vn'].stat} ${this.$resources['vn'].material}`"
     :filterCount="filterCountComputed"
   >
   </MaterialStat>
+  <!-- Nhập khẩu nguyên vật liệu -->
+  <MaterialImport
+    v-if="isShowMaterialImport"
+    :closeThis="closeMaterialImport"
+    :title="`${this.$resources['vn'].import} ${this.$resources['vn'].material}`"
+    @emitReloadData="filterMaterials"
+    @emitUpdateFocusedId="updateFocusedId"
+    @emitUpdateFocusedIds="updateFocusedIds"
+  >
+  </MaterialImport>
   <!-- Dialog delete confirm -->
   <m-dialog
     :type="this.deleteConfirmDialog.type"
@@ -243,8 +274,9 @@
   </m-dialog>
 </template>
 <script>
-import MaterialForm from './MaterialForm.vue';
-import MaterialStat from './MaterialStat.vue';
+import MaterialForm from './material-form/MaterialForm.vue';
+import MaterialStat from './material-stat/MaterialStat.vue';
+import MaterialImport from './material-import/MaterialImport.vue';
 import {
   formatDate,
   formatStringByDot,
@@ -262,7 +294,8 @@ export default {
   name: "MaterialsList",
   components: {
     MaterialForm,
-    MaterialStat
+    MaterialStat,
+    MaterialImport,
   },
   data() {
     return {
@@ -290,6 +323,10 @@ export default {
        * Id of material to focus
        */
       focusedId: null,
+      /**
+       * Ids of material to focus
+       */
+      focusedIds: [],
       /**
        * Delete confirm dialog object
        */
@@ -388,13 +425,23 @@ export default {
             }
           },
           {
-            title: this.$resources['vn'].warehouse,
+            title: this.$resources['vn'].warehouseCode,
+            textAlign: 'left',
+            widthCell: 160,
+            name: "WarehouseCode",
+            sortType: this.$enums.sortType.blur,
+            filterConfig: {
+              filterType: this.$enums.filterType.selectName,
+            }
+          },
+          {
+            title: this.$resources['vn'].warehouseName,
             textAlign: 'left',
             widthCell: 260,
             name: "WarehouseName",
             sortType: this.$enums.sortType.blur,
             filterConfig: {
-              filterType: this.$enums.filterType.selectName,
+              filterType: this.$enums.filterType.text,
             }
           },
           {
@@ -441,12 +488,13 @@ export default {
        */
       dateFormat: 'dd/MM/yyyy',
       /**
-       * Show or hide conversion unit detail
+       * Show or hide material stat
        */
       isShowMaterialStat: false,
       /**
-       * Count by year
+       * Show or hide material import
        */
+      isShowMaterialImport: false,
     };
   },
   async created() {
@@ -467,8 +515,9 @@ export default {
      * 
      * Author: nlnhat (05/08/2023)
      */
-    keySearch() {
-      this.reloadMaterials();
+    async keySearch() {
+      await this.reloadMaterials();
+      this.focusFirstMaterial();
     },
     /**
      * Theo dõi thay đổi của mỗi sort item
@@ -518,6 +567,7 @@ export default {
     filterModelsClean: {
       async handler() {
         await this.reloadMaterials();
+        this.focusFirstMaterial();
       },
       deep: true
     },
@@ -535,15 +585,9 @@ export default {
       head.filterConfig.selects = this.unitStore.unitSelects;
     },
     "warehouseStore.warehouseSelects": function () {
-      const head = this.table.heads.find(head => head.name == "WarehouseName")
+      const head = this.table.heads.find(head => head.name == "WarehouseCode")
       head.filterConfig.selects = this.warehouseStore.warehouseSelects;
     },
-    /**
-     * Handle when focused id changes
-     */
-    // focusedId() {
-    //   this.$refs.table.scrollTop(this.scrollTopComputed);
-    // }
   },
   computed: {
     /**
@@ -656,7 +700,7 @@ export default {
      * Author: nlnhat (05/08/2023)
      */
     async filterMaterialsOnCreated() {
-      this.filterModels[6] = {
+      this.filterModels[7] = {
         column: "IsUnfollow",
         compareType: this.$enums.compareType.equal,
         logicType: this.$enums.logicType.and,
@@ -866,7 +910,7 @@ export default {
     async deleteMaterials() {
       await this.makeLoadingEffect(async () => {
         try {
-          const response = await materialService.deleteMany(this.materialsSelect);
+          const response = await materialService.deleteMany(this.focusedIds);
 
           if (response?.status == this.$enums.status.ok) {
             const deletedCount = response.data;
@@ -876,13 +920,20 @@ export default {
               this.showToastDeleteSuccess(`${this.$resources['vn'].deleted} ${deletedCount} ${this.$resources['vn'].material}`);
 
               // Nếu không xoá được hết thì báo lỗi
-              if (deletedCount < this.materialsSelect.length) {
-                const errorDeleteCount = this.materialsSelect.length - deletedCount;
+              if (deletedCount < this.focusedIds.length) {
+                const errorDeleteCount = this.focusedIds.length - deletedCount;
                 this.showToastDeleteError(`${this.$resources['vn'].cannotDelete} ${errorDeleteCount} ${this.$resources['vn'].material}`);
               }
 
-              this.materialsSelect = [];
               await this.filterMaterials();
+
+              // Focus vào dòng mới
+              const length = this.materials.length;
+              if (length > 0) {
+                this.focusedId = this.materials[0].MaterialId;
+                this.focusedIds = [this.focusedId];
+                this.focusFocusedId();
+              }
             }
           }
         } catch (error) {
@@ -890,12 +941,26 @@ export default {
         }
       })
     },
+
     /**
-     * On click delete one material
+     * On click delete
      * 
      * Author: nlnhat (29/06/2023)
      */
-    onClickDeleteMaterial() {
+    onClickDelete() {
+      if (this.focusedIds.length <= 1) {
+        this.handleDeleteMaterial();
+      }
+      else {
+        this.handleDeleteMaterials();
+      }
+    },
+    /**
+     * Handle delete one material
+     * 
+     * Author: nlnhat (29/06/2023)
+     */
+    handleDeleteMaterial() {
       try {
         const materialId = this.focusedId;
         const material = this.materials.find(material => material.MaterialId == materialId);
@@ -921,13 +986,13 @@ export default {
       }
     },
     /**
-     * On click delete all materials
+     * Handle delete many materials
      * 
      * Author: nlnhat (29/06/2023)
      */
-    onClickDeleteMaterials() {
+    handleDeleteMaterials() {
       try {
-        const oldLength = this.materialsSelect.length;
+        const oldLength = this.focusedIds.length;
 
         this.deleteConfirmDialog.content = `${this.$resources['vn'].deleteConfirm} ${oldLength} ${this.$resources['vn'].selectedMaterials}`;
         this.deleteConfirmDialog.onClickDelete = () => {
@@ -1088,12 +1153,6 @@ export default {
           event.stopPropagation();
           this.onReloadData();
         }
-        // Ctrl + E: Export to excel
-        else if (event.ctrlKey && event.keyCode == code.e) {
-          event.preventDefault();
-          event.stopPropagation();
-          this.exportToExcel();
-        }
         // Ctrl + D || Delete: Delete
         else if (((event.ctrlKey && event.keyCode == code.d) || event.keyCode == code.delete)
           && this.focusedId != null) {
@@ -1101,11 +1160,23 @@ export default {
           event.stopPropagation();
           this.onClickDeleteMaterial();
         }
-        // Ctrl + R || Thống kệ
-        else if (event.ctrlKey && event.keyCode == code.r) {
+        // Ctrl + S || Thống kệ
+        else if (event.ctrlKey && event.keyCode == code.s) {
           event.preventDefault();
           event.stopPropagation();
           this.showMaterialStat();
+        }
+        // Ctrl + I || Nhập khẩu
+        else if (event.ctrlKey && event.keyCode == code.i) {
+          event.preventDefault();
+          event.stopPropagation();
+          this.showMaterialImport();
+        }
+        // Ctrl + E: Export to excel
+        else if (event.ctrlKey && event.keyCode == code.e) {
+          event.preventDefault();
+          event.stopPropagation();
+          this.exportToExcel();
         }
         // Ctrl + A: Chọn tất
         // else if (event.ctrlKey && event.keyCode == code.a) {
@@ -1211,8 +1282,10 @@ export default {
      */
     focusRow(index) {
       const refFocus = this.$refs.tr.find(tr => tr.index == index);
-      if (refFocus)
+      if (refFocus) {
+        this.focusedIds = [refFocus.id];
         refFocus.focus();
+      }
     },
     /**
      * Focus on a row by id
@@ -1246,6 +1319,37 @@ export default {
       this.focusedId = id;
     },
     /**
+     * Update focused ids
+     * 
+     * Author: nlnhat (08/08/2023) 
+     * @param {*} ids Focused ids
+     */
+    updateFocusedIds(ids) {
+      this.focusedIds = ids ?? [];
+    },
+    /**
+     * Select many from focused id to id
+     * 
+     * Author: nlnhat (08/08/2023) 
+     * @param {*} id End id selected
+     */
+    selectMany(startId, endId) {
+      const ids = this.materials.map(material => material.MaterialId);
+      let startIndex = Math.max(ids.indexOf(startId), 0);
+      let endIndex = ids.indexOf(endId);
+      let newIds = [];
+
+      if (startIndex < endIndex) {
+        newIds = ids.slice(startIndex, endIndex + 1);
+      }
+      else {
+        newIds = ids.slice(endIndex, startIndex + 1);
+      }
+
+      newIds = newIds.filter(id => !this.focusedIds.includes(id));
+      this.focusedIds.push(...newIds);
+    },
+    /**
      * Handle delete on a row
      * 
      * Author: nlnhat (04/08/2023)
@@ -1263,6 +1367,20 @@ export default {
     async updatePage(page) {
       this.page = page;
       await this.reloadMaterials();
+      this.focusFirstMaterial();
+    },
+    /**
+     * Focus vào nguyên vật liệu đầu tiên khi sang trang khác hoặc tìm kiếm
+     *
+     * Author: nlnhat (14/09/2023)
+     */
+    focusFirstMaterial() {
+      if (this.materials?.length > 0 && this.focusedIds?.length <= 1) {
+        const id = this.materials[0].MaterialId;
+        this.focusedId = id;
+        this.focusedIds = [id];
+
+      }
     },
     /**
      * Show MaterialStat
@@ -1279,6 +1397,22 @@ export default {
      */
     closeMaterialStat() {
       this.isShowMaterialStat = false;
+    },
+    /**
+     * Show MaterialImport
+     *
+     * Author: nlnhat (08/09/2023)
+     */
+    showMaterialImport() {
+      this.isShowMaterialImport = true;
+    },
+    /**
+     * Close MaterialImport
+     *
+     * Author: nlnhat (08/09/2023)
+     */
+    closeMaterialImport() {
+      this.isShowMaterialImport = false;
     },
     /**
      * Imported methods

@@ -376,6 +376,11 @@
   width: 12px;
   height: 11px;
 }
+.icon--cukcuk-xmark--red {
+  background: var(--cukcuk-sprite) no-repeat -2px -2683px;
+  width: 12px;
+  height: 11px;
+}
 .icon--cukcuk-edit {
   background: var(--cukcuk-sprite) no-repeat 0 -2633px;
   width: 16px;
@@ -420,6 +425,16 @@
   width: 10px;
   height: 16px;
   scale: calc(20 / 16);
+}
+.icon--cukcuk-arrow-left {
+  background: var(--cukcuk-sprite) no-repeat  0 -1024px;
+	width: 15px;
+	height: 15px;
+}
+.icon--cukcuk-arrow-right {
+  background: var(--cukcuk-sprite) no-repeat 0 -832px;
+	width: 15px;
+	height: 15px;
 }
 .icon--cukcuk-dot--green {
   background: var(--cukcuk-sprite) no-repeat 0 -1216px;
@@ -488,6 +503,11 @@
 	width: 13px;
 	height: 14px;
   /* scale: calc(15/14); */
+}
+.icon--cukcuk-import {
+  background: var(--cukcuk-sprite) no-repeat -1px -1552px;
+	width: 15px;
+	height: 16px;
 }
 /* icon effect */
 .icon-btn {

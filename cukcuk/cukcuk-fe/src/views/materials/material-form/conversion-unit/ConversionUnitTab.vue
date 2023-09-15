@@ -258,14 +258,20 @@ export default {
         deleteRow() {
             if (this.conversionUnitsComputed.length > 0) {
                 const conversionUnit = this.conversionUnits.find(unit => unit.ConversionUnitId == this.focusedId);
+                const conversionUnitIndex = this.conversionUnits.indexOf(conversionUnit);
                 const oldIndex = this.conversionUnitsComputed.indexOf(conversionUnit);
 
+                // Nếu edit là create thì xoá luôn
                 if (conversionUnit.EditMode == this.$enums.editMode.create) {
-                    this.conversionUnits.pop(conversionUnit);
+                    if (conversionUnitIndex !== -1) {
+                        this.conversionUnits.splice(conversionUnitIndex, 1);
+                    }
                 }
+                // TH khác thì chỉnh edit mode thành delete
                 else {
                     conversionUnit.EditMode = this.$enums.editMode.delete;
                 }
+                // Cập nhật lại focused id
                 const length = this.conversionUnitsComputed.length;
                 if (length > 0) {
                     const indexFocus = oldIndex < length ? oldIndex : length - 1;

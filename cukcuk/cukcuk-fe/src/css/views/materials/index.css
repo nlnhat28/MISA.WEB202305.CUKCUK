@@ -2,11 +2,6 @@
 
 /* customers */
 
-a,
-a:active,
-a:visited {
-  text-decoration: none;
-}
 .icon {
   caret-color: transparent;
 }

@@ -117,6 +117,9 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="CannotEmpty" xml:space="preserve">
+    <value>không được để trống</value>
+  </data>
   <data name="CannotOverToday" xml:space="preserve">
     <value>không thể lớn hơn hôm nay</value>
   </data>
@@ -189,6 +192,12 @@
   <data name="MaterialExportError" xml:space="preserve">
     <value>Có lỗi xảy ra trong quá trình xuất file Excel</value>
   </data>
+  <data name="MaterialName" xml:space="preserve">
+    <value>Tên nguyên vật liệu</value>
+  </data>
+  <data name="MaterialNotValidImportFile" xml:space="preserve">
+    <value>File nhập khẩu không hợp lệ. Vui lòng tải file mẫu để nhập khẩu.</value>
+  </data>
   <data name="MaterialsList" xml:space="preserve">
     <value>Danh sách nguyên vật liệu</value>
   </data>
@@ -197,6 +206,9 @@
   </data>
   <data name="Multiple" xml:space="preserve">
     <value>Nhân</value>
+  </data>
+  <data name="NotExist" xml:space="preserve">
+    <value>không tồn tại</value>
   </data>
   <data name="NotFound" xml:space="preserve">
     <value>Không tìm thấy dữ liệu</value>
@@ -227,6 +239,15 @@
   </data>
   <data name="Used" xml:space="preserve">
     <value>đã được sử dụng</value>
+  </data>
+  <data name="Valid" xml:space="preserve">
+    <value>Hợp lệ</value>
+  </data>
+  <data name="ValidData" xml:space="preserve">
+    <value>Dữ liệu hợp lệ</value>
+  </data>
+  <data name="Warehouse" xml:space="preserve">
+    <value>Kho ngầm định</value>
   </data>
   <data name="WarehouseCode" xml:space="preserve">
     <value>Mã kho</value>

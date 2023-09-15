@@ -35,7 +35,7 @@ namespace MISA.CUKCUK.Infrastructure
 
             var param = InfrastructureHelper.GetParamFromEntity(entity);
             param.Add($"p_{TableId}Out", dbType: DbType.Guid, direction: ParameterDirection.Output);
-        
+
             _ = await _unitOfWork.Connection.ExecuteAsync(
                 proc, param, transaction: _unitOfWork.Transaction, commandType: CommandType.StoredProcedure);
 
@@ -48,19 +48,24 @@ namespace MISA.CUKCUK.Infrastructure
         /// <param name="entities">Danh sách đối tượng mới</param>
         /// <returns>Số bản ghi ảnh hưởng</returns>
         /// Created by: nlnhat (16/08/2023)
-        public async Task<int> InsertManyAsync(IEnumerable<TEntity> entities)
+        public async Task<int> InsertManyAsync(IEnumerable<TEntity>? entities)
         {
-            var proc = $"{Procedure}InsertMany";
 
-            var entitiesJson = JsonConvert.SerializeObject(entities);
+            if (entities?.Count() > 0)
+            {
+                var proc = $"{Procedure}InsertMany";
 
-            var param = new DynamicParameters();
-            param.Add($"p_{Table}s", entitiesJson);
+                var entitiesJson = JsonConvert.SerializeObject(entities);
 
-            var result = await _unitOfWork.Connection.ExecuteAsync(
-                proc, param, transaction: _unitOfWork.Transaction, commandType: CommandType.StoredProcedure);
+                var param = new DynamicParameters();
+                param.Add($"p_{Table}s", entitiesJson);
 
-            return result;
+                var result = await _unitOfWork.Connection.ExecuteAsync(
+                    proc, param, transaction: _unitOfWork.Transaction, commandType: CommandType.StoredProcedure);
+                return result;
+            }
+
+            return 0;
         }
         /// <summary>
         /// Cập nhật 1 đối tượng
@@ -84,19 +89,23 @@ namespace MISA.CUKCUK.Infrastructure
         /// <param name="entities">Danh sách đối tượng muốn cập nhật</param>
         /// <returns>Số bản ghi bị ảnh hưởng</returns>
         /// Created by: nlnhat (16/08/2023)
-        public async Task<int> UpdateManyAsync(IEnumerable<TEntity> entities)
+        public async Task<int> UpdateManyAsync(IEnumerable<TEntity>? entities)
         {
-            var proc = $"{Procedure}UpdateMany";
+            if (entities?.Count() > 0)
+            {
+                var proc = $"{Procedure}UpdateMany";
 
-            var entitiesJson = JsonConvert.SerializeObject(entities);
+                var entitiesJson = JsonConvert.SerializeObject(entities);
 
-            var param = new DynamicParameters();
-            param.Add($"p_{Table}s", entitiesJson);
+                var param = new DynamicParameters();
+                param.Add($"p_{Table}s", entitiesJson);
 
-            var result = await _unitOfWork.Connection.ExecuteAsync(
-                proc, param, transaction: _unitOfWork.Transaction, commandType: CommandType.StoredProcedure);
+                var result = await _unitOfWork.Connection.ExecuteAsync(
+                    proc, param, transaction: _unitOfWork.Transaction, commandType: CommandType.StoredProcedure);
+                return result;
+            };
 
-            return result;
+            return 0;
         }
         /// <summary>
         /// Xoá 1 đối tượng theo id
@@ -121,19 +130,24 @@ namespace MISA.CUKCUK.Infrastructure
         /// <param name="ids">Danh sách id</param>
         /// <returns>Số bản ghi bị ảnh hưởng</returns>
         /// Created by: nlnhat (16/08/2023)
-        public async Task<int> DeleteManyAsync(IEnumerable<Guid> ids)
+        public async Task<int> DeleteManyAsync(IEnumerable<Guid>? ids)
         {
-            var proc = $"{Procedure}DeleteMany";
 
-            var idsJson = JsonConvert.SerializeObject(ids);
+            if (ids?.Count() > 0)
+            {
+                var proc = $"{Procedure}DeleteMany";
 
-            var param = new DynamicParameters();
-            param.Add($"p_{TableId}s", idsJson);
+                var idsJson = JsonConvert.SerializeObject(ids);
 
-            var result = await _unitOfWork.Connection.ExecuteAsync(
-                proc, param, transaction: _unitOfWork.Transaction, commandType: CommandType.StoredProcedure);
+                var param = new DynamicParameters();
+                param.Add($"p_{TableId}s", idsJson);
 
-            return result;
+                var result = await _unitOfWork.Connection.ExecuteAsync(
+                    proc, param, transaction: _unitOfWork.Transaction, commandType: CommandType.StoredProcedure);
+                return result;
+            }
+
+            return 0;
         }
         #endregion
     }

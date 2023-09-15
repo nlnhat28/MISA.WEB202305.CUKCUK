@@ -78,6 +78,10 @@
         /// Lỗi tạo nguyên vật liệu
         /// </summary>
         MaterialCreate = 2010,
+        /// <summary>
+        /// Lỗi file nhập khẩu
+        /// </summary>
+        MaterialNotValidImportFile = 2011,
         #endregion
 
         #region Mã lỗi phân hệ kho

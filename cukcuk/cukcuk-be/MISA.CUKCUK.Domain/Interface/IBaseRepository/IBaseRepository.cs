@@ -20,7 +20,7 @@
         /// <param name="entities">Các đối tượng muốn tạo</param>
         /// <returns>Id của các bản ghi mới</returns>
         /// Created by: nlnhat (15/08/2023)
-        Task<int> InsertManyAsync(IEnumerable<TEntity> entities);
+        Task<int> InsertManyAsync(IEnumerable<TEntity>? entities);
         /// <summary>
         /// Cập nhật 1 đối tượng
         /// </summary>
@@ -34,7 +34,7 @@
         /// <param name="entities">Các đối tượng muốn cập nhật</param>
         /// <returns>Số lượng bản ghi bị ảnh hưởng</returns>
         /// Created by: nlnhat (15/08/2023)
-        Task<int> UpdateManyAsync(IEnumerable<TEntity> entities);
+        Task<int> UpdateManyAsync(IEnumerable<TEntity>? entities);
         /// <summary>
         /// Xoá 1 đối tượng
         /// </summary>
@@ -48,6 +48,6 @@
         /// <param name="ids">Danh sách id đối tượng muốn xoá</param>
         /// <returns>Số lượng bản ghi bị ảnh hưởng</returns>
         /// Created by: nlnhat (15/08/2023)
-        Task<int> DeleteManyAsync(IEnumerable<Guid> ids);
+        Task<int> DeleteManyAsync(IEnumerable<Guid>? ids);
     }
 }

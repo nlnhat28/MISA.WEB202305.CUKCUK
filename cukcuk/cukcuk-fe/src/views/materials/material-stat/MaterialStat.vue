@@ -255,7 +255,7 @@ export default {
                             label: this.$resources['vn'].created,
                             borderColor: this.$enums.color.primary.hex,
                             pointBackgroundColor: this.$enums.color.primary.hex,
-                            lineTension: 0.4,
+                            lineTension: 0.3,
                             borderWidth: 1,
                             data: [
                                 ...createCounts
@@ -280,7 +280,7 @@ export default {
                             label: this.$resources['vn'].deleted,
                             borderColor: this.$enums.color.danger.hex,
                             pointBackgroundColor: this.$enums.color.danger.hex,
-                            lineTension: 0.4,
+                            lineTension: 0.3,
                             borderWidth: 1,
                             data: [
                                 ...deleteCounts

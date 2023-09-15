@@ -169,3 +169,26 @@ input[type="number"]::-webkit-outer-spin-button {
 #app:has(#popup-container--main) #main .popup-container {
   background-color: transparent;
 }
+
+/* href */
+a, a:active, a:visited {
+  text-decoration: none;
+}
+
+.link-url {
+  color: blue;
+  cursor: pointer;
+  caret-color: transparent;
+}
+
+.link-url:focus {
+  text-decoration: underline;
+}
+
+.link-url:hover {
+  color: var(--orange-500);
+}
+
+.link-url:active {
+  color: var(--orange-600);
+}

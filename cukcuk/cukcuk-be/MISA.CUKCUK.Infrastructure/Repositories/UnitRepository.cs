@@ -1,6 +1,8 @@
 using Dapper;
 using MISA.CUKCUK.Domain;
+using Newtonsoft.Json;
 using System.Data;
+using System.Reflection.Emit;
 using static Dapper.SqlMapper;
 
 namespace MISA.CUKCUK.Infrastructure
@@ -40,6 +42,28 @@ namespace MISA.CUKCUK.Infrastructure
                 proc, param, _unitOfWork.Transaction, commandType: CommandType.StoredProcedure);
 
             return result;
+        }
+        /// <summary>
+        /// Lấy nhiều đơn vị tính theo tên
+        /// </summary>
+        /// <param name="names">Danh sách tên đơn vị tính</param>
+        /// <returns>Danh sách đơn vị có tên tương ứng</returns>
+        public async Task<IEnumerable<Unit>> GetManyByNameAsync(List<string> names)
+        {
+            if (names?.Count > 0)
+            {
+                var proc = $"{Procedure}GetManyByName";
+
+                var param = new DynamicParameters();
+                var namesJson = JsonConvert.SerializeObject(names);
+                param.Add($"p_{Table}Names", namesJson);
+
+                var result = await _unitOfWork.Connection.QueryAsync<Unit>(
+                    proc, param, _unitOfWork.Transaction, commandType: CommandType.StoredProcedure);
+
+                return result;
+            }
+            return new List<Unit>();
         }
         /// <summary>
         /// Lấy tất cả id của đơn vị tính
